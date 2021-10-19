@@ -9,7 +9,7 @@ class User(AbstractUser):
 
 class User_Profile(models.Model):
 	type = "author"
-	id = uuid.uuid4()
+	#id = uuid.uuid4()
 	host = None
 	displayName = models.CharField(max_length=60)
 	profileImage = None

@@ -3,5 +3,6 @@ from . import views
 
 
 urlpatterns = [
-  path('', views.post, name='post')
+  path('', views.post, name='post'),
+  path('<int:Post_id>/', views.placeholder, name='post_placeholder')
 ]

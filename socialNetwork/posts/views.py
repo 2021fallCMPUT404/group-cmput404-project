@@ -5,13 +5,13 @@ from django.views import View
 from .models import Post
 
 
-class PostView (View):
 
-    def get_posts(self,request, *args, **kwargs):
-        posts = Post.objects.all().order_by('-pub_date')
-        
-        context = {
-            'postList':posts,
-        }
-        return render(request,'posts/index.html', context)
+class PostView(View):
+    def get_posts(self,request, post_id,*args, **kwargs):
+            posts = Post.objects.all().order_by('-pub_date')
+            
+            context = {
+                'postList':posts,
+            }
+            return render(request,'posts/index.html', context)
 

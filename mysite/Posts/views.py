@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from . import views
 from django.http import HttpResponse
+from django.template import loader
 from .models import Post
 # Create your views here.
 
@@ -11,5 +12,10 @@ def post(request, Post_id):
 
 def placeholder(request):
     latest_post_list = Post.objects.order_by('-pub_date')[:5]
-    output = '\n'.join([q.text for q in latest_post_list])
-    return HttpResponse(output)
+    template = loader.get_template('Posts/placeholder.html')
+    #output = '\n'.join([q.text for q in latest_post_list])
+    print(latest_post_list)
+    context = {
+        'latest_post_list': latest_post_list
+    }
+    return HttpResponse(template.render(context, request))

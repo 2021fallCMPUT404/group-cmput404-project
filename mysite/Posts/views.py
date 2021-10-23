@@ -21,3 +21,17 @@ def placeholder(request):
         'latest_post_list': latest_post_list
     }
     return HttpResponse(template.render(context, request))
+
+def create_post(request):
+    user = request.user
+    if request.method == "POST":
+	form = NewPostForm(request.POST, request.FILES)
+	if form.is_valid():
+	    data = form.save(commit=False)
+	    data.user_name = user
+	    data.save()
+	    messages.success(request, f'Posted Successfully')
+	    return redirect('home')
+    else:
+	form = NewPostForm()
+    return render(request, 'feed/create_post.html', {'form':form})

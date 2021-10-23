@@ -1,8 +1,8 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from . import views
 from django.http import HttpResponse, Http404
 from django.template import loader
-from .models import Post
+from .models import Post, Comment, Like
 # Create your views here.
 
 
@@ -23,15 +23,21 @@ def placeholder(request):
     return HttpResponse(template.render(context, request))
 
 def create_post(request):
-    user = request.user
-    if request.method == "POST":
-	form = NewPostForm(request.POST, request.FILES)
-	if form.is_valid():
-	    data = form.save(commit=False)
-	    data.user_name = user
-	    data.save()
-	    messages.success(request, f'Posted Successfully')
-	    return redirect('home')
-    else:
-	form = NewPostForm()
-    return render(request, 'feed/create_post.html', {'form':form})
+	user = request.user
+	if request.method == "POST":
+		form = NewPostForm(request.POST, request.FILES)
+		if form.is_valid():
+			data = form.save(commit=False)
+			data.user_name = user
+			data.save()
+			messages.success(request, f'Posted Successfully')
+			return redirect('home')
+	else:
+		form = NewPostForm()
+	return render(request, 'Posts/create_post.html', {'form':form})
+
+def delete_post(request,pid):
+    post = Post.objects.get(Post_id=pid)
+    if request.user== post.user_name:
+        Post.objects.get(Post_id=pid).delete()
+    return redirect('home')

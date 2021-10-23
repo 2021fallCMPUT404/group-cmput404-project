@@ -34,7 +34,7 @@ def create_post(request):
 			return redirect('home')
 	else:
 		form = NewPostForm()
-	return render(request, 'Posts/Make_Posts/make_post.html', {'form':form})
+	return render(request, 'templates/Make_Posts/make_post.html', {'form':form})
 
 def delete_post(request,pid):
     post = Post.objects.get(Post_id=pid)

@@ -15,16 +15,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+<<<<<<< HEAD
 
 from django.conf.urls import include, url
 from users import views
 
+=======
+>>>>>>> f525717b540b8d51ce4b12c3bcd196153cd5b4ab
 
 urlpatterns = [
     path('post/', include('Posts.urls')),
     path('authors/', include('users.urls')),
     path('admin/', admin.site.urls),
+<<<<<<< HEAD
 
     path('users', include('users.urls')),
     url(r'^users_test$', views.index, name='index'),
+=======
+>>>>>>> f525717b540b8d51ce4b12c3bcd196153cd5b4ab
 ]

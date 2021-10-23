@@ -28,8 +28,8 @@ class MyUUIDModel(models.Model):
 class User_Profile(models.Model):
 	type = "author"
 	host = None
-	displayName = models.ForeignKey(displayName, on_delete=models.CASCADE, related_name = "username")
-	id = models.ForeignKey(MyUUIDModel, primary_key=True, on_delete=models.CASCADE)
+	displayName = models.ForeignKey(displayName, primary_key=True, on_delete=models.CASCADE, related_name = "username")
+	id = models.ForeignKey(MyUUIDModel, on_delete=models.CASCADE)
 	profileImage = None
 	github = None
 	bio = models.CharField(max_length = 256, unique = False, default="egg dog")

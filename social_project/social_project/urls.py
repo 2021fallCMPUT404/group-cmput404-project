@@ -5,6 +5,9 @@ from users import views
 
 urlpatterns = [
     path('users', include('users.urls')),
-    url(r'^$', views.index, name='index'),
+    path('', views.index, name='index'),
     path('admin/', admin.site.urls),
+    path('create_user_profile',
+         views.create_user_profile,
+         name='create_user_profile'),
 ]

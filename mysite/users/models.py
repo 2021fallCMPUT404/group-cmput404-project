@@ -6,6 +6,7 @@ from django import forms
 from django.forms.widgets import Textarea
 # Create your models here.
 
+#TODO: MERGE USER_PROFILE INTO USER
 class User(AbstractUser):
 	pass
 

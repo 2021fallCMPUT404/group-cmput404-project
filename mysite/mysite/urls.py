@@ -19,12 +19,12 @@ from django.urls import path, include
 from django.conf.urls import include, url
 from users import views
 
-
 urlpatterns = [
     path('post/', include('Posts.urls')),
     path('authors/', include('users.urls')),
     path('admin/', admin.site.urls),
-
     path('users', include('users.urls')),
     url(r'^users_test$', views.index, name='index'),
+    url(r'^$', views.index, name='index'),
+    url(r'create_user_form', views.create_user_form, name='create_user_form')
 ]

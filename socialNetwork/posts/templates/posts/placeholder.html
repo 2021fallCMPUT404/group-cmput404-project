@@ -1,0 +1,22 @@
+{% extends 'posts/base.html' %}
+
+
+
+{% block content %}
+
+{% if latest_post_list %}
+    <ul>
+    <!--<p>{{latest_post_list}}</p>-->
+    {% for posts in latest_post_list %}
+        <li><a href="/post/{{ posts.id }}/">{{ posts.text }}</a></li>
+        <p>Author is: {{posts.author}}</p>
+        <p>Text is: {{posts.text}}</p>
+        <p>Pub date is: {{posts.pub_date}}</p>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No posts are available.</p>
+{% endif %}
+
+
+{% endblock content %}

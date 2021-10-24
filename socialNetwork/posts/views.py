@@ -1,17 +1,31 @@
-from django.db import models
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.views import View
+from django.shortcuts import get_object_or_404, render
+from . import views
+from django.http import HttpResponse, Http404
+from django.template import loader
 from .models import Post
+from django.views.generic import CreateView
+# Create your views here.
 
 
+def post(request, Post_id):
+    post = get_object_or_404(Post, pk=Post_id)
+    return render(request, 'Posts/post.html', {'post':post})
+    #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
+    #return HttpResponse(output)
 
-class PostView(View):
-    def get_posts(self,request, post_id,*args, **kwargs):
-            posts = Post.objects.all().order_by('-pub_date')
-            
-            context = {
-                'postList':posts,
-            }
-            return render(request,'posts/index.html', context)
+def placeholder(request):
+    latest_post_list = Post.objects.order_by('-pub_date')[:5]
+    template = loader.get_template('Posts/placeholder.html')
+    #output = '\n'.join([q.text for q in latest_post_list])
+    print(latest_post_list)
+    context = {
+        'latest_post_list': latest_post_list
+    }
+    return HttpResponse(template.render(context, request))
 
+
+class addPost(CreateView):
+    model = Post
+    template_name = 'addPost.html'
+    fields = '__all__'
+    

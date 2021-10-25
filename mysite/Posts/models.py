@@ -11,6 +11,8 @@ class Post(models.Model):
     image = models.FileField(upload_to='', blank=True, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    shared_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
+    shared_on = models.DateTimeField(blank=True, null=True)
     visibility =None
 
 
@@ -25,8 +27,3 @@ class Comment(models.Model):
 class Like(models.Model):
 	user = models.ForeignKey(User, related_name='likes', on_delete=models.CASCADE)
 	post = models.ForeignKey(Post, related_name='likes', on_delete=models.CASCADE)
-
-class Share(models.Model):
-        user = models.ForeignKey(User, related_name='shares', on_delete=models.CASCADE)
-        post = models.ForeignKey(Post, related_name='shares', on_delete=models.CASCADE)
-        

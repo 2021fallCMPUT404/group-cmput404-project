@@ -68,3 +68,4 @@ def login_view(request):
         password = request.POST.get('password')
     else:
         print('login failed')
+

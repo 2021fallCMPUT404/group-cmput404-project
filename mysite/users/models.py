@@ -2,10 +2,18 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.http import HttpResponse
 import uuid
+from django import forms	
+from django.forms.widgets import Textarea
 # Create your models here.
 
+#TODO: MERGE USER_PROFILE INTO USER
 class User(AbstractUser):
 	pass
+
+class Create_user(forms.Form):
+	username = forms.CharField(initial='')
+	password = forms.CharField(widget=forms.PasswordInput())
+	confirm_password = forms.CharField(widget=forms.PasswordInput())
 
 class User_Profile(models.Model):
 	type = "author"

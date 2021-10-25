@@ -9,7 +9,7 @@ from .forms import ShareForm
 
 
 def post(request, Post_id):
-    post = get_object_or_404(Post, pk=Post_id)
+    post = get_object_or_404(Post, Post_id=Post_id)
     share_form = ShareForm()
     return render(request, 'Posts/post.html', {'post':post})
     #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
@@ -47,7 +47,7 @@ def delete_post(request,pid):
 
 class SharedPostView(View):
   def post(self, request, pid, *args, **kwargs):
-    original_post = Post.objects.get(pk=pid)
+    original_post = Post.objects.get(Post_id=pid)
     form = ShareForm(request.POST)
     if form.is_valid():
     new_post = Post(
@@ -59,7 +59,9 @@ class SharedPostView(View):
       shared_user = request.user
     )
     new_post.save()
+    '''
     for img in original_post.image.all():
       new_post.image.add(img),
     new_post.save()
-    return redirect('post-list')
+    '''
+    return redirect('home')

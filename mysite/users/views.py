@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from .models import User, Create_user, User_Profile
 from django.apps import apps
 from . import create_user_form
-from django
+
 
 Post_model = apps.get_model('posts', 'Post')
 

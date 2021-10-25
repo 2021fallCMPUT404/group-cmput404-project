@@ -2,6 +2,9 @@ from django import forms
 from django.forms.widgets import Textarea
 from django.core import validators
 from users.models import User_Profile
+from django.contrib.auth.models import User
+
+
 '''
 class create_user(forms.Form):
     username = forms.CharField(initial='doge')
@@ -33,14 +36,12 @@ class create_user(forms.Form):
 class create_new_user(forms.ModelForm):
 
     password = forms.CharField(label='password', widget=forms.PasswordInput())
-    confirm_password = forms.CharField(label='confirm_password',
-                                       widget=forms.PasswordInput())
-    check_bot = forms.CharField(required=False, widget=forms.HiddenInput)
 
     class Meta():
-        model = User_Profile
-        #fields = ['profileImage', 'bio', 'github', 'created_date']
-        fields = ['displayName','bio', 'github']
+        #model = User_Profile
+        
+        model = User
+        fields = ('first_name', 'last_name', 'username', 'password', 'email')
 
     def clean(self):
         cleaned_data = super(create_new_user, self).clean()
@@ -53,3 +54,9 @@ class create_new_user(forms.ModelForm):
                 "password and confirm_password does not match.")
         if len(checking_bot) > 0:
             raise forms.ValidationError("This is a bot.")
+
+class create_new_user_profile(forms.ModelForm):
+    class Meta():
+        model = User_Profile
+        fields = ['displayName', 'github', 'profileImage', 'bio']
+

@@ -2,6 +2,9 @@ from django.shortcuts import render, get_object_or_404
 from . import views
 from django.http import HttpResponse
 from .models import User, Create_user, User_Profile
+from django.apps import apps
+
+Post_model = apps.get_model('Posts', 'Post')
 # Create your views here.
 def homepage(request):
 	return HttpResponse("Placeholder homepage")
@@ -9,9 +12,15 @@ def homepage(request):
 def placeholder(request, User_id):
 	#latest_user_list = User.objects.order_by('-id')[:5]
 	#output = ','.join([str(q.username) for q in latest_user_list])
-	user = User.objects.get(pk=User_id)
+	user = get_object_or_404(User, pk=User_id)
 	output = 'User id is: {}, Username is: {}, passoword is: {}'.format(user.id, user.username, user.password)
 	return HttpResponse(output)
+
+def user_post_view(request, User_id):
+	user = get_object_or_404(User, pk=User_id)
+	latest_post_list = Post_model.objects.all().filter(author__id=user.id)
+	print(latest_post_list)
+	return render(request, 'Posts/placeholder.html', {'latest_post_list': latest_post_list})
 
 def index(request):
     my_dict = {'insert_me': "This line is from users/index.html"}
@@ -33,4 +42,4 @@ def create_user_view(request):
 			print("not ok")
 			
 	return render(request, 'users/create_user.html', {'form':form})
-	#return HttpResponse("etst")
+

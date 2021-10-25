@@ -3,6 +3,7 @@ from . import views
 from django.http import HttpResponse, Http404
 from django.template import loader
 from .models import Post
+from django.views.generic import CreateView
 # Create your views here.
 
 
@@ -21,3 +22,10 @@ def placeholder(request):
         'latest_post_list': latest_post_list
     }
     return HttpResponse(template.render(context, request))
+
+
+class addPost(CreateView):
+    model = Post
+    template_name = 'addPost.html'
+    fields = '__all__'
+    

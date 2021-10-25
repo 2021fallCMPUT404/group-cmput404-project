@@ -1,3 +1,9 @@
+{% extends 'posts/base.html' %}
+
+
+
+{% block content %}
+
 {% if latest_post_list %}
     <ul>
     <!--<p>{{latest_post_list}}</p>-->
@@ -11,3 +17,6 @@
 {% else %}
     <p>No posts are available.</p>
 {% endif %}
+
+
+{% endblock content %}

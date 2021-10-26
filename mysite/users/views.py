@@ -37,7 +37,7 @@ def user_post_view(request, User_id):
 
 def index(request):
     #my_dict = {'insert_me': "This line is from users/index.html"}
-    return render(request, 'users/advance_home_page.html')
+    return render(request, 'users/user_home_page.html')
 
 
 def create_user_view(request):
@@ -63,12 +63,7 @@ def create_user_view(request):
     return render(request, 'users/create_user.html', {'form': form})
 
 
-def login_view(request):
-    if request.method == "POST":
-        displayName = request.POST.get('displayName')
-        password = request.POST.get('password')
-    else:
-        print('login failed')
+
 
 
 def register(request):
@@ -120,7 +115,7 @@ def login_view(request):
         if user:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect(reverse('advance_home_page'))
+                return HttpResponseRedirect(reverse('user_home_page'))
 
             else:
                 print('This user account is not activated yet')
@@ -135,7 +130,7 @@ def login_view(request):
 @login_required
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse('advance_home_page'))
+    return HttpResponseRedirect(reverse('user_home_page'))
 
 
 @login_required

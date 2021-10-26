@@ -11,9 +11,9 @@ from django.views.generic import CreateView
 
 
 def post(request, Post_id):
-    post = get_object_or_404(Post, Post_id=Post_id)
+    post = get_object_or_404(Post, pk=Post_id)
     share_form = ShareForm()
-    return render(request, 'Posts/post.html', {'post':post})
+    return render(request, 'posts/post.html', {'post':post})
     #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
     #return HttpResponse(output)
 
@@ -27,46 +27,13 @@ def placeholder(request):
     }
     return HttpResponse(template.render(context, request))
 
-def create_post(request):
-	user = request.user
-	if request.method == "POST":
-		form = NewPostForm(request.POST, request.FILES)
-		if form.is_valid():
-			data = form.save(commit=False)
-			data.user_name = user
-			data.save()
-			messages.success(request, f'Posted Successfully')
-			return redirect('home')
-	else:
-		form = NewPostForm()
-	return render(request, 'templates/Make_Posts/make_post.html', {'form':form})
+def delete_post(request,Post_id):
+    post = Post.objects.get(pk=Post_id)
+    print(request.user)
+    if request.user== post.author:
+        Post.objects.get(pk=Post_id).delete()
+    return redirect('post' )
 
-def delete_post(request,pid):
-    post = Post.objects.get(Post_id=pid)
-    if request.user== post.user_name:
-        Post.objects.get(Post_id=pid).delete()
-    return redirect('home')
-
-class SharedPostView(View):
-  def post(self, request, pid, *args, **kwargs):
-    original_post = Post.objects.get(Post_id=pid)
-    form = ShareForm(request.POST)
-    if form.is_valid():
-    new_post = Post(
-      shared_body = self.request.POST.get('body'),
-      body = original_post.body,
-      author = original_post.author,
-      created_on = original_post.created_on,
-      shared_on = timezone.now(),
-      shared_user = request.user
-    )
-    new_post.save()
-    '''
-    for img in original_post.image.all():
-      new_post.image.add(img),
-    new_post.save()
-    '''
-    return redirect('home')
 
 class addPost(CreateView):
     model = Post

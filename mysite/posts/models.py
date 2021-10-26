@@ -15,8 +15,8 @@ class Post(models.Model):
     shared_on = models.DateTimeField(blank=True, null=True)
     visibility =None
 
-def get_absolute_url(self):
-    return reverse('post_placeholder', args=(str(self.id)))
+    def get_absolute_url(self):
+        return reverse('post_placeholder', args=(str(self.id)))
 
 
 class Comment(models.Model):

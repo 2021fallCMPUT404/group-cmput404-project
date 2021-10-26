@@ -40,7 +40,7 @@ class create_new_user(forms.ModelForm):
     class Meta():
         model = User_Profile
         #fields = ['profileImage', 'bio', 'github', 'created_date']
-        fields = ['profileImage', 'bio', 'github']
+        fields = ['displayName','bio', 'github']
 
     def clean(self):
         cleaned_data = super(create_new_user, self).clean()

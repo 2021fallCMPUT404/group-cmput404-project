@@ -1,11 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from . import views
 from django.http import HttpResponse
+
 from .models import User, Create_user, User_Profile
 from django.apps import apps
 from . import create_user_form
+#from django
 
-Post_model = apps.get_model('Posts', 'Post')
+Post_model = apps.get_model('posts', 'Post')
 
 
 # Create your views here.
@@ -26,7 +28,7 @@ def user_post_view(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     latest_post_list = Post_model.objects.all().filter(author__id=user.id)
     print(latest_post_list)
-    return render(request, 'Posts/placeholder.html',
+    return render(request, 'posts/placeholder.html',
                   {'latest_post_list': latest_post_list})
 
 
@@ -56,3 +58,11 @@ def create_user_view(request):
             print("not ok")
 
     return render(request, 'users/create_user.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == "POST":
+        displayName = request.POST.get('displayName')
+        password = request.POST.get('password')
+    else:
+        print('login failed')

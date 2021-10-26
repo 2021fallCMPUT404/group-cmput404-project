@@ -115,13 +115,9 @@ def login_view(request):
         if user:
             if user.is_active:
                 login(request, user)
-<<<<<<< HEAD
                 #return HttpResponseRedirect(reverse('advance_home_page'))
                 return HttpResponseRedirect('user_home_page')
-=======
-                return HttpResponseRedirect(reverse('user_home_page'))
 
->>>>>>> 3aabcf7f80e57873b8aa16aff829ab24d168bd9d
             else:
                 print('This user account is not activated yet')
                 HttpResponse('This user account is not activated yet')
@@ -141,11 +137,10 @@ def logout_view(request):
 @login_required
 def confirm_logout_view(request):
     return HttpResponse("logout from the user account")
-<<<<<<< HEAD
+
 
 
 def user_home_page_view(request):
     user_name_text = {'insert_username': request.user.username}
     return render(request, 'users/user_home_page.html', context=user_name_text)
-=======
->>>>>>> 3aabcf7f80e57873b8aa16aff829ab24d168bd9d
+

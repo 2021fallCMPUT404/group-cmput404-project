@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users', include('users.urls')),
     url(r'^users_test$', views.index, name='index'),
-    path('', views.advance_home_page, name='advance_home_page'),
-    path('users/', include('users.urls'))
+    path('', views.index, name='advance_home_page'),
+    path('users', include('users.urls')),
+    path('logout', views.logout_view, name='logout')
 ]

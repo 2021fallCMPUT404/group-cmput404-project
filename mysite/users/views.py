@@ -1,16 +1,17 @@
 from django.shortcuts import render, get_object_or_404
 from . import views
 from django.http import HttpResponse
-
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from .models import User, Create_user, User_Profile
 from django.apps import apps
 from . import create_user_form
-
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate, login, logout
 
 Post_model = apps.get_model('posts', 'Post')
 
 
-# Create your views here.
 def homepage(request):
     return HttpResponse("Placeholder homepage")
 
@@ -35,8 +36,8 @@ def user_post_view(request, User_id):
 
 
 def index(request):
-    my_dict = {'insert_me': "This line is from users/index.html"}
-    return render(request, 'users/index.html', context=my_dict)
+    #my_dict = {'insert_me': "This line is from users/index.html"}
+    return render(request, 'users/advance_home_page.html')
 
 
 def create_user_view(request):
@@ -69,3 +70,74 @@ def login_view(request):
     else:
         print('login failed')
 
+
+def register(request):
+    registered_user = False
+
+    if request.method == "POST":
+        user_form = create_user_form.create_new_user(request.POST)
+        user_profile_form = create_user_form.create_new_user_profile(
+            request.POST)
+
+        if user_form.is_valid() and user_profile_form.is_valid():
+            user = user_form.save()
+            user.set_password(user.password)
+            user.save()
+            profile = user_profile_form.save(commit=False)
+            profile.user = user
+
+            if 'profileImage' in request.FILES:
+                profile.profileImage = request.FILES['profileImage']
+
+            profile.save()
+
+            registered = True
+
+        else:
+            print('register failed')
+            print('user form error:' + str(user_form.errors))
+            print('user profile form error:' + str(user_profile_form.errors))
+    else:
+        user_form = create_user_form.create_new_user()
+        user_profile_form = create_user_form.create_new_user_profile()
+
+    return render(
+        request, 'users/register.html', {
+            'user_registered': registered_user,
+            'user_form': user_form,
+            'profile_form': user_profile_form
+        })
+
+
+def login_view(request):
+
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(username=username, password=password)
+
+        if user:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect(reverse('advance_home_page'))
+
+            else:
+                print('This user account is not activated yet')
+                HttpResponse('This user account is not activated yet')
+        else:
+            print('No such username or password in the database')
+            HttpResponse('No such username or password in the database')
+    else:
+        return render(request, 'users/login.html', {})
+
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('advance_home_page'))
+
+
+@login_required
+def confirm_logout_view(request):
+    return HttpResponse("logout from the user account")

@@ -19,12 +19,10 @@ from django.urls import path, include
 from django.conf.urls import include, url
 from users import views
 
-
 urlpatterns = [
-    path('post/', include('Posts.urls')),
+    path('post/', include('posts.urls')),
     path('authors/', include('users.urls')),
     path('admin/', admin.site.urls),
-
     path('users', include('users.urls')),
     url(r'^users_test$', views.index, name='index'),
 ]

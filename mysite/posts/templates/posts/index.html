@@ -1,0 +1,12 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+
+    <h1>Social Media Logo</h1>
+    
+    {% for post in postList %}
+        <h1>{{post.user_name}}</h1>
+        <p>{{post.pub_date}}</p>
+    {% endfor %}
+
+{% endblock content %}

@@ -5,6 +5,8 @@ from django.template import loader
 from django.utils import timezone
 from .models import Post, Comment, Like
 from .forms import ShareForm
+from .models import Post
+from django.views.generic import CreateView
 # Create your views here.
 
 
@@ -17,7 +19,7 @@ def post(request, Post_id):
 
 def placeholder(request):
     latest_post_list = Post.objects.order_by('-pub_date')[:5]
-    template = loader.get_template('Posts/placeholder.html')
+    template = loader.get_template('posts/placeholder.html')
     #output = '\n'.join([q.text for q in latest_post_list])
     print(latest_post_list)
     context = {
@@ -65,3 +67,9 @@ class SharedPostView(View):
     new_post.save()
     '''
     return redirect('home')
+
+class addPost(CreateView):
+    model = Post
+    template_name = 'addPost.html'
+    fields = '__all__'
+    

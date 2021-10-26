@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.fields.related import ForeignKey
 from users.models import User
 import uuid
 from django.urls import reverse
@@ -13,7 +14,7 @@ class Post(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     visibility = None
-
+    
 
 def get_absolute_url(self):
     return reverse('post_placeholder', args=(str(self.id)))

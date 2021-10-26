@@ -1,0 +1,11 @@
+{% extends "users/home_page.html" %}
+
+{% block body_block %}
+<h1>User home page</h1>
+<div>
+    <p1> Welcome!</p1>
+    {{ insert_username }}
+    {{base_image}}
+    <img src="{{base_image}}" style="width: 20%; height: 20%;" alt="{{base_image}}">
+</div>
+{% endblock %}

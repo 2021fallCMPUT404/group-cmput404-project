@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends "users/home_page.html" %}
 
 {% block body_block %}
@@ -7,5 +8,17 @@
     {{ insert_username }}
     {{base_image}}
     <img src="{{base_image}}" style="width: 20%; height: 20%;" alt="{{base_image}}">
+=======
+
+{% extends "users/home_page.html" %}
+
+{% block body_block %}
+
+<div>
+    <h1>Home page</h1>
+    {% if user.is_authenticated %}
+            <li><a href="{% url 'addPost' %}">Add a Post</a></li>
+    {% endif %}
+>>>>>>> 3aabcf7f80e57873b8aa16aff829ab24d168bd9d
 </div>
 {% endblock %}

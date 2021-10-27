@@ -8,16 +8,16 @@ from django.urls import reverse
 
 class Post(models.Model):
     type = 'post'
-
     text = models.TextField(blank=True, null=True)
-    image = models.FileField(upload_to='', blank=True, null=True)
+    image = models.ImageField(upload_to='', blank=True, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    visibility = None
-    
+    shared_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
+    shared_on = models.DateTimeField(blank=True, null=True)
+    visibility =None
 
-def get_absolute_url(self):
-    return reverse('post_placeholder', args=(str(self.id)))
+    def get_absolute_url(self):
+        return reverse('post_placeholder', args=(str(self.id)))
 
 
 class Comment(models.Model):

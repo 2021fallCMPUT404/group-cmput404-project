@@ -1,13 +1,16 @@
 {% extends "users/home_page.html" %}
 {% load static %}
-
+{% load crispy_forms_tags %}
 {% block body_block %}
 <h1>User home page</h1>
+<h2>{{ user.username }}</h2>
 <div>
     <p1> Welcome!</p1>
     {{ insert_username }}
-    {{ user_profile_image }}
-    <img src="{{ user_profile_image.url }}">
+    {{ request.user.User_Profile.profileImage.url }}
+    {% if user.is_authenticated %}
+        <img src="{{ user.user_profile.profileImage.url }}" width = '400px' height="300">
+    {% endif %}
     {% if user.is_authenticated %}
             <li><a href="{% url 'addpost' %}">Add a Post</a></li>
     {% endif %}

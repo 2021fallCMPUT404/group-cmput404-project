@@ -69,7 +69,7 @@ class SharedPostView(View):
                             shared_on = timezone.now())
             
             new_post.save()
-            '
+            
             for img in original_post.image.all():
               new_post.image.add(img),
             new_post.save()

@@ -8,7 +8,11 @@ from django import forms
 from django.forms.widgets import Textarea
 import datetime
 from posts.models import Post
-
+'''
+#TODO: MERGE USER_PROFILE INTO USER
+class User(AbstractUser):
+    pass
+'''
 def user_directory_path(instance, filename):
 
     # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>

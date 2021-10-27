@@ -123,7 +123,8 @@ def login_view(request):
                 HttpResponse('This user account is not activated yet')
         else:
             print('No such username or password in the database')
-            HttpResponse('No such username or password in the database')
+            #HttpResponse('No such username or password in the database')
+            return render(request, 'users/login_failed.html')
     else:
         return render(request, 'users/login.html', {})
 
@@ -139,8 +140,9 @@ def confirm_logout_view(request):
     return HttpResponse("logout from the user account")
 
 
-
+@login_required
 def user_home_page_view(request):
-    user_name_text = {'insert_username': request.user.username}
-    return render(request, 'users/user_home_page.html', context=user_name_text)
+    user = User.objects.get(id = request.user.id)
+    user_profile_image = User_Profile.profileImage
+    return render(request, 'users/user_home_page.html', context={'insert_username': request.user.username, 'user_profile_image':user_profile_image})
 

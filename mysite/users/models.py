@@ -29,7 +29,7 @@ class Create_user(forms.Form):
 class User_Profile(models.Model):
     type = "author"
     
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
     host = None
     displayName = models.CharField(max_length=60, blank = True)
     profileImage = models.ImageField(upload_to='profile_picture', blank = True)

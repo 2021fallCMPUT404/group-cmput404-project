@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from . import settings
 from django.conf.urls import include, url
 from users import views
+from django.contrib.staticfiles.urls import static
 
 urlpatterns = [
     path('post/', include('posts.urls')),
@@ -29,4 +30,4 @@ urlpatterns = [
     path('users', include('users.urls')),
     path('addPost', include('posts.urls')),
     path('logout', views.logout_view, name='logout')
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

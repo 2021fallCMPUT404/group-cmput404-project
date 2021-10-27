@@ -1,18 +1,20 @@
-<!DOCTYPE html>
-{% load static %}
-<html>
+{% extends "users/home_page.html" %}
 
-<head>
-    <meta charset="UTF-8" />
-    <title>users</title>
-</head>
+{% block body_block %}
 
-<body>
-    <h1>This is a html file for users.</h1><br>
-    {{insert_me}}
-    <link rel="stylesheet" href='{%static "css/users/test.css" %}'>
-    <h2>This is a doge image</h2><br>
-    <img src="{%static 'images/users/doge.jpg' %}" alt="can't find image">
-</body>
 
-</html>
+<h1>Login here</h1>
+<div>
+    <p1>User Login</p1>
+    <form action="{% url 'users:login' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class='username_password'>
+            <label for='username'> Please enter your username</label>
+            <input type="text" name="username">
+            <label for='password'> Please enter your password</label>
+            <input type="password" name="password">
+        </div>
+        <input type="submit" name="login" value="login">
+    </form>
+</div>
+{% endblock %}

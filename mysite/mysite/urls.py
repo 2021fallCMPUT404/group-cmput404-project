@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from . import settings
 from django.conf.urls import include, url
 from users import views
 from django.conf.urls.static import static
@@ -28,4 +28,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users', include('users.urls')),
     url(r'^users_test$', views.index, name='index'),
-] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+    path('', views.index, name='user_home_page'),
+    path('users', include('users.urls')),
+    path('addPost', include('posts.urls')),
+    path('logout', views.logout_view, name='logout')
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -7,5 +7,7 @@ urlpatterns = [
     path('users_test', views.index, name='index'),
     path('create_user/', views.create_user_view, name='create_user'),
     path('<int:User_id>/posts/', views.user_post_view, name='view_user_posts'),
+    path('requests/send-request/<int:User_id>/', views.send_friend_request, name='send_friend_request'),
+    path('requests/accept-request/<int:User_id>/', views.accept_friend_request, name='accept_request'),
     path('user_login/', views.login_view, name='user_login')
 ]

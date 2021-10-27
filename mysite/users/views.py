@@ -1,8 +1,9 @@
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from . import views
 from django.http import HttpResponse
 
-from .models import User, Create_user, User_Profile
+from .models import User, Create_user, User_Profile, FriendRequest
 from django.apps import apps
 from . import create_user_form
 #from django
@@ -66,3 +67,20 @@ def login_view(request):
         password = request.POST.get('password')
     else:
         print('login failed')
+
+
+def send_friend_request(request, User_id):
+    user = get_object_or_404(User,pk=User_id)
+    print(user)
+    request_profile = User_Profile.objects.get(user=request.user)
+    object_profile = User_Profile.objects.get(user_id=User_id)
+    f_request, created = FriendRequest.objects.get_or_create(actor=request_profile, object=object_profile)
+    print("Friend request created")
+    print(f_request.summary())
+    return HttpResponseRedirect('/authors/{}'.format(User_id))
+
+def accept_friend_request(request, from_user_id):
+    return
+
+def reject_friend_request(request, User_id):
+    return

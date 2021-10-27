@@ -22,7 +22,7 @@ def placeholder(request):
     latest_post_list = Post.objects.order_by('-pub_date')[:5]
     template = loader.get_template('posts/placeholder.html')
     #output = '\n'.join([q.text for q in latest_post_list])
-    print(latest_post_list)
+    #print(latest_post_list)
     context = {
         'latest_post_list': latest_post_list
     }

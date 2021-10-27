@@ -10,8 +10,13 @@
     {% for posts in latest_post_list %}
         <li><a href="/post/{{ posts.id }}/">{{ posts.text }}</a></li>
         <p>Author is: {{posts.author}}</p>
+        {% if posts.image %}
+            <img src='{{posts.image.url}}' width="30%">
+        {% endif %}
         <p>Text is: {{posts.text}}</p>
         <p>Pub date is: {{posts.pub_date}}</p>
+        <a href="{% url 'editpost' posts.pk %}" >Edit Post</a>
+
     {% endfor %}
     </ul>
 {% else %}

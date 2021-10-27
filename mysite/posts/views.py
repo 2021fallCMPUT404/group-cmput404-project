@@ -54,6 +54,9 @@ class deletePost(DeleteView):
     success_url = reverse_lazy('post')
 
 class SharedPostView(View):
+    model = Post
+    template_name  = 'posts/sharePost.html'
+    
     def post(self, request, pid, *args, **kwargs):
         original_post = Post.objects.get(pk=pid)
         form = ShareForm(request.POST)
@@ -66,10 +69,10 @@ class SharedPostView(View):
                             shared_on = timezone.now())
             
             new_post.save()
-            '''
+            '
             for img in original_post.image.all():
               new_post.image.add(img),
             new_post.save()
-            '''
+            
         return redirect('post')
     

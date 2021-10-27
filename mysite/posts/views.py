@@ -6,7 +6,7 @@ from django.utils import timezone
 from .models import Post, Comment, Like
 from .forms import ShareForm
 from .models import Post
-from django.views.generic import CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView, DeleteView, View
 from django.urls import reverse_lazy
 # Create your views here.
 
@@ -52,4 +52,24 @@ class deletePost(DeleteView):
     model = Post
     template_name  = 'posts/deletePost.html'
     success_url = reverse_lazy('post')
+
+class SharedPostView(View):
+    def post(self, request, pid, *args, **kwargs):
+        original_post = Post.objects.get(pk=pid)
+        form = ShareForm(request.POST)
+        if form.is_valid():
+            new_post = Post(type = 'post',
+                            text = original_post.text,
+                            pub_date = original_post.pub_date,
+                            author = original_post.author,
+                            shared_user=request.user,
+                            shared_on = timezone.now())
+            
+            new_post.save()
+            '''
+            for img in original_post.image.all():
+              new_post.image.add(img),
+            new_post.save()
+            '''
+        return redirect('post')
     

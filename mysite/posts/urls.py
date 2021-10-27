@@ -8,4 +8,5 @@ urlpatterns = [
   path('<int:Post_id>/', views.post, name='post_placeholder'),
   path('<int:pk>/edit/', views.updatePost.as_view(), name='editpost'),
   path('<int:pk>/delete-post/', views.deletePost.as_view(), name='deletepost'),
+  path('<int:pk>/share/', views.SharedPostView.as_view(), name='sharepost'),
 ]

@@ -16,6 +16,7 @@
         <p>Text is: {{posts.text}}</p>
         <p>Pub date is: {{posts.pub_date}}</p>
         <a href="{% url 'editpost' posts.pk %}" >Edit Post</a>
+        <a href="{% url 'sharepost' post.pk %}">Share Post</a>
 
     {% endfor %}
     </ul>

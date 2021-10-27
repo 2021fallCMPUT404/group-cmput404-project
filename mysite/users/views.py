@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from . import views
 from django.http import HttpResponse
 
-from .models import User, Create_user, User_Profile, FriendRequest
+from .models import User, Create_user, User_Profile, FriendRequest, UserFollows
 from django.apps import apps
 from . import create_user_form
 #from django
@@ -79,8 +79,19 @@ def send_friend_request(request, User_id):
     print(f_request.summary())
     return HttpResponseRedirect('/authors/{}'.format(User_id))
 
-def accept_friend_request(request, from_user_id):
-    return
+def accept_friend_request(request, User_id):
+    #User id is from the actor, the person who sent the friend request
+    actor_user_profile = get_object_or_404(User_Profile, user_id=User_id)
+    object_user_profile = get_object_or_404(User_Profile,user=request.user)
+    f_request = FriendRequest.objects.filter(actor=actor_user_profile, object=object_user_profile)
+
+    actor_user = get_object_or_404(User,pk=User_id)
+    UserFollows.objects.get_or_create(actor_id=actor_user, object_id=request.user)
+    UserFollows.objects.get_or_create(actor_id=request.user, object_id=actor_user)
+    #TODO: DO SOME ERROR CHECKING AND CHECK IF THE F_REQUEST INSTANCE EXISTS
+    f_request.delete()
+    print("{} accepted {}s' friend request")
+    return HttpResponseRedirect('/authors/{}'.format(User_id))
 
 def reject_friend_request(request, User_id):
     return

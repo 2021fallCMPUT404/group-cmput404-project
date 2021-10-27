@@ -20,7 +20,7 @@ class Post(models.Model):
 
     type = 'post'
     text = models.TextField(blank=True, null=True)
-    image = models.FileField(upload_to='', blank=True, null=True)
+    image = models.ImageField(upload_to='', blank=True, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     shared_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='+')

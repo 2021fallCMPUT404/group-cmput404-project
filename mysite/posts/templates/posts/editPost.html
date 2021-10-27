@@ -1,0 +1,20 @@
+{% extends 'posts/base.html' %}
+
+
+
+{% block content %}
+<h1>Edit Post</h1>
+<form method="POST" enctype = 'multipart/form-data'>
+    {% csrf_token %}
+    {{form.as_p}}
+    <button>Update</button>
+    {% if post %}
+        <a href="{% url 'deletepost' post.pk %}">Delete Post</a>
+    {% endif %}
+</form>
+
+
+
+
+
+{% endblock content %}

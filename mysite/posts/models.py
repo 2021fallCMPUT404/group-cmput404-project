@@ -6,6 +6,18 @@ from django.urls import reverse
 
 
 class Post(models.Model):
+
+    PUBLIC=0
+    PRIVATE=1
+    FREINDS=2
+
+    Privacy=(
+        (PUBLIC,"PUBLIC"),
+        (PRIVATE,"PRIVATE"),
+        (FREINDS,"FRIENDS"),
+        
+    )
+
     type = 'post'
     text = models.TextField(blank=True, null=True)
     image = models.FileField(upload_to='', blank=True, null=True)
@@ -14,6 +26,7 @@ class Post(models.Model):
     shared_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
     shared_on = models.DateTimeField(blank=True, null=True)
     visibility =None
+    privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
 
     def get_absolute_url(self):
         return reverse('post_placeholder', args=(str(self.id)))

@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
+from django.db.models.fields.related import ForeignKey
 from users.models import User
 import uuid
 from django.urls import reverse

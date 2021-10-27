@@ -1,0 +1,14 @@
+{% extends "users/home_page.html" %}
+{% load static %}
+
+{% block body_block %}
+<h1>User home page</h1>
+<div>
+    <p1> Welcome!</p1>
+    {{ insert_username }}
+    {{ user_profile_image }}
+    <img src="{{ user_profile_image.url }}">
+    {% if user.is_authenticated %}
+            <li><a href="{% url 'addpost' %}">Add a Post</a></li>
+    {% endif %}
+{% endblock %}

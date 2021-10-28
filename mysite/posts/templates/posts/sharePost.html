@@ -4,14 +4,13 @@
 
 {% block content %}
 <h1>Share Post</h1>
-<form method="POST" enctype = 'multipart/form-data'>
+<form method="GET" enctype = 'multipart/form-data'>
     {% csrf_token %}
-    
+    {{form.as_p}}
+    <h2>{{ post.shared_user.user.username }}</h2>
     <button type="submit">Share</button>
     <a class = 'btn btn-primary' href="{% url 'post'  %}">Cancel</button>
 </form>
-
-
 
 
 

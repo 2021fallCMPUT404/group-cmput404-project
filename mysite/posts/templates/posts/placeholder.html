@@ -14,6 +14,10 @@
             <img src='{{posts.image.url}}' width="30%">
         {% endif %}
         <p>Text is: {{posts.text}}</p>
+        {% if posts.shared_user %}
+            <p>Author: {{posts.author}}</p>
+            <p>Shared By: {{posts.shared_user}}</p>
+        {% endif %}
         <p>Pub date is: {{posts.pub_date}}</p>
         <a href="{% url 'editpost' posts.pk %}" >Edit Post</a>
         <a href="{% url 'sharepost' posts.pk %}">Share Post</a>

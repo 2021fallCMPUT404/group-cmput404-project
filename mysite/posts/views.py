@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth.models import User
 from . import views
 from django.http import HttpResponse, Http404
 from django.template import loader
@@ -8,12 +9,26 @@ from .forms import ShareForm
 from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.core.exceptions import PermissionDenied
+
 # Create your views here.
 
 
 def post(request, Post_id):
     post = get_object_or_404(Post, pk=Post_id)
     share_form = ShareForm()
+    current_user=User.objects.get(id=request.user.id)
+    authorized_posts=[]
+    #for p in post:
+    #   if
+    #        authorized_posts.append(p)
+    #    elif p.privacy==1:
+    #        if p.author==current_user:
+    #            authorized_posts.append(p)
+    #authorized_posts.sort(key="pub_date")
+
+
+
     return render(request, 'posts/post.html', {'post':post})
     #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
     #return HttpResponse(output)

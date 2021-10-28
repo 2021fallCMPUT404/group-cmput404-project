@@ -6,16 +6,17 @@ import uuid
 from django.urls import reverse
 
 
+
 class Post(models.Model):
 
     PUBLIC=0
     PRIVATE=1
-    FREINDS=2
+    # FREINDS=2    #Need friend system?
 
     Privacy=(
         (PUBLIC,"PUBLIC"),
-        (PRIVATE,"PRIVATE"),
-        (FREINDS,"FRIENDS"),
+        (PRIVATE,"PRIVATE"),        #only shows to me
+        #(FREINDS,"FRIENDS"),
         
     )
 
@@ -26,8 +27,10 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     shared_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
     shared_on = models.DateTimeField(blank=True, null=True)
-    visibility =None
     privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
+    visible=None
+
+
 
     def get_absolute_url(self):
         return reverse('post_placeholder', args=(str(self.id)))
@@ -51,3 +54,5 @@ class Like(models.Model):
     post = models.ForeignKey(Post,
                              related_name='likes',
                              on_delete=models.CASCADE)
+
+

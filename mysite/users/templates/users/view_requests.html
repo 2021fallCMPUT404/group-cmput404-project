@@ -1,0 +1,22 @@
+{% if recieved_requests %}
+    <ul>
+    <p> You have request(s) from others right now:</p>
+    {% for requests in recieved_requests %}
+        <li> You have a request from {{requests.actor.displayName}}</li>
+        <a href="{% url 'accept_request' User_id=requests.actor.user.id%}">Accept</a>
+        <a href="{% url 'reject_request' User_id=requests.actor.user.id%}">Reject</a>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You have no requests from others right now.</p>
+{% endif %}
+{% if sent_requests %}
+    <p>You have pending requests to others right now:</p>
+    <ul>
+    {% for pending in sent_requests%}
+        <li> You have a sent a request to {{pending.object.displayName}}</li>
+    {% endfor %}
+{% else %}
+    <p> You have no pending friend requests to others right now.</p>
+{% endif %}
+

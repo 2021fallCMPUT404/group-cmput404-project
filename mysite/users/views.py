@@ -101,3 +101,10 @@ def reject_friend_request(request, User_id):
     f_request.delete()
     print("{} deleted {}s' friend request".format(object_user_profile.displayName, actor_user_profile.displayName))
     return HttpResponseRedirect('/authors/{}'.format(request.user.id))
+
+def view_friend_requests(request, User_id):
+    user_profile = get_object_or_404(User_Profile, user_id=User_id)
+    recieved_requests = FriendRequest.objects.filter(object=user_profile)
+    sent_requests = FriendRequest.objects.filter(actor=user_profile)
+    print(recieved_requests, sent_requests)
+    return render(request, 'users/view_requests.html', {'recieved_requests':recieved_requests, 'sent_requests':sent_requests})

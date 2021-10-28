@@ -9,5 +9,6 @@ urlpatterns = [
     path('<int:User_id>/posts/', views.user_post_view, name='view_user_posts'),
     path('requests/send-request/<int:User_id>/', views.send_friend_request, name='send_friend_request'),
     path('requests/accept-request/<int:User_id>/', views.accept_friend_request, name='accept_request'),
+    path("requests/deny-request/<int:User_id>/", views.views.reject_friend_request, name='reject_request'),
     path('user_login/', views.login_view, name='user_login')
 ]

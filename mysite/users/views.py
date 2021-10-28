@@ -90,8 +90,14 @@ def accept_friend_request(request, User_id):
     UserFollows.objects.get_or_create(actor_id=request.user, object_id=actor_user)
     #TODO: DO SOME ERROR CHECKING AND CHECK IF THE F_REQUEST INSTANCE EXISTS
     f_request.delete()
-    print("{} accepted {}s' friend request")
-    return HttpResponseRedirect('/authors/{}'.format(User_id))
+    print("{} accepted {}s' friend request".format(object_user_profile.displayName, actor_user_profile.displayName))
+    return HttpResponseRedirect('/authors/{}'.format(request.user.id))
 
 def reject_friend_request(request, User_id):
-    return
+    actor_user_profile = get_object_or_404(User_Profile, user_id=User_id)
+    object_user_profile = get_object_or_404(User_Profile,user=request.user)
+    f_request = FriendRequest.objects.filter(actor=actor_user_profile, object=object_user_profile)
+    #TO DO: CHECK IF THE FRIEND REQUEST EXISTS BEFORE DELETING
+    f_request.delete()
+    print("{} deleted {}s' friend request".format(object_user_profile.displayName, actor_user_profile.displayName))
+    return HttpResponseRedirect('/authors/{}'.format(request.user.id))

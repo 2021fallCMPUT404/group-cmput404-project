@@ -63,9 +63,6 @@ def create_user_view(request):
     return render(request, 'users/create_user.html', {'form': form})
 
 
-
-
-
 def register(request):
     registered_user = False
 
@@ -142,7 +139,44 @@ def confirm_logout_view(request):
 
 @login_required
 def user_home_page_view(request):
-    user = User.objects.get(id = request.user.id)
+    user = User.objects.get(id=request.user.id)
     user_profile_image = User_Profile.profileImage
-    return render(request, 'users/user_home_page.html', context={'insert_username': request.user.username, 'user_profile_image':user_profile_image})
+    the_user_profile = User_Profile.objects.get(user=request.user)
+    user_display_name = the_user_profile.displayName
+    return render(request,
+                  'users/user_home_page.html',
+                  context={
+                      'insert_display_name': user_display_name,
+                      'user_profile_image': user_profile_image
+                  })
 
+
+@login_required
+def edit_user_profile_view(request):
+    if request.method == "POST":
+
+        user_profile_form = create_user_form.create_new_user_profile(
+            request.POST)
+        original_user_profile = User_Profile.objects.get(user=request.user)
+        if user_profile_form.is_valid():
+            #profile = user_profile_form.save(commit=False)
+            #request.user.profile = profile
+            original_user_profile.displayName = request.POST['displayName']
+            original_user_profile.bio = request.POST['bio']
+            original_user_profile.github = request.POST['github']
+            if 'profileImage' in request.FILES:
+                original_user_profile.profileImage = request.FILES[
+                    'profileImage']
+
+            original_user_profile.save()
+
+        else:
+            print('edit user profile failed')
+            print('user profile form error:' + str(user_profile_form.errors))
+
+    else:
+
+        user_profile_form = create_user_form.create_new_user_profile()
+
+    return render(request, 'users/edit_user_profile.html',
+                  {'profile_form': user_profile_form})

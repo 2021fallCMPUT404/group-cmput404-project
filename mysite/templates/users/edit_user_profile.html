@@ -1,0 +1,16 @@
+{% extends "users/home_page.html" %}
+<li><a href="{% url 'users:edit_user_profile' %}">users:edit user profile</a></li>
+{% load static %}
+{% load crispy_forms_tags %}
+{% block body_block %}
+<h1>Edit user profile</h1>
+<div>
+    <h2>Register form</h2>
+    <form method='post' enctype="multipart/form-data">
+        {% csrf_token %}
+        {{profile_form.as_p}}
+        <input type="submit" name="submit" value="finish edit">
+    </form>
+
+</div>
+{% endblock %}

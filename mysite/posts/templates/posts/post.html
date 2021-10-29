@@ -5,6 +5,10 @@
 {% endif %}
 <p>Date: {{post.pub_date}}</p>
 <p>ID: {{post.id}}</p>
+{% if post.shared_user %}
+    <p>Author: {{post.author}}</p>
+    <p>Shared By: {{post.shared_user}}</p>
+{% endif %}
 <br>
 <br>
 <h2>Leave a comment</h2>
@@ -39,3 +43,4 @@
 <br><br>
 <a href="{% url 'editpost' post.pk %}" >Edit Post</a>
 <a href="{% url 'deletepost' post.pk %}">Delete Post</a>
+<a href="{% url 'sharepost' post.pk %}">Share Post</a>

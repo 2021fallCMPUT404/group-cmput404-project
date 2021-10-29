@@ -1,0 +1,19 @@
+{% extends 'posts/base.html' %}
+
+
+
+{% block content %}
+<h1>Share Post</h1>
+<form method="POST" enctype = 'multipart/form-data'>
+    {% csrf_token %}
+    {{form.as_p}}
+    <h2>{{ post.shared_user.user.username }}</h2>
+    <button type="submit">Share</button>
+    {% if post %}
+        <a href="{% url 'deletepost' post.pk %}">Delete Post</a>
+    {% endif %}
+</form>
+
+
+
+{% endblock content %}

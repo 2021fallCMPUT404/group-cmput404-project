@@ -7,7 +7,7 @@ from django.utils import timezone
 from .models import Post, Comment, Like
 from .forms import ShareForm,CommentForm
 from .models import Post
-from django.views.generic import CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
 
@@ -87,3 +87,9 @@ class deletePost(DeleteView):
     model = Post
     template_name = 'posts/deletePost.html'
     success_url = reverse_lazy('post')
+
+class SharedPostView(UpdateView):
+    model = Post
+    template_name  = 'posts/sharePost.html'
+    fields = ['shared_on','shared_user']
+

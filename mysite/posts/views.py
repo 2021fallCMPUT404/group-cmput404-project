@@ -40,7 +40,7 @@ def delete_post(request,Post_id):
 
 class addPost(CreateView):
     model = Post
-    template_name  = 'posts/editPost.html'
+    template_name  = 'posts/addPost.html'
     fields = '__all__'
     
     

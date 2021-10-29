@@ -32,6 +32,6 @@ urlpatterns = [
     path('users', include('users.urls')),
     path('login', include('users.urls')),
     path('', views.login_view, name ='login'),
-    path('addPost', include('posts.urls')),
+    
     path('logout', views.logout_view, name='logout')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

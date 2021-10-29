@@ -49,7 +49,7 @@ class User_Profile(models.Model):
 
     #user = models.ForeignKey(User, on_delete=models.CASCADE)
     bio = models.CharField(max_length=256, unique=False)
-    user_posts = models.ForeignKey(Post, on_delete=models.CASCADE, null=True)
+    #user_posts = models.ForeignKey(Post, on_delete=models.CASCADE, null=True)
 
 
 class Inbox(models.Model):

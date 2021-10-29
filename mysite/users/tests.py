@@ -1,4 +1,6 @@
+from django.forms.fields import EmailField
 from django.test import TestCase
+<<<<<<< HEAD
 from django.contrib.auth.models import User
 from .models import User_Profile
 
@@ -52,3 +54,44 @@ class UsersTestCase(TestCase):
         self.assertEqual(test_profile_1.displayName, 'case_1')
         self.assertEqual(test_profile_2.displayName, 'case_2')
         '''
+=======
+from django.urls import reverse
+from django.test.utils import setup_test_environment
+from django.test import Client
+from .models import Create_user, User, User_Profile, UserFollows, FriendRequest
+
+# Create your tests here.
+client = Client()
+
+class FriendRequestModelTests(TestCase):
+    user1 = User(username="user1", password="1")
+    user1_profile = User_Profile(user=user1)
+    user2= User(username="user2", password='2')
+    user2_profile = User_Profile(user=user2)
+
+
+    def test_create_friend_request(self):
+        f_req = FriendRequest(actor=self.user1_profile, object=self.user2_profile)
+        self.assertIs(f_req.actor == self.user1_profile, True)
+        self.assertIs(f_req.object == self.user2_profile, True)
+
+
+class UserFollowsModelsTests(TestCase):
+    user1 = User(username="user1", password="1")
+    user1_profile = User_Profile(user=user1)
+    user2= User(username="user2", password='2')
+    user2_profile = User_Profile(user=user2)
+
+    def test_create_user_follow(self):
+        user_follow = UserFollows(actor=self.user1_profile, object=self.user2_profile)
+        self.assertIs(user_follow.actor == self.user1_profile, True)
+        self.assertIs(user_follow.object == self.user2_profile, True)
+
+
+class UserViewsTests(TestCase):
+    
+    def test_homepage(self):
+        response = self.client.get(reverse('users:homepage'))
+        self.assertTrue(response.status_code != 404)
+
+>>>>>>> f03a138ddd73cc0a366506103e575fb55a2e23a5

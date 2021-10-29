@@ -8,6 +8,7 @@ from django.apps import apps
 from . import create_user_form
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
+from django.urls import reverse_lazy
 
 Post_model = apps.get_model('posts', 'Post')
 
@@ -120,7 +121,7 @@ def login_view(request):
 
             else:
                 print('This user account is not activated yet')
-                HttpResponse('This user account is not activated yet')
+                return HttpResponse('This user account is not activated yet')
         else:
             print('No such username or password in the database')
             #HttpResponse('No such username or password in the database')
@@ -132,7 +133,7 @@ def login_view(request):
 @login_required
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse('user_home_page'))
+    return render(request, 'users/login.html')
 
 
 @login_required
@@ -145,4 +146,5 @@ def user_home_page_view(request):
     user = User.objects.get(id = request.user.id)
     user_profile_image = User_Profile.profileImage
     return render(request, 'users/user_home_page.html', context={'insert_username': request.user.username, 'user_profile_image':user_profile_image})
+
 

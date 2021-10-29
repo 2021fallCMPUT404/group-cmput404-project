@@ -1,0 +1,43 @@
+body{
+    
+    margin:0;
+    text-align:center;
+}
+
+
+ul{
+    list-style: none;
+}
+
+.Welcome  {
+    color: lightblue;
+    font-size: 6em;
+    text-align: center;
+}
+
+.wrapper{
+    margin: 80px;
+}
+
+.login-form{
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.form-control{
+    margin-bottom: 5px;
+}
+
+.login-buttons{
+    text-align: center;
+}
+
+.goBack a{
+    color: white;
+    text-decoration: none;
+}
+
+.wrapper-reg{
+    margin: 20px;
+    background-color:rgb(181, 215, 255);
+}

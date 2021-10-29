@@ -1,0 +1,23 @@
+{% extends "users/home_page.html" %}
+
+{% block content %}
+<h1 class = 'Welcome'>Welcome to Social Circle</h1>
+<div class = 'wrapper'>
+    <form action="{% url 'users:login' %}" method="post" enctype="multipart/form-data" class='form-signin'>
+        {% csrf_token %}
+        <h2 class ='form-signin-heading text-center'>Login here</h2>
+        
+                <label for='username' class='login-form'> Please enter your username</label>
+                <input type="text" name="username" placeholder="Username" class='form-control' required="" autofocus="" /> 
+            
+                <label for='password' class='login-form'> Please enter your password</label>
+                <input type="password" name="password" placeholder="Password" class='form-control' required="" autofocus="">
+        
+        <br>
+        <div class='login-buttons'>
+            <button class="btn btn-lg btn-primary btn-block">Login</button>
+            <a href="{% url 'users:register' %}" class="btn btn-lg  btn btn-success btn-block">Create New Account</a>
+        </div>
+    </form>
+</div>
+{% endblock content %}

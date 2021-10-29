@@ -1,0 +1,9 @@
+{% extends "users/home_page.html" %}
+
+{% block content %}
+
+<div class='goBack'>
+    <h1>Account does not exist</h1>
+    <button class="btn btn-lg btn-primary btn-block"><a href= "{% url 'users:login' %}">Back To Login Page</a></button>
+</div>
+{% endblock content %}

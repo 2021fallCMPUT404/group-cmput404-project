@@ -1,0 +1,20 @@
+{% extends "users/home_page.html" %}
+
+{% load crispy_forms_tags %}
+<h1>Welcome to Social Circle!</h1>
+{% block content %}
+
+<h2 class='username'>{{ user.username }}</h2>
+<div>
+    <p>Home Page </p>
+    {% if user.profileImage %}
+        {{ request.user.User_Profile.profileImage.url }}
+        {% if user.is_authenticated %}
+            <img src="{{ user.user_profile.profileImage.url }}" width = '400px' height="300">
+            <li><a href="{% url 'addpost' %}">Add a Post</a></li>
+        {% endif %}
+    {% else %}
+        <h2>User doesn't have a profile Image</h2>
+    {% endif %}
+    <li><a href="{% url 'addpost' %}">Add a Post</a></li>
+{% endblock content %}

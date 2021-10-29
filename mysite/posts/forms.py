@@ -8,3 +8,11 @@ class ShareForm(forms.Form):
     'rows': '3',
     'placeholder': 'Say Something...'
   }))
+
+
+
+class addPostForm(forms.Form):
+  class Meta:
+    model = Post
+    fields = '__all__'
+    

@@ -8,6 +8,8 @@ from .forms import ShareForm
 from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from .forms import addPostForm
+from rest_framework.views import APIView
 # Create your views here.
 
 
@@ -38,9 +40,11 @@ def delete_post(request,Post_id):
 
 class addPost(CreateView):
     model = Post
-    template_name = 'posts/addPost.html'
+    template_name  = 'posts/editPost.html'
     fields = '__all__'
-
+    
+    
+    
     
 class updatePost(UpdateView):
     model = Post

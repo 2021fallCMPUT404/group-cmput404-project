@@ -5,7 +5,6 @@ from django.template import loader
 from django.utils import timezone
 from .models import Post, Comment, Like
 from .forms import ShareForm
-from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 # Create your views here.

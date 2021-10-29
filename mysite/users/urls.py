@@ -4,6 +4,7 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import static
+
 app_name = 'users'
 
 urlpatterns = [
@@ -15,5 +16,8 @@ urlpatterns = [
     path('user_login/', views.login_view, name='user_login'),
     path('register/', views.register, name='register'),
     path('login', views.login_view, name='login'),
-    path('user_home_page', views.user_home_page_view, name='user_home_page')
+    path('user_home_page', views.user_home_page_view, name='user_home_page'),
+    path('edit_user_profile',
+         views.edit_user_profile_view,
+         name='edit_user_profile'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

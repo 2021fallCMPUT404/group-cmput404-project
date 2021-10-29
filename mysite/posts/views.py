@@ -22,6 +22,7 @@ def post(request, Post_id):
     #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
     #return HttpResponse(output)
 
+
 def placeholder(request):
     latest_post_list = Post.objects.order_by('-pub_date')[:5]
     template = loader.get_template('posts/placeholder.html')
@@ -47,12 +48,13 @@ def placeholder(request):
     
     return HttpResponse(template.render(context, request))
 
-def delete_post(request,Post_id):
+
+def delete_post(request, Post_id):
     post = Post.objects.get(pk=Post_id)
     print(request.user)
-    if request.user== post.author:
+    if request.user == post.author:
         Post.objects.get(pk=Post_id).delete()
-    return redirect('post' )
+    return redirect('post')
 
 
 
@@ -77,11 +79,11 @@ class addComment(CreateView):
         
 class updatePost(UpdateView):
     model = Post
-    template_name  = 'posts/editPost.html'
+    template_name = 'posts/editPost.html'
     fields = ['text', 'image']
 
 
 class deletePost(DeleteView):
     model = Post
-    template_name  = 'posts/deletePost.html'
+    template_name = 'posts/deletePost.html'
     success_url = reverse_lazy('post')

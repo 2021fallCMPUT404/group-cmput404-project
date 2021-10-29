@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .test_users_models import *
+from test_users_model_form import *
 from posts.models import Post, Comment
 
 class test_post(TestCase):
@@ -19,7 +19,7 @@ class test_post(TestCase):
         test_user_1 = User.objects.get(username="testcase")
         test_profile_1 = User_Profile.objects.get(user=test_user_1)
 
-        Post.objects.create{
+        Post.objects.create(
             #type = 'post',
             text = 'trial',
             image='test_image.jpg',

@@ -1,6 +1,8 @@
 from django.forms.fields import EmailField
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.urls import reverse
+from django.test.utils import setup_test_environment
+from django.test import Client
 from .models import Create_user, User, User_Profile, UserFollows, FriendRequest
 
 # Create your tests here.

@@ -41,7 +41,7 @@ class create_new_user(forms.ModelForm):
         #model = User_Profile
 
         model = User
-        fields = ('first_name', 'last_name', 'username', 'password', 'email')
+        fields = ('first_name', 'last_name', 'username', 'email', 'password')
 
     def clean(self):
         cleaned_data = super(create_new_user, self).clean()

@@ -21,14 +21,13 @@ from users import views
 from django.conf.urls.static import static
 from django.conf import settings
 
-
 urlpatterns = [
     path('post/', include('posts.urls')),
     path('authors/', include('users.urls')),
     path('admin/', admin.site.urls),
     path('users', include('users.urls')),
     url(r'^users_test$', views.index, name='index'),
-    path('', views.index, name='user_home_page'),
+    path('', views.advance_home_page_view, name='advance_home_page'),
     path('users', include('users.urls')),
     path('addPost', include('posts.urls')),
     path('logout', views.logout_view, name='logout')

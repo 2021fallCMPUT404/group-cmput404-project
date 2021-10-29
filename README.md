@@ -36,3 +36,11 @@ Webseries: Create A Simple Django Blog
 Author: 'Codemy.com'
 Source:https://www.youtube.com/watch?v=TAH01Iy5AuE&list=PLCC34OHNcOtr025c1kHSPrnP18YPB-NFi&index=17&ab_channel=Codemy.com
 
+Build A Blog Comment Section - Django Blog #33
+Author: 'Codemy.com'
+Source:https://www.youtube.com/watch?v=hZrlh4qU4eQ&t=1s&ab_channel=Codemy.com
+
+Post Blog Comments - Django Blog #34
+Author: 'Codemy.com'
+https://www.youtube.com/watch?v=OuOB9ADT_bo&t=1064s&ab_channel=Codemy.com
+

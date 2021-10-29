@@ -1,11 +1,23 @@
-# group-cmput404-project
-Project: social Circle
+Project: social Circle (social network app)
+WORK IN PROGRESS NOT FULLY FUNCTIONING
 2021fallCMPUT404, group-cmput404-project
 
 CCID: srezwan
 
-Citations
+CSS and UI still needs work 
 
+Working functions:
+- Login
+- Register new user
+- add post
+- edit post
+- delete post
+- commenting
+- friend request
+- feed displayed
+
+
+Citations:
 
 django documentaion
 Source: https://docs.djangoproject.com/en/3.2/

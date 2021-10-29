@@ -44,3 +44,8 @@ Post Blog Comments - Django Blog #34
 Author: 'Codemy.com'
 https://www.youtube.com/watch?v=OuOB9ADT_bo&t=1064s&ab_channel=Codemy.com
 
+Bootstrap Grid Examples:
+Source: https://getbootstrap.com/docs/4.0/examples/grid/
+
+Bootstrap List-Group Examples:
+Source: https://getbootstrap.com/docs/5.1/examples/list-groups/

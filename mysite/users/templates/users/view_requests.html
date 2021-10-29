@@ -1,22 +1,30 @@
-{% if recieved_requests %}
-    <p> You have request(s) from others right now:</p>
-    <ul>
-    {% for requests in recieved_requests %}
-        <li> You have a request from {{requests.actor.displayName}}</li>
-        <a href="{% url 'accept_request' User_id=requests.actor.user.id%}">Accept</a>
-        <a href="{% url 'reject_request' User_id=requests.actor.user.id%}">Reject</a>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>You have no requests from others right now.</p>
-{% endif %}
-{% if sent_requests %}
-    <p>You have pending requests to others right now:</p>
-    <ul>
-    {% for pending in sent_requests%}
-        <li> You have a sent a request to {{pending.object.displayName}}</li>
-    {% endfor %}
-{% else %}
-    <p> You have no pending friend requests to others right now.</p>
-{% endif %}
+{% extends 'users/base.html' %} 
+{% block content %}
+<div class="container">
+    {% if recieved_requests %}
+        <p> You have request(s) from others right now:</p>
+        <div class="list-group">
+        {% for requests in recieved_requests %}
+            <li class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true"> Request from {{requests.actor.displayName}}
+                <a href="{% url 'accept_request' User_id=requests.actor.user.id%}">Accept</a>
+                <a href="{% url 'reject_request' User_id=requests.actor.user.id%}">Reject</a>
+            </li>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p>You have no requests from others right now.</p>
+    {% endif %}
+    {% if sent_requests %}
+        <p>You have pending requests to others right now:</p>
+        <div class="list-group">
+        {% for pending in sent_requests%}
+            <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true" 
+            href="{% url 'placeholder' User_id=pending.object.user.id%}"> {{follower.actor.displayName}}> Request to {{pending.object.displayName}}</a>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p> You have no pending friend requests to others right now.</p>
+    {% endif %}
+    </div>
+{% endblock content %}
 

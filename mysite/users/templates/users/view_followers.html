@@ -1,10 +1,22 @@
+{% extends 'users/base.html' %} 
+{% block content %}
+<div class="container">
+<h1> {{user.displayName}} Followers List </h1>
 {% if followers_list %}
-    <p>This author is being followed by: </p>
-    <ul>
+    <h4>{{user.displayName}} is being followed by: </h4>
+    <div class="list-group">
         {% for follower in followers_list %}
-            <li> {{follower.actor.displayName}} </li>
+            <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true" 
+            href="{% url 'placeholder' User_id=follower.actor.user.id%}"> {{follower.actor.displayName}}</a>
+            
+                <!--<img class="rounded-circle flex-shrink-0" width="32" height="32"src='/media/images/users/user_1/background_4E81jiR.gif' alt="https://github.com/twbs.png">-->
+            
+
+            <!--TODO: GET USER PROFILE IMAGE TO DISPLAY BESIDE THEIR USERNAME-->
         {% endfor %}
-    </ul>
+    </div>
 {% else %}
-    <p> This author has no followers :( </p>
+    <p> {{user.displayName}}  has no followers :( </p>
 {% endif %}
+</div>
+{% endblock content %}

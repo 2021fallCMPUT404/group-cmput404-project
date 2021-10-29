@@ -2,6 +2,7 @@ from django.forms.fields import EmailField
 from django.test import TestCase
 from django.urls import reverse
 from django.test.utils import setup_test_environment
+from django.contrib.auth import authenticate
 from django.test import Client
 from .models import Create_user, User, User_Profile, UserFollows, FriendRequest
 
@@ -34,8 +35,14 @@ class UserFollowsModelsTests(TestCase):
 
 
 class UserViewsTests(TestCase):
+    user1 = User(username="user1", password="1", id=1)
+    user1_profile = User_Profile(user=user1)
     
     def test_homepage(self):
         response = self.client.get(reverse('users:homepage'))
         self.assertTrue(response.status_code != 404)
 
+
+    def test_wrong_view_request(self):
+        response = self.client.get(reverse('users:view_requests', args=([100])))
+        self.assertEqual(response.status_code, 403)

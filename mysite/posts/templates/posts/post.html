@@ -13,6 +13,39 @@
 
     <a href="{% url 'editpost' post.pk %} " class="btn btn-primary">Edit Post</a>
     <a href="{% url 'deletepost' post.pk %}" class="btn btn-danger">Delete Post</a>
+    <a href="{% url 'addcomment' post.pk %}" class="btn btn-danger">Comment on Post</a>
     <a class='return' href="{% url 'post'  %}">Go Back</a>
 </div>
+<br>
+<br>
+<h2>Leave a comment</h2>
+<p>Total number of comments : {{post.comments.count}}</p>
+<h2>Comments</h2>
+
+{%if not post.comments.all %}
+No comment yet <br>
+<a href="{% url 'addcomment' post.pk %}">Add Comment</a>
+
+{%else%}
+<a href="{% url 'addcomment' post.pk %}">Add Comment</a>
+<p>
+    {%for comment in post.comments.all%}
+
+    <br>
+    <strong>
+        {{user.user_profile.displayName}} &nbsp; &nbsp;&nbsp; {{comment.comment_created}}
+        <br><br>
+    </strong>
+    {{comment.comment_body}}
+
+
+
+    <br>
+
+    {% endfor %}
+
+</p>
+{% endif %}
+
+<br><br>
 {% endblock content %}

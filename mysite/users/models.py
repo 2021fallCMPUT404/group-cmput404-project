@@ -44,7 +44,6 @@ class User_Profile(models.Model):
         blank=True,
         default='profile_picture/default_picture.png')
     github = models.URLField(
-        unique=True,
         blank=True,
         default="https://github.com/2021fallCMPUT404/group-cmput404-project")
 

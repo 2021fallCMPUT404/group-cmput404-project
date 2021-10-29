@@ -1,0 +1,10 @@
+{% if followers_list %}
+    <p>This author is being followed by: </p>
+    <ul>
+        {% for follower in followers_list %}
+            <li> {{follower.actor.displayName}} </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p> This author has no followers :( </p>
+{% endif %}

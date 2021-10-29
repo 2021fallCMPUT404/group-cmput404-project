@@ -1,6 +1,6 @@
 {% if recieved_requests %}
-    <ul>
     <p> You have request(s) from others right now:</p>
+    <ul>
     {% for requests in recieved_requests %}
         <li> You have a request from {{requests.actor.displayName}}</li>
         <a href="{% url 'accept_request' User_id=requests.actor.user.id%}">Accept</a>

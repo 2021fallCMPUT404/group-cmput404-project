@@ -7,6 +7,7 @@ urlpatterns = [
     path('users_test', views.index, name='index'),
     path('create_user/', views.create_user_view, name='create_user'),
     path('<int:User_id>/posts/', views.user_post_view, name='view_user_posts'),
+    path('<int:User_id>/followers/', views.view_followers, name='view_followers'),
     path('requests/send-request/<int:User_id>/', views.send_friend_request, name='send_friend_request'),
     path('requests/accept-request/<int:User_id>/', views.accept_friend_request, name='accept_request'),
     path("requests/deny-request/<int:User_id>/", views.views.reject_friend_request, name='reject_request'),

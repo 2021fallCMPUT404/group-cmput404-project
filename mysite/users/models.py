@@ -49,8 +49,8 @@ class Inbox(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class UserFollows(models.Model):
-    actor_id = models.ForeignKey(User, related_name="following", on_delete=models.CASCADE)
-    object_id = models.ForeignKey(User, related_name="followers", on_delete=models.CASCADE)
+    actor = models.ForeignKey(User_Profile, related_name="following", on_delete=models.CASCADE, default='')
+    object = models.ForeignKey(User_Profile, related_name="followers", on_delete=models.CASCADE, default='')
 
 class FriendRequest(models.Model):
     '''

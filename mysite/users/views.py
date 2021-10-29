@@ -84,14 +84,15 @@ def accept_friend_request(request, User_id):
     actor_user_profile = get_object_or_404(User_Profile, user_id=User_id)
     object_user_profile = get_object_or_404(User_Profile,user=request.user)
     f_request = FriendRequest.objects.filter(actor=actor_user_profile, object=object_user_profile)
+    #TODO: ADD THE ACTOR IN USER FOLLOWS
 
     actor_user = get_object_or_404(User,pk=User_id)
-    UserFollows.objects.get_or_create(actor_id=actor_user, object_id=request.user)
-    UserFollows.objects.get_or_create(actor_id=request.user, object_id=actor_user)
+    UserFollows.objects.get_or_create(actor=actor_user_profile, object=object_user_profile)
+    UserFollows.objects.get_or_create(actor=object_user_profile, object=actor_user_profile)
     #TODO: DO SOME ERROR CHECKING AND CHECK IF THE F_REQUEST INSTANCE EXISTS
     f_request.delete()
     print("{} accepted {}s' friend request".format(object_user_profile.displayName, actor_user_profile.displayName))
-    return HttpResponseRedirect('/authors/{}'.format(request.user.id))
+    return HttpResponseRedirect('/authors/requests/view-request/{}/'.format(request.user.id))
 
 def reject_friend_request(request, User_id):
     actor_user_profile = get_object_or_404(User_Profile, user_id=User_id)
@@ -100,7 +101,7 @@ def reject_friend_request(request, User_id):
     #TO DO: CHECK IF THE FRIEND REQUEST EXISTS BEFORE DELETING
     f_request.delete()
     print("{} deleted {}s' friend request".format(object_user_profile.displayName, actor_user_profile.displayName))
-    return HttpResponseRedirect('/authors/{}'.format(request.user.id))
+    return HttpResponseRedirect('/authors/requests/view-request/{}/'.format(request.user.id))
 
 def view_friend_requests(request, User_id):
     user_profile = get_object_or_404(User_Profile, user_id=User_id)
@@ -108,3 +109,14 @@ def view_friend_requests(request, User_id):
     sent_requests = FriendRequest.objects.filter(actor=user_profile)
     print(recieved_requests, sent_requests)
     return render(request, 'users/view_requests.html', {'recieved_requests':recieved_requests, 'sent_requests':sent_requests})
+
+
+def view_followers(request, User_id):
+    user = get_object_or_404(User, pk=User_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    followers_list = UserFollows.objects.filter(object=user_profile)
+    #friends_list = UserFollows.objects.filter(object_id=user_profile)
+    for x in followers_list:
+        print(x.actor.displayName)
+    return render(request, 'users/view_followers.html', {'followers_list':followers_list})
+

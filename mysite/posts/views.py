@@ -92,4 +92,3 @@ class SharedPostView(UpdateView):
     model = Post
     template_name  = 'posts/sharePost.html'
     fields = ['shared_on','shared_user']
-

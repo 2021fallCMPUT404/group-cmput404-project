@@ -55,3 +55,15 @@ class User_Profile(models.Model):
 class Inbox(models.Model):
     type = 'inbox'
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class UserFollows(models.Model):
+    actor = models.ForeignKey(User_Profile, related_name="following", on_delete=models.CASCADE, default='')
+    object = models.ForeignKey(User_Profile, related_name="followers", on_delete=models.CASCADE, default='')
+
+class FriendRequest(models.Model):
+    type = "Follow"
+    actor = models.ForeignKey(User_Profile, on_delete=models.CASCADE, related_name="actor", default='')
+    object = models.ForeignKey(User_Profile, on_delete=models.CASCADE, related_name="object", default='')
+
+    def summary(self):
+        return '{} wants to follow {}'.format(self.actor.displayName, self.object.displayName)

@@ -19,7 +19,6 @@ class CommentForm(forms.ModelForm):
     #How to set author into fields?
     fields=('comment_body',)
     widgets={
-      #'author':forms.TextInput(),
       'comment_body':forms.Textarea(),
 
     }

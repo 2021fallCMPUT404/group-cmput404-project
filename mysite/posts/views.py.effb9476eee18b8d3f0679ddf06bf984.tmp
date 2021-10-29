@@ -65,7 +65,7 @@ class addPost(CreateView):
     model = Post
     template_name  = 'posts/addPost.html'
     fields = '__all__'
-
+<<<<<<< HEAD
 
 class addComment(CreateView):
     model = Comment
@@ -80,6 +80,12 @@ class addComment(CreateView):
 
 
         
+class updatePost(UpdateView):
+    model = Post
+    template_name = 'posts/editPost.html'
+    fields = ['text', 'image']
+=======
+    
     
     
     
@@ -87,7 +93,7 @@ class updatePost(UpdateView):
     model = Post
     template_name  = 'posts/editPost.html'
     fields = ['title','text', 'image']
-
+>>>>>>> 1d7cb35454d0282ef27cac6dd524379df5161acb
 
 
 class deletePost(DeleteView):

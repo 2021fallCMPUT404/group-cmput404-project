@@ -2,7 +2,7 @@
 <li><a href="{% url 'users:edit_user_profile' %}">users:edit user profile</a></li>
 {% load static %}
 {% load crispy_forms_tags %}
-{% block body_block %}
+{% block content %}
 <h1>Edit user profile</h1>
 <div>
     <h2>Register form</h2>
@@ -13,4 +13,4 @@
     </form>
 
 </div>
-{% endblock %}
+{% endblock content %}

@@ -1,46 +1,18 @@
-<h1>Author: {{post.author}}</h1>
-<p>Text: {{post.text}}</p>
-{% if post.image %}
+{% extends 'posts/base.html' %}
+
+{% block content %}
+
+<div class='post-wrapper'>
+    <h1>Author: {{post.author}}</h1>
+    <p>Text: {{post.text}}</p>
+    {% if post.image %}
     <img src='{{post.image.url}}' width="30%">
-{% endif %}
-<p>Date: {{post.pub_date}}</p>
-<p>ID: {{post.id}}</p>
-{% if post.shared_user %}
-    <p>Author: {{post.author}}</p>
-    <p>Shared By: {{post.shared_user}}</p>
-{% endif %}
-<br>
-<br>
-<h2>Leave a comment</h2>
-<p>Total number of comments : {{post.comments.count}}</p>
-<h2>Comments</h2>
+    {% endif %}
+    <p>Date: {{post.pub_date}}</p>
+    <p>ID: {{post.id}}</p>
 
-{%if not post.comments.all %}
-    No comment yet <br>
-    <a href="{% url 'addcomment' post.pk %}">Add Comment</a>
-
-{%else%}
-<a href="{% url 'addcomment' post.pk %}">Add Comment</a>
-<p>
-    {%for comment in post.comments.all%}
-    
-    <br>
-        <strong>
-            {{comment.id }}  &nbsp; &nbsp;&nbsp;     {{comment.comment_created}}
-            <br><br>
-        </strong>
-            {{comment.comment_body}}
-            
-
-        
-        <br>
-        
-    {% endfor %}
-        
-</p>         
-{% endif %}}
-
-<br><br>
-<a href="{% url 'editpost' post.pk %}" >Edit Post</a>
-<a href="{% url 'deletepost' post.pk %}">Delete Post</a>
-<a href="{% url 'sharepost' post.pk %}">Share Post</a>
+    <a href="{% url 'editpost' post.pk %} " class="btn btn-primary">Edit Post</a>
+    <a href="{% url 'deletepost' post.pk %}" class="btn btn-danger">Delete Post</a>
+    <a class='return' href="{% url 'post'  %}">Go Back</a>
+</div>
+{% endblock content %}

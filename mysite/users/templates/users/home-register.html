@@ -1,0 +1,11 @@
+{% extends "users/home_page.html" %}
+
+
+{% block content %}
+<br>
+    <a href="{% url 'users:register' %}" class="btn btn-primary">Sign up</a>
+    <a href="{% url 'users:login' %}" class="btn btn-primary">Login</a>
+
+
+
+{% endblock content %}

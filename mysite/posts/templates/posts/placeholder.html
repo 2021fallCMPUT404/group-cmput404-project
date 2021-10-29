@@ -5,28 +5,32 @@
 {% block content %}
 
 {% if latest_post_list %}
-    <ul>
+<ul>
     <!--<p>{{latest_post_list}}</p>-->
     {% for posts in latest_post_list %}
-        <li><a href="/post/{{ posts.id }}/">{{ posts.text }}</a></li>
-        <p>Author is: {{posts.author}}</p>
+    <li><a href="/post/{{ posts.id }}/" class="addpost-header">
+            <h2>{{ posts.title }}</h2>
+        </a></li>
+    <div class='content'>
+
         {% if posts.image %}
-            <img src='{{posts.image.url}}' width="30%">
+        <img src='{{posts.image.url}}' width="30%">
         {% endif %}
-        <p>Text is: {{posts.text}}</p>
-        {% if posts.shared_user %}
-            <p>Author: {{posts.author}}</p>
-            <p>Shared By: {{posts.shared_user}}</p>
-        {% endif %}
-        <p>Pub date is: {{posts.pub_date}}</p>
-        <a href="{% url 'editpost' posts.pk %}" >Edit Post</a>
-        <a href="{% url 'sharepost' posts.pk %}">Share Post</a>
+        <p>{{ posts.text }}</p>
+
+        <div class='pub-info'>
+            <p>Pub date is: {{posts.pub_date}}</p>
+            <p>Author is: {{posts.author}}</p>
+        </div>
+    </div>
+
+    <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'>Edit Post</a>
 
     {% endfor %}
-    </ul>
+</ul>
 {% else %}
-    <p>No posts are available.</p>
+<p>No posts are available.</p>
 {% endif %}
-
+<a class='return' href="">Go Back</a>
 
 {% endblock content %}

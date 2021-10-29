@@ -1,22 +1,19 @@
 {% extends "users/home_page.html" %}
 
-{% block body_block %}
+{% block content %}
 
 
-<h1>Register</h1>
-<div>
+<h1>Create a new account!</h1>
+<div class = 'wrapper-reg'>
     {% if user_registered %}
     <p1>Registered</p1>
-    {% else %}
-    <p2>Please register</p2>
     {% endif %}
-    <h2>Register form</h2>
-
     <form method='post' enctype="multipart/form-data">
         {% csrf_token %}
         {{user_form.as_p}}
         {{profile_form.as_p}}
-        <input type="submit" name="submit" value="register">
+        <button class="btn btn-lg btn-primary btn-block">Create</button>
+        <a  class = 'return' href="{% url 'users:login'  %}">Go Back</a>
     </form>
 </div>
-{% endblock %}
+{% endblock content %}

@@ -6,8 +6,10 @@
         <div class="list-group">
         {% for requests in recieved_requests %}
             <li class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true"> Request from {{requests.actor.displayName}}
-                <a href="{% url 'accept_request' User_id=requests.actor.user.id%}">Accept</a>
-                <a href="{% url 'reject_request' User_id=requests.actor.user.id%}">Reject</a>
+                <!--<a href="">Accept</a>
+                <a href="">Reject</a>-->
+                <a href="/authors/requests/accept-request/{{requests.actor.user.id}}">Accept</a>
+                <a href="/authors/requests/deny-request/{{requests.actor.user.id}}">Reject</a>
             </li>
         {% endfor %}
         </div>
@@ -19,7 +21,7 @@
         <div class="list-group">
         {% for pending in sent_requests%}
             <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true" 
-            href="{% url 'placeholder' User_id=pending.object.user.id%}"> {{follower.actor.displayName}}> Request to {{pending.object.displayName}}</a>
+            href="/authors/{{pending.object.user.id}}/"> {{pending.object.displayName}}</a>
         {% endfor %}
         </div>
     {% else %}

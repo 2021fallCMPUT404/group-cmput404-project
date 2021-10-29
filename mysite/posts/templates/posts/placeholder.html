@@ -8,20 +8,27 @@
     <ul>
     <!--<p>{{latest_post_list}}</p>-->
     {% for posts in latest_post_list %}
-        <li><a href="/post/{{ posts.id }}/">{{ posts.text }}</a></li>
-        <p>Author is: {{posts.author}}</p>
+    <li><a href="/post/{{ posts.id }}/" class="addpost-header"><h2>{{ posts.title }}</h2></a></li>
+    <div class = 'content'>
+
         {% if posts.image %}
-            <img src='{{posts.image.url}}' width="30%">
+        <img src='{{posts.image.url}}' width="30%">
         {% endif %}
-        <p>Text is: {{posts.text}}</p>
-        <p>Pub date is: {{posts.pub_date}}</p>
-        <a href="{% url 'editpost' posts.pk %}" >Edit Post</a>
+         <p>{{ posts.text }}</p>
+
+         <div class = 'pub-info'>
+            <p>Pub date is: {{posts.pub_date}}</p>
+            <p>Author is: {{posts.author}}</p>
+        </div>
+    </div>
+       
+    <a href="{% url 'editpost' posts.pk %}" class='btn btn-info' >Edit Post</a>
 
     {% endfor %}
     </ul>
 {% else %}
     <p>No posts are available.</p>
 {% endif %}
-
+<a  class = 'return' href="">Go Back</a>
 
 {% endblock content %}

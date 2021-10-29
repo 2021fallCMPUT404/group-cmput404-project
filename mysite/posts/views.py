@@ -9,7 +9,7 @@ from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .forms import addPostForm
-from rest_framework.views import APIView
+
 # Create your views here.
 
 
@@ -49,7 +49,7 @@ class addPost(CreateView):
 class updatePost(UpdateView):
     model = Post
     template_name  = 'posts/editPost.html'
-    fields = ['text', 'image']
+    fields = ['title','text', 'image']
 
 
 class deletePost(DeleteView):

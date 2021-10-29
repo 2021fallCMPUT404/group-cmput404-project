@@ -41,3 +41,39 @@ ul{
     margin: 20px;
     background-color:rgb(181, 215, 255);
 }
+
+
+
+/* Post css */
+
+.addpost-header{
+    color: lightblue;
+    font-size: 40pt;
+    text-decoration: none;
+    
+}
+.addpost-header:hover{
+    color: red;
+}
+.post-wrapper{
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto  ;
+    background-color: lightblue ;
+}
+
+.pub-info p:first-child{
+    margin-bottom: -5px;
+    margin-top: -5px;
+}
+
+.pub-info p{
+    font-style:italic;
+}
+
+
+.return{
+    text-decoration: none;
+    float: left;
+    color: red;
+}

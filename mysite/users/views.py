@@ -145,6 +145,7 @@ def confirm_logout_view(request):
 def user_home_page_view(request):
     user = User.objects.get(id = request.user.id)
     user_profile_image = User_Profile.profileImage
+    
     return render(request, 'users/user_home_page.html', context={'insert_username': request.user.username, 'user_profile_image':user_profile_image})
 
 

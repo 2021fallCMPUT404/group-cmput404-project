@@ -2,7 +2,12 @@ Project: social Circle (social network app)
 WORK IN PROGRESS NOT FULLY FUNCTIONING
 2021fallCMPUT404, group-cmput404-project
 
-CCID: srezwan
+CCID: 
+srezwan
+gortega
+renyu
+qd
+jionghao
 
 CSS and UI still needs work 
 

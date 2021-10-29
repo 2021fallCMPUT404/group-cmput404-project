@@ -5,7 +5,7 @@ from django.http import HttpResponse, Http404
 from django.template import loader
 from django.utils import timezone
 from .models import Post, Comment, Like
-from .forms import ShareForm
+from .forms import ShareForm,CommentForm
 from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -55,12 +55,26 @@ def delete_post(request,Post_id):
     return redirect('post' )
 
 
+
+
 class addPost(CreateView):
     model = Post
     template_name = 'posts/addPost.html'
     fields = '__all__'
 
-    
+class addComment(CreateView):
+    model = Comment
+    form_class=CommentForm
+    template_name = 'posts/addComment.html'
+    #fields = '__all__'
+    def form_valid(self, form):
+        form.instance.post_id=self.kwargs['pk']
+        return super().form_valid(form)
+
+    success_url = reverse_lazy('post')
+
+
+        
 class updatePost(UpdateView):
     model = Post
     template_name  = 'posts/editPost.html'
@@ -71,4 +85,3 @@ class deletePost(DeleteView):
     model = Post
     template_name  = 'posts/deletePost.html'
     success_url = reverse_lazy('post')
-    

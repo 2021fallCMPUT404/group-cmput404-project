@@ -23,7 +23,7 @@ class test_post(TestCase):
             #type = 'post',
             text = 'trial',
             image='test_image.jpg',
-            pub_date = models.DateTimeField(auto_now_add=True)
+            pub_date = models.DateTimeField(auto_now_add=True),
             author = test_profile_1.displayName,
             shared_user = None,
             shared_on = None,

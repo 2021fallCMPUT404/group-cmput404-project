@@ -1,0 +1,79 @@
+body{
+    
+    margin:0;
+    text-align:center;
+}
+
+
+ul{
+    list-style: none;
+}
+
+.Welcome  {
+    color: lightblue;
+    font-size: 6em;
+    text-align: center;
+}
+
+.wrapper{
+    margin: 80px;
+}
+
+.login-form{
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.form-control{
+    margin-bottom: 5px;
+}
+
+.login-buttons{
+    text-align: center;
+}
+
+.goBack a{
+    color: white;
+    text-decoration: none;
+}
+
+.wrapper-reg{
+    margin: 20px;
+    background-color:rgb(181, 215, 255);
+}
+
+
+
+/* Post css */
+
+.addpost-header{
+    color: lightblue;
+    font-size: 40pt;
+    text-decoration: none;
+    
+}
+.addpost-header:hover{
+    color: red;
+}
+.post-wrapper{
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto  ;
+    background-color: lightblue ;
+}
+
+.pub-info p:first-child{
+    margin-bottom: -5px;
+    margin-top: -5px;
+}
+
+.pub-info p{
+    font-style:italic;
+}
+
+
+.return{
+    text-decoration: none;
+    float: left;
+    color: red;
+}

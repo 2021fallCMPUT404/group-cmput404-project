@@ -10,6 +10,8 @@ from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
+from .forms import addPostForm
+
 
 # Create your views here.
 
@@ -61,8 +63,9 @@ def delete_post(request, Post_id):
 
 class addPost(CreateView):
     model = Post
-    template_name = 'posts/addPost.html'
+    template_name  = 'posts/addPost.html'
     fields = '__all__'
+
 
 class addComment(CreateView):
     model = Comment
@@ -77,10 +80,14 @@ class addComment(CreateView):
 
 
         
+    
+    
+    
 class updatePost(UpdateView):
     model = Post
-    template_name = 'posts/editPost.html'
-    fields = ['text', 'image']
+    template_name  = 'posts/editPost.html'
+    fields = ['title','text', 'image']
+
 
 
 class deletePost(DeleteView):

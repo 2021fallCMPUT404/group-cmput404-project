@@ -3,12 +3,19 @@
 
 
 {% block content %}
-<h1>Add new post</h1>
-<form method="POST" enctype = 'multipart/form-data'>
-    {% csrf_token %}
-    {{form.as_p}}
-    <button>Post</button>
-</form>
+    {% if user.is_authenticated %}
+        <h1 class ='post-header'>Add New Post</h1>
+        <div class= 'post-wrapper'>
+        
+            <form method="POST" enctype = 'multipart/form-data'>
+                {% csrf_token %}
+                {{form.as_p}}
+                <input type="submit" class="btn btn-lg btn-primary btn-block">
+            </form>
 
+        {% else %}
+            <h1>Permission Denied</h1>
 
+        {% endif %}
+    </div>
 {% endblock content %}

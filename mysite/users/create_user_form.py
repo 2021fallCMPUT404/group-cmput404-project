@@ -41,6 +41,7 @@ class create_new_user(forms.ModelForm):
         #model = User_Profile
 
         model = User
+
         fields = ('first_name', 'last_name', 'username', 'email', 'password')
 
     def clean(self):

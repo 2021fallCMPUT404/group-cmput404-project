@@ -24,14 +24,12 @@ def user_directory_path(instance, filename):
 
 # Create your models here.
 
-<<<<<<< HEAD
 
 class Create_user(forms.Form):
     username = forms.CharField(initial='')
     password = forms.CharField(widget=forms.PasswordInput())
     confirm_password = forms.CharField(widget=forms.PasswordInput())
 
-=======
 def user_directory_path(instance, filename):
   
     # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
@@ -39,7 +37,6 @@ def user_directory_path(instance, filename):
 
 class User(AbstractUser):
 	pass
->>>>>>> 5d930751a4f5a42d2cad51c63ca06c1ee04729fd
 
 class displayName(models.Model):
     displayName = models.CharField(max_length = 32, unique = True)
@@ -55,7 +52,6 @@ class MyUUIDModel(models.Model):
 	    return self.id
 
 class User_Profile(models.Model):
-<<<<<<< HEAD
     type = "author"
 
     user = models.OneToOneField(User,
@@ -91,7 +87,7 @@ class FriendRequest(models.Model):
 
     def summary(self):
         return '{} wants to follow {}'.format(self.actor.displayName, self.object.displayName)
-=======
+
 	type = "author"
 	host = None
 	displayName = models.ForeignKey(displayName, primary_key=True, on_delete=models.CASCADE, related_name = "username")
@@ -116,4 +112,3 @@ class edit_history(models.Model):
 
     def __str__(self):
         return self.edit_date
->>>>>>> 5d930751a4f5a42d2cad51c63ca06c1ee04729fd

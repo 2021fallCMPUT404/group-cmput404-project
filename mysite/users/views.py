@@ -129,7 +129,7 @@ def login_view(request):
 @login_required
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse('user_home_page'))
+    return HttpResponseRedirect(reverse('advance_home_page'))
 
 
 @login_required
@@ -180,3 +180,7 @@ def edit_user_profile_view(request):
 
     return render(request, 'users/edit_user_profile.html',
                   {'profile_form': user_profile_form})
+
+
+def advance_home_page_view(request):
+    return render(request, 'users/advance_home_page.html')

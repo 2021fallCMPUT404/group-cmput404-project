@@ -7,22 +7,21 @@ import uuid
 from django.urls import reverse
 
 
-
 class Post(models.Model):
 
-    PUBLIC=0
-    PRIVATE=1
+    PUBLIC = 0
+    PRIVATE = 1
     # FREINDS=2    #Need friend system?
 
-    Privacy=(
-        (PUBLIC,"PUBLIC"),          
-        (PRIVATE,"PRIVATE"),        #only shows to me
+    Privacy = (
+        (PUBLIC, "PUBLIC"),
+        (PRIVATE, "PRIVATE"),  #only shows to me
         #(FREINDS,"FRIENDS"),
         #(Unlisted,"Unlisted")
-        
     )
 
     type = 'post'
+    title = models.TextField(default='New Post!', max_length=200)
     text = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='', blank=True, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)
@@ -33,7 +32,17 @@ class Post(models.Model):
     privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
     visible=None
 
+    shared_user = models.ForeignKey(User,
+                                    on_delete=models.CASCADE,
+                                    null=True,
+                                    blank=True,
+                                    related_name='+')
 
+    shared_on = models.DateTimeField(blank=True, null=True)
+    privacy = models.IntegerField(choices=Privacy, default=PUBLIC)
+    visible = None
+
+    contentType = models.TextField(default="text/plain")
 
     def get_absolute_url(self):
         return reverse('post_placeholder', args=(str(self.id)))
@@ -44,11 +53,18 @@ class Post(models.Model):
 
 class Comment(models.Model):
     #name of the user (primary key problem)
-    id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, blank=True, null=True,related_name="comments")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    post = models.ForeignKey(Post,
+                             on_delete=models.CASCADE,
+                             blank=True,
+                             null=True,
+                             related_name="comments")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               on_delete=models.CASCADE,
+                               blank=True,
+                               null=True)
     comment_body = models.TextField()
-    comment_created= models.DateTimeField(auto_now_add=True)
+    comment_created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['comment_created']
@@ -57,17 +73,15 @@ class Comment(models.Model):
         return 'Comment {} by {}'.format(self.comment_body, self.author)
 
 
-
-
-
 class Like(models.Model):
-    
+
     user = models.ForeignKey(User,
                              related_name='likes',
                              on_delete=models.CASCADE)
     post = models.ForeignKey(Post,
                              related_name='likes',
                              on_delete=models.CASCADE)
+
 
 class Share(models.Model):
     id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -80,5 +94,4 @@ class Share(models.Model):
 
     def __str__(self):
         return 'Shared by {}'.format(self.author)
-
 

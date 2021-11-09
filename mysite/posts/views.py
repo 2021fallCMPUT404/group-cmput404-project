@@ -58,7 +58,10 @@ def delete_post(request, Post_id):
         Post.objects.get(pk=Post_id).delete()
     return redirect('post')
 
-
+def select_github_activity(request):
+    #In this view, the webpage will allow user to observer all the recent activity on user profile.
+    #The user will be allowed to select one activity and add it inot stream.
+    pass
 
 
 class addPost(CreateView):

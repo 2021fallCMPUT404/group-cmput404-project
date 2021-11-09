@@ -1,0 +1,23 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+
+<div class="all_activities">
+    <div class="activity_list">
+        <script type="text/javascript">
+            import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
+            function loadDoc() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        document.getElementById("user-activity-overview").innerHTML = this.responseText;
+                    }
+                };
+                xhttp.open("GET", "{% url 'github_url' %}", true);
+                xhttp.send();
+            }
+        </script>
+    </div>
+</div>
+
+{% endblock content %}

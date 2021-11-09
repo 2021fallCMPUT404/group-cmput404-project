@@ -9,6 +9,7 @@ from . import create_user_form
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
+from django.db.models import Q
 
 Post_model = apps.get_model('posts', 'Post')
 
@@ -201,7 +202,8 @@ def send_friend_request(request, User_id):
     f_request, created = FriendRequest.objects.get_or_create(actor=request_profile, object=object_profile)
     print("Friend request created")
     print(f_request.summary())
-    return HttpResponseRedirect('/authors/{}'.format(User_id))
+    #return HttpResponseRedirect('/authors/{}'.format(User_id))
+    return HttpResponseRedirect(reverse('users:request_page'))
 
 def accept_friend_request(request, User_id):
     #User id is from the actor, the person who sent the friend request
@@ -254,4 +256,9 @@ def view_followers(request, User_id):
     for x in followers_list:
         print(x.actor.displayName)
     return render(request, 'users/view_followers.html', {'followers_list':followers_list, 'user':user_profile})
+
+def send_request_page(request):
+    users_list = User_Profile.objects.filter(~Q(id=request.user.id))
+    print(users_list)
+    return render(request, 'users/send_requests.html', {'users_list':users_list})
 

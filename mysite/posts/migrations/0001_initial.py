@@ -24,6 +24,7 @@ class Migration(migrations.Migration):
                 ('shared_on', models.DateTimeField(blank=True, null=True)),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 ('shared_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('original_post', models.ForeignKey(on_delete=models.CASCADE, to='post'))
             ],
         ),
         migrations.CreateModel(

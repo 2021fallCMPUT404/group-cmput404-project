@@ -29,6 +29,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     shared_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
     shared_on = models.DateTimeField(blank=True, null=True)
+    original_post = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, editable =False)
     privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
     visible=None
 
@@ -36,6 +37,9 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('post_placeholder', args=(str(self.id)))
+
+    def is_shared_post(self):
+        return self.shared_user != None
 
 
 class Comment(models.Model):
@@ -64,5 +68,17 @@ class Like(models.Model):
     post = models.ForeignKey(Post,
                              related_name='likes',
                              on_delete=models.CASCADE)
+
+class Share(models.Model):
+    id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, blank=True, null=True,related_name="shares")
+    shared_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+    shared_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['shared_on', 'shared_user']
+
+    def __str__(self):
+        return 'Shared by {}'.format(self.author)
 
 

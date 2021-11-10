@@ -10,4 +10,5 @@ urlpatterns = [
   path('<int:pk>/edit/', views.updatePost.as_view(), name='editpost'),
   path('<int:pk>/delete-post/', views.deletePost.as_view(), name='deletepost'),
   path('<int:pk>/share/', views.SharedPostView.as_view(), name='sharepost'),
+  path('select_github_activity/', views.select_github_activity, name='select_github_activity'),
 ]

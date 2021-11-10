@@ -1,22 +1,96 @@
 {% extends 'posts/base.html' %}
-
+{% load crispy_forms_tags %}
 {% block content %}
-
+<h1>{{ insert_github_username }}</h1>
 <div class="all_activities">
     <div class="activity_list">
+        <dl id = 'event_list'></dl>
         <script type="text/javascript">
-            import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
-            function loadDoc() {
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 && this.status == 200) {
-                        document.getElementById("user-activity-overview").innerHTML = this.responseText;
-                    }
-                };
-                xhttp.open("GET", "{% url 'github_url' %}", true);
-                xhttp.send();
+
+            function check_key(json_data, key){
+                if (json_data.hasOwnProperty(key)) {
+                    return json_data[key]
+                } else {
+
+                }
             }
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    world = this.responseText;
+                    var parsed_data = JSON.parse(this.responseText);
+                    var event_list = document.getElementById('event_list')
+                    for (let i = 0; i < parsed_data.length; i++) {
+                        //console.log(parsed_data[i]);
+                        let event_type = parsed_data[i]['type'];
+                        let event_date = parsed_data[i]['created_at']
+                        let event_org;
+                        let event_repo;
+                        let inner_text = event_type; 
+
+                        let promise_org = new Promise(function(solve, reject) {
+                            if (parsed_data[i].hasOwnProperty('org')){
+                                solve(parsed_data[i]['org']['login'])
+                            } else {
+                                reject('no org')
+                            }
+                        })
+                        promise_org.then(
+                            function found_org(value) {
+                                console.log(value)
+                                event_org = value;
+                                inner_text += value
+                                
+                            },
+                            function not_found_org(error){
+                                console.log(error)
+                                console.log('this is empty:' + event_org)
+                                
+                            }
+                        )
+
+                        let promise_repo = new Promise(function(solve, reject) {
+                            if (parsed_data[i]['repo']['name']) {
+                                solve(parsed_data[i]['repo']['name']);
+                            } else {
+                                reject('no repo')
+                            }
+                        });
+                        promise_repo.then(
+                            function found_repo(value) {
+                                console.log(value)
+                                event_repo = value;
+                                inner_text = inner_text + value
+                            },
+                            function not_found_repo(error){
+                                console.log(error)
+                                
+                            }
+
+                        )
+
+                        var dt = document.createElement('dt');
+                        dt.innerText = event_date
+                        event_list.appendChild(dt)
+                        var dd = document.createElement('dd')
+                        dd.innerText = inner_text
+                        event_list.appendChild(dd)
+
+                    };
+
+
+
+                };
+            };
+
+            xhr.open('GET', 'https://api.github.com/users/JohnChen97/events/public', true);
+            xhr.setRequestHeader('Accept', "application/json");
+            xhr.send();
+            
+
         </script>
+        
     </div>
 </div>
 

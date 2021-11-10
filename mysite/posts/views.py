@@ -103,10 +103,9 @@ class SharedPostView(View):
         if current_user == AnonymousUser:
             return HttpResponseRedirect(reverse('post_placeholder', args=(str(current_user), post_object.ID)))
 
-
         sharedPost = Post.objects.create(
             text=post_object.text,
-            #images=post_object.images,
+            image=post_object.image,
             pub_date=post_object.pub_date,
             author=post_object.author,
             shared_user=current_user,

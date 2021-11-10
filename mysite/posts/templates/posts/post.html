@@ -14,6 +14,7 @@
     <a href="{% url 'editpost' post.pk %} " class="btn btn-primary">Edit Post</a>
     <a href="{% url 'deletepost' post.pk %}" class="btn btn-danger">Delete Post</a>
     <a href="{% url 'addcomment' post.pk %}" class="btn btn-danger">Comment on Post</a>
+    <a href="{% url 'sharepost' post.pk %}" class="btn btn-danger">Share Post</a>
     <a class='return' href="{% url 'post'  %}">Go Back</a>
 </div>
 <br>
@@ -46,6 +47,13 @@ No comment yet <br>
 
 </p>
 {% endif %}
-
+<h2>Shares</h2>
+{%if not post.shared_user.all %}
+    Not shared yet <br>
+{%else%}
+    {%for user in post.shared_user.all%}
+        <p>{{user}}</p>
+    {% endfor %}
+{% endif %}
 <br><br>
 {% endblock content %}

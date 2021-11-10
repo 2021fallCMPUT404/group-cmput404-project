@@ -1,13 +1,14 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from . import views
-from django.http import HttpResponse, Http404
+from django.urls.base import reverse
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from django.utils import timezone
-from .models import Post, Comment, Like
+from .models import Post, Comment, Like, Share
 from .forms import ShareForm,CommentForm
 from .models import Post
-from django.views.generic import CreateView, UpdateView, DeleteView, FormView
+from django.views.generic import CreateView, UpdateView, DeleteView, View
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
@@ -95,7 +96,19 @@ class deletePost(DeleteView):
     template_name = 'posts/deletePost.html'
     success_url = reverse_lazy('post')
 
-class SharedPostView(UpdateView):
-    model = Post
-    template_name  = 'posts/sharePost.html'
-    fields = ['shared_on','shared_user']
+class SharedPostView(View):
+    def get(self, request, pk):
+        post_object = get_object_or_404(Post, pk=pk)
+        current_user = request.user
+        if current_user == AnonymousUser:
+            return HttpResponseRedirect(reverse('post_placeholder', args=(str(current_user), post_object.ID)))
+
+        sharedPost = Post.objects.create(
+            text=post_object.text,
+            image=post_object.image,
+            pub_date=post_object.pub_date,
+            author=post_object.author,
+            shared_user=current_user,
+            original_post=post_object
+            ).save()
+        return HttpResponseRedirect(reverse('post'))

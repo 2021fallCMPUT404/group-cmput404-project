@@ -1,3 +1,4 @@
+from django.http.response import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from . import views
 from django.http import HttpResponse
@@ -6,13 +7,41 @@ from django.urls import reverse
 from .models import User, Create_user, User_Profile, FriendRequest, UserFollows
 from django.apps import apps
 from . import create_user_form
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.db.models import Q
+from .serializers import UserSerializer, userFollowSerializer, userPSerializer
+#rest framework imports
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 Post_model = apps.get_model('posts', 'Post')
 
+
+@api_view(['GET'])
+def apiOverview(request):
+    return Response("API BASE POINT", safe=False)
+
+@api_view(['GET'])
+def UserList(request):
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def userGet(request, User_id):
+    user = get_object_or_404(User, pk=User_id)
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def userFollow(request, User_id):
+    user = get_object_or_404(User, pk=User_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    followers_list = UserFollows.objects.filter(object=user_profile)
+    serializer = userFollowSerializer(followers_list, many=True)
+    return Response({'type':'follow', 'items':serializer.data})
 
 def homepage(request):
     return HttpResponse("Placeholder homepage")

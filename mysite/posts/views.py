@@ -64,13 +64,14 @@ def select_github_activity(request):
     #The user will be allowed to select one activity and add it inot stream.
     the_user_profile = User_Profile.objects.get(user=request.user)
     github_username = the_user_profile.github
-    print(github_username)
+    
+    #print(request.GET)
     if request.method == 'POST':
-        pass
+        print(request.POST)
     else:
         print('return')
         return render(request, 'posts/display_github_activities.html', context={'insert_github_username':github_username})
-
+        
 
 
 

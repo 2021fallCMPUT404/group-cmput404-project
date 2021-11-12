@@ -36,12 +36,36 @@ def userGet(request, User_id):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def userFollow(request, User_id):
+def follow_list(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
     followers_list = UserFollows.objects.filter(object=user_profile)
     serializer = userFollowSerializer(followers_list, many=True)
     return Response({'type':'follow', 'items':serializer.data})
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def follow_crud(request, User_id, Foreign_id):
+    user = get_object_or_404(User, pk=User_id)
+    foreign_user = get_object_or_404(User, pk=Foreign_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    foreign_user_profile = get_object_or_404(User_Profile, user=foreign_user)
+    if request.method=='GET':
+        thing = UserFollows.objects.filter(actor=foreign_user_profile, object=user_profile).first()
+        serializer = userFollowSerializer(thing, many=False)
+        print('PRINTING DATA:', serializer)
+        return Response(serializer.data)
+    elif request.method=='PUT':
+        #f_request, created = FriendRequest.objects.get_or_create(actor=foreign_user_profile, object=user_profile)
+        FriendRequest.create_friend_request(foreign_user_profile, user_profile)
+        UserFollows.create_user_follow(foreign_user_profile, user_profile)
+        return Response('PUT')
+    elif request.method=='DELETE':
+        UserFollows.delete_user_follow(foreign_user_profile, user_profile)
+        return Response('DELETE')
+    else:
+        return HttpResponseBadRequest('Bad')
+    return Response()
+
 
 def homepage(request):
     return HttpResponse("Placeholder homepage")
@@ -226,12 +250,8 @@ def send_friend_request(request, User_id):
     request_profile = User_Profile.objects.get(user=request.user)
     #Checks if the object_profile is valid
     object_profile = get_object_or_404(User_Profile, user_id=User_id)
-    #object_profile = User_Profile.objects.get(user_id=User_id)
     #TODO: CHECK IF THE ACTOR IS ALREADY FOLLOWING THE OBJECT
-    f_request, created = FriendRequest.objects.get_or_create(actor=request_profile, object=object_profile)
-    print("Friend request created")
-    print(f_request.summary())
-    #return HttpResponseRedirect('/authors/{}'.format(User_id))
+    FriendRequest.create_friend_request(request_profile, object_profile)
     return HttpResponseRedirect(reverse('users:request_page'))
 
 def accept_friend_request(request, User_id):

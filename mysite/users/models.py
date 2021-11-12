@@ -60,10 +60,32 @@ class UserFollows(models.Model):
     actor = models.ForeignKey(User_Profile, related_name="following", on_delete=models.CASCADE, default='')
     object = models.ForeignKey(User_Profile, related_name="followers", on_delete=models.CASCADE, default='')
 
+    #Creates new instance of Userfollow with the actor following the object
+    #Parameters are User_Profile objects
+    def create_user_follow(actor, object):
+        UserFollows.objects.get_or_create(actor=actor, object=object)
+
+    #The actor will stop follwing the object
+    def delete_user_follow(actor, object):
+        instance = UserFollows.objects.filter(actor=actor, object=object)
+        if instance.exists():
+            instance.delete()
+        return None
+
+
 class FriendRequest(models.Model):
     type = "Follow"
     actor = models.ForeignKey(User_Profile, on_delete=models.CASCADE, related_name="actor", default='')
     object = models.ForeignKey(User_Profile, on_delete=models.CASCADE, related_name="object", default='')
+
+    def create_friend_request(actor, object):
+        '''Creates a friend request instance with the actor being the person who follows
+        and the object is the person whom is being followed. The actor and object paramaters
+        are user_profile objects.'''
+        print(actor, object)
+        f_request, created = FriendRequest.objects.get_or_create(actor=actor, object=object)
+        print("Friend request created")
+        print(f_request.summary())
 
     def summary(self):
         return '{} wants to follow {}'.format(self.actor.displayName, self.object.displayName)

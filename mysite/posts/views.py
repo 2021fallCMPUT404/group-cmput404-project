@@ -12,7 +12,7 @@ from users.models import User_Profile
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
-
+from django.views.decorators.csrf import csrf_exempt,csrf_protect
 
 # Create your views here.
 
@@ -59,6 +59,7 @@ def delete_post(request, Post_id):
         Post.objects.get(pk=Post_id).delete()
     return redirect('post')
 
+#@csrf_exempt
 def select_github_activity(request):
     #In this view, the webpage will allow user to observer all the recent activity on user profile.
     #The user will be allowed to select one activity and add it inot stream.
@@ -67,10 +68,14 @@ def select_github_activity(request):
     
     #print(request.GET)
     if request.method == 'POST':
-        print(request.POST)
+        print('\ncheck\n')
+        print(request.POST['select_event'])
+        
     else:
-        print('return')
-        return render(request, 'posts/display_github_activities.html', context={'insert_github_username':github_username})
+        pass
+    return render(request, 'posts/display_github_activities.html', context={'insert_github_username':github_username})
+
+
         
 
 

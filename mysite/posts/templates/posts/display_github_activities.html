@@ -5,10 +5,11 @@
 <h1>{{ insert_github_username }}</h1>
 <div class="all_activities">
     <div class="activity_list">
-        <dl id='event_list'>
-            <form id='event_form' method='post'>
-                <input type='submit' value='submit' value='submit_github_data'>
-
+        
+            <form id='event_form' method = 'post'>
+                {% csrf_token %}
+                <input type="submit" class="btn btn-lg btn-primary btn-block">
+            </form>
 
                 <script type="text/javascript">
 
@@ -25,8 +26,8 @@
                         if (this.readyState == 4 && this.status == 200) {
                             world = this.responseText;
                             var parsed_data = JSON.parse(this.responseText);
-                            var event_list = document.getElementById('event_list');
-
+                            
+                            var event_form = document.getElementById('event_form')
 
                             for (let i = 0; i < parsed_data.length; i++) {
                                 //console.log(parsed_data[i]);
@@ -90,34 +91,39 @@
                                     )
                                     await promise_org
                                     await promise_repo
-
-                                    var dt = document.createElement('dt');
-                                    dt.innerText = event_json['date'];
-                                    event_list.appendChild(dt);
-                                    var dd = document.createElement('dd');
+                                    
+                                    //var dt = document.createElement('dt');
+                                    //dt.innerText = event_json['date'];
+                                    //event_list.appendChild(dt);
+                                    //var dd = document.createElement('dd');
+                                    
                                     for (let key in event_json) {
                                         inner_text += ' ' + event_json[key];
                                     }
-                                    dd.innerText = inner_text;
-                                    event_list.appendChild(dd);
+                                    //dd.innerText = inner_text;
+                                    //event_list.appendChild(dd);
 
                                     var button_label = document.createElement('label');
-                                    button_label.innerText = 'submit';
+                                    button_label.innerText = event_date + ', ' + inner_text;
                                     const select_button = document.createElement('input');
                                     select_button.type = 'radio';
                                     select_button.name = 'select_event';
                                     select_button.id = i
-                                    select_button.value = event_json
-                                    event_list.appendChild(select_button);
+                                    let event_json_string = JSON.stringify(event_json)
+                                    let test_string = 'check this out'
+                                    console.log(event_json_string)
+                                    select_button.value = event_date + ' ' + inner_text;
+                                    button_label.appendChild(select_button)
+                                    
 
+                                    event_form.appendChild(button_label)
 
 
 
 
                                 })()
                             }
-
-
+                            
 
 
 
@@ -130,8 +136,8 @@
 
 
                 </script>
-            </form>
-        </dl>
+            
+        
     </div>
 </div>
 

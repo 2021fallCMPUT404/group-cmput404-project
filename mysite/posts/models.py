@@ -73,5 +73,3 @@ class Like(models.Model):
                              related_name='likes',
                              on_delete=models.CASCADE)
 
-class github_activity(models.Model):
-    pass

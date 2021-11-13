@@ -9,6 +9,7 @@ from . import create_user_form
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_exempt,csrf_protect
 
 Post_model = apps.get_model('posts', 'Post')
 
@@ -100,7 +101,6 @@ def register(request):
             'user_form': user_form,
             'profile_form': user_profile_form
         })
-
 
 def login_view(request):
 

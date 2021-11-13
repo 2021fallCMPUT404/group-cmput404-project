@@ -13,7 +13,7 @@ from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
 from django.views.decorators.csrf import csrf_exempt,csrf_protect
-
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 # Create your views here.
 
 
@@ -68,12 +68,19 @@ def select_github_activity(request):
     
     #print(request.GET)
     if request.method == 'POST':
-        print('\ncheck\n')
-        print(request.POST['select_event'])
+        user_profile = User_Profile.objects.get(user=request.user)
         
-    else:
-        pass
-    return render(request, 'posts/display_github_activities.html', context={'insert_github_username':github_username})
+        github_data = request.POST['select_event']
+        print(github_data)
+        data_list = github_data.split(' ')
+        event_type = data_list[0]
+        
+        content = ' '.join([data for data in data_list[1:]])
+        github_activity_post = Post(title = event_type, text = content, author = request.user)
+        github_activity_post.save()
+        return render(request, 'users/user_home_page.html')
+    else:        
+        return render(request, 'posts/display_github_activities.html', context={'insert_github_username':github_username})
 
 
         

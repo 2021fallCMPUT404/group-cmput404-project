@@ -23,9 +23,11 @@
             <p>Author is: {{posts.author}}</p>
         </div>
     </div>
-
-    <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'>Edit Post</a>
-
+    {%if not posts.shared_user%}
+        <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'>Edit Post</a>
+    {%else%}
+        <p>Shared by {{ posts.shared_user }}</p>
+    {% endif %}
     {% endfor %}
 </ul>
 {% else %}

@@ -18,7 +18,6 @@ from rest_framework.response import Response
 
 Post_model = apps.get_model('posts', 'Post')
 
-
 @api_view(['GET'])
 def apiOverview(request):
     return Response("API BASE POINT", safe=False)
@@ -40,7 +39,10 @@ def follow_list(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
     followers_list = UserFollows.objects.filter(object=user_profile)
-    serializer = userFollowSerializer(followers_list, many=True)
+    actor_list = []
+    for follow in followers_list:
+        actor_list.append(follow.actor)
+    serializer = userPSerializer(actor_list, many=True)
     return Response({'type':'follow', 'items':serializer.data})
 
 @api_view(['GET', 'PUT', 'DELETE'])

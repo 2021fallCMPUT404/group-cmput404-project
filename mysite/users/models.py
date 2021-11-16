@@ -83,6 +83,10 @@ class FriendRequest(models.Model):
         and the object is the person whom is being followed. The actor and object paramaters
         are user_profile objects.'''
         print(actor, object)
+        if UserFollows.objects.filter(actor=object, object=actor).exists():  #Checks if the object is already following the actor
+            # Returns so it doesn't create constant friend requests
+            print("{} is already following {}".format(object.displayName, actor.displayName))
+            return
         f_request, created = FriendRequest.objects.get_or_create(actor=actor, object=object)
         print("Friend request created")
         print(f_request.summary())

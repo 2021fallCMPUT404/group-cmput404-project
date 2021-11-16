@@ -5,12 +5,13 @@
 <h1>{{ insert_github_username }}</h1>
 <div class="all_activities">
     <div class="activity_list">
-
+        <a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block">Go back</a>
         <form id='event_form' method='post'>
+            <input type="submit" class= "btn btn-lg btn-primary btn-block" value = 'Add selected Activity'>
             {% csrf_token %}
-            <input type="submit" class="btn btn-lg btn-primary btn-block">
+            
         </form>
-
+        
         <script type="text/javascript">
 
             function check_key(json_data, key) {
@@ -128,7 +129,7 @@
                         })()
                     }
 
-
+                    
 
 
                 }

@@ -8,6 +8,7 @@ from django import forms
 from django.forms.widgets import Textarea
 import datetime
 from posts.models import Post
+from django.urls import reverse
 '''
 #TODO: MERGE USER_PROFILE INTO USER
 class User(AbstractUser):

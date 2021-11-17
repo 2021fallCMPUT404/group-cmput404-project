@@ -306,7 +306,7 @@ def view_followers(request, User_id):
     #friends_list = UserFollows.objects.filter(object_id=user_profile)
     for x in followers_list:
         print(x.actor.displayName)
-    return render(request, 'users/view_followers.html', {'followers_list':followers_list, 'user':user_profile})
+    return render(request, 'users/view_followers.html', {'followers_list':followers_list, 'user':user_profile, 'request':request})
 
 def send_request_page(request):
     users_list = User_Profile.objects.filter(~Q(id=request.user.id))

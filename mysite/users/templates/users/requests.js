@@ -18,4 +18,15 @@ window.onload = function() {
             }
         });
     }
+
+    function viewFollowerList(user_id){
+
+        var wrapper = document.getElementById('list-group')
+        url = 'http://' + location.host + '/authors/' + user_id + '/followers/'
+
+        fetchJSON(url).then((json) => {
+            console.log("Printing JSON:" + json)
+        });
+
+    }
 };

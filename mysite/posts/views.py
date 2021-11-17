@@ -104,11 +104,12 @@ class SharedPostView(View):
             return HttpResponseRedirect(reverse('post_placeholder', args=(str(current_user), post_object.ID)))
 
         sharedPost = Post.objects.create(
+            title=post_object.title,
             text=post_object.text,
             image=post_object.image,
             pub_date=post_object.pub_date,
             author=post_object.author,
             shared_user=current_user,
-            original_post=post_object
+            contentType=post_object.contentType
             ).save()
         return HttpResponseRedirect(reverse('post'))

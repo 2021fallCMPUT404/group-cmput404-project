@@ -8,6 +8,7 @@
 <ul>
     <!--<p>{{latest_post_list}}</p>-->
     {% for posts in latest_post_list %}
+    
     <li><a href="/post/{{ posts.id }}/" class="addpost-header">
             {%if not posts.shared_user%}
                 <h2>{{ posts.title }}</h2>
@@ -20,7 +21,12 @@
         {% if posts.image %}
         <img src='{{posts.image.url}}' width="30%">
         {% endif %}
-        <p>{{ posts.text | markdown | safe }}</p>
+        <!--separate markdown and plain text-->
+        {%if posts.contentType == '1' %}
+            <p>{{ posts.text | markdown | safe }}</p>
+        {%else%}
+            <p>{{ posts.text }}</p>
+        {% endif %}
 
         <div class='pub-info'>
             <p>Pub date is: {{posts.pub_date}}</p>

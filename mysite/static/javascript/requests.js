@@ -1,8 +1,10 @@
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
 function fetchJSON(uri, m='GET', b=''){
     if (m === "GET" || m === "DELETE"){
-        var request = new Request(uri, {method:m,});
+        var request = new Request(uri, {method:m, headers:{'X-CSRFToken':csrfToken}});
     } else if (m ==='POST' || m === "PUT") {
-        var request = new Request(uri, {method:m, body:JSON.stringify(b)});
+        var request = new Request(uri, {method:m, headers:{'X-CSRFToken':csrfToken}, body:JSON.stringify(b)});
     }
     //console.log(request.method);
     return fetch(request).then((response) => {
@@ -29,7 +31,7 @@ function unfollowUser(user_id, foreign_id){
 function viewFollowerList(user_id){
     //console.log("CALLING FOLLOWER FUNCTION")
     var wrapper = document.getElementsByClassName('list-group')
-    console.log(wrapper.length)
+    //console.log(wrapper.length)
     var url = 'http://' + location.host + '/authors/' + user_id + '/followers/'
 
     fetchJSON(url).then((json) => {
@@ -50,7 +52,7 @@ function viewFollowerList(user_id){
             item += "<h2 class = 'mb-0'>" + user.displayName + "</h2>";
             item += "<p>" + user.bio + "</p>";
             item += "</div>";
-            item += '<input aria-current="true"type="button" onclick="unfollowUser('+user_id + ',' + user.user + ')" value="Unfollow">'
+            item += '<input aria-current="true"type="button" onclick="unfollowUser('+user_id + ',' + user.user + '); viewFollowerList('+user_id+')" value="Unfollow">'
             //item += "<input type='button' onclick='viewFollowerList(" + user.id + ") value='Update'></div></div>";
             wrapper[0].innerHTML += item;
         }

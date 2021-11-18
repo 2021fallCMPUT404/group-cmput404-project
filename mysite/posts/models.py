@@ -39,7 +39,7 @@ class Post(models.Model):
     contentType = models.TextField(default="text/plain")
 
     def get_absolute_url(self):
-        return reverse('post_placeholder', args=(str(self.id)))
+        return reverse('post_placeholder', args=[str(self.id)])
 
 
 class Comment(models.Model):

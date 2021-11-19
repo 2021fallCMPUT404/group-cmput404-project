@@ -6,10 +6,13 @@ from django.urls import reverse
 from .models import User, Create_user, User_Profile, FriendRequest, UserFollows
 from django.apps import apps
 from . import create_user_form
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
-from django.views.decorators.csrf import csrf_exempt,csrf_protect
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+
+from rest_framework.parsers import JSONParser
+from .serializers import UserSerializer, UserProfileSerializer
 
 Post_model = apps.get_model('posts', 'Post')
 
@@ -43,11 +46,10 @@ def index(request):
 
 
 def create_user_view(request):
-    #form = Create_user()
-    form = create_user_form.create_new_user(request.POST)
+
     if request.method == "POST":
-        #form = Create_user(request.POST)
         form = create_user_form.create_new_user(request.POST)
+
         if form.is_valid():
             print("OK")
             #TODO: CHECK IF THE USER ALREADY EXISTS IN THE DATABASE
@@ -102,6 +104,7 @@ def register(request):
             'profile_form': user_profile_form
         })
 
+
 def login_view(request):
 
     if request.method == 'POST':
@@ -133,7 +136,6 @@ def logout_view(request):
     return render(request, 'users/login.html')
 
 
-
 @login_required
 def confirm_logout_view(request):
     return HttpResponse("logout from the user account")
@@ -152,7 +154,7 @@ def user_home_page_view(request):
                       'insert_display_name': user_display_name,
                       'user_profile_image': user_profile_image
                   })
-    
+
 
 @login_required
 def edit_user_profile_view(request):
@@ -188,20 +190,23 @@ def edit_user_profile_view(request):
 def advance_home_page_view(request):
     return render(request, 'users/advance_home_page.html')
 
+
 def send_friend_request(request, User_id):
     if request.user.is_anonymous:
         return HttpResponseForbidden("Please sign in")
-    user = get_object_or_404(User,pk=User_id)
+    user = get_object_or_404(User, pk=User_id)
     print(user)
     request_profile = User_Profile.objects.get(user=request.user)
     #Checks if the object_profile is valid
     object_profile = get_object_or_404(User_Profile, user_id=User_id)
     #object_profile = User_Profile.objects.get(user_id=User_id)
     #TODO: CHECK IF THE ACTOR IS ALREADY FOLLOWING THE OBJECT
-    f_request, created = FriendRequest.objects.get_or_create(actor=request_profile, object=object_profile)
+    f_request, created = FriendRequest.objects.get_or_create(
+        actor=request_profile, object=object_profile)
     print("Friend request created")
     print(f_request.summary())
     return HttpResponseRedirect('/authors/{}'.format(User_id))
+
 
 def accept_friend_request(request, User_id):
     #User id is from the actor, the person who sent the friend request
@@ -209,31 +214,41 @@ def accept_friend_request(request, User_id):
     if request.user.is_anonymous:
         return HttpResponseForbidden("Please sign in")
     actor_user_profile = get_object_or_404(User_Profile, user_id=User_id)
-    object_user_profile = get_object_or_404(User_Profile,user=request.user)
-    f_request = FriendRequest.objects.filter(actor=actor_user_profile, object=object_user_profile)
+    object_user_profile = get_object_or_404(User_Profile, user=request.user)
+    f_request = FriendRequest.objects.filter(actor=actor_user_profile,
+                                             object=object_user_profile)
     if not f_request.exists():
         return HttpResponseBadRequest("Friend request does not exist")
     #TODO: ADD THE ACTOR IN USER FOLLOWS
 
-    actor_user = get_object_or_404(User,pk=User_id)
-    UserFollows.objects.get_or_create(actor=actor_user_profile, object=object_user_profile)
-    UserFollows.objects.get_or_create(actor=object_user_profile, object=actor_user_profile)
+    actor_user = get_object_or_404(User, pk=User_id)
+    UserFollows.objects.get_or_create(actor=actor_user_profile,
+                                      object=object_user_profile)
+    UserFollows.objects.get_or_create(actor=object_user_profile,
+                                      object=actor_user_profile)
     #TODO: DO SOME ERROR CHECKING AND CHECK IF THE F_REQUEST INSTANCE EXISTS
     f_request.delete()
-    print("{} accepted {}s' friend request".format(object_user_profile.displayName, actor_user_profile.displayName))
-    return HttpResponseRedirect('/authors/requests/view-request/{}/'.format(request.user.id))
+    print("{} accepted {}s' friend request".format(
+        object_user_profile.displayName, actor_user_profile.displayName))
+    return HttpResponseRedirect('/authors/requests/view-request/{}/'.format(
+        request.user.id))
+
 
 def reject_friend_request(request, User_id):
     if request.user.is_anonymous:
         return HttpResponseForbidden("Please sign in")
     actor_user_profile = get_object_or_404(User_Profile, user_id=User_id)
-    object_user_profile = get_object_or_404(User_Profile,user=request.user)
-    f_request = FriendRequest.objects.filter(actor=actor_user_profile, object=object_user_profile)
+    object_user_profile = get_object_or_404(User_Profile, user=request.user)
+    f_request = FriendRequest.objects.filter(actor=actor_user_profile,
+                                             object=object_user_profile)
     if not f_request.exists():  #Checks if the friend request exists
         return HttpResponseBadRequest("Friend request does not exist")
     f_request.delete()
-    print("{} deleted {}s' friend request".format(object_user_profile.displayName, actor_user_profile.displayName))
-    return HttpResponseRedirect('/authors/requests/view-request/{}/'.format(request.user.id))
+    print("{} deleted {}s' friend request".format(
+        object_user_profile.displayName, actor_user_profile.displayName))
+    return HttpResponseRedirect('/authors/requests/view-request/{}/'.format(
+        request.user.id))
+
 
 def view_friend_requests(request, User_id):
     #Makes sure that only the author can see the requests
@@ -243,7 +258,10 @@ def view_friend_requests(request, User_id):
     recieved_requests = FriendRequest.objects.filter(object=user_profile)
     sent_requests = FriendRequest.objects.filter(actor=user_profile)
     print(recieved_requests, sent_requests)
-    return render(request, 'users/view_requests.html', {'recieved_requests':recieved_requests, 'sent_requests':sent_requests})
+    return render(request, 'users/view_requests.html', {
+        'recieved_requests': recieved_requests,
+        'sent_requests': sent_requests
+    })
 
 
 def view_followers(request, User_id):
@@ -253,5 +271,7 @@ def view_followers(request, User_id):
     #friends_list = UserFollows.objects.filter(object_id=user_profile)
     for x in followers_list:
         print(x.actor.displayName)
-    return render(request, 'users/view_followers.html', {'followers_list':followers_list, 'user':user_profile})
-
+    return render(request, 'users/view_followers.html', {
+        'followers_list': followers_list,
+        'user': user_profile
+    })

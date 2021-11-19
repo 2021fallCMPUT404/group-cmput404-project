@@ -5,6 +5,7 @@ from django.db.models.fields.related import ForeignKey
 from users.models import User
 import uuid
 from django.urls import reverse
+from rest_framework import serializers
 
 
 class Post(models.Model):

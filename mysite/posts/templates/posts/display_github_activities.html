@@ -7,11 +7,11 @@
     <div class="activity_list">
         <a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block">Go back</a>
         <form id='event_form' method='post'>
-            <input type="submit" class= "btn btn-lg btn-primary btn-block" value = 'Add selected Activity'>
+            <input type="submit" class="btn btn-lg btn-primary btn-block" value='Add selected Activity'>
             {% csrf_token %}
-            
+
         </form>
-        
+
         <script type="text/javascript">
 
             function check_key(json_data, key) {
@@ -117,7 +117,7 @@
                             let event_json_string = JSON.stringify(event_json)
                             let test_string = 'check this out'
                             console.log(event_json_string)
-                            select_button.value = inner_text;
+                            select_button.value = event_json;
                             button_label.appendChild(select_button)
 
 
@@ -129,7 +129,7 @@
                         })()
                     }
 
-                    
+
 
 
                 }

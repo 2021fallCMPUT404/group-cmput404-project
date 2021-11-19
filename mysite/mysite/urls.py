@@ -32,5 +32,15 @@ urlpatterns = [
     path('users', include('users.urls')),
     path('login', include('users.urls')),
     path('', views.login_view, name='login'),
-    path('logout', views.logout_view, name='logout')
+    path('logout', views.logout_view, name='logout'),
+    path('request_user_list',
+         views.request_user_list,
+         name='request_user_list'),
+    path('request_user_profile_list',
+         views.request_user_profile_list,
+         name='request_user_profile_list'),
+    path('request_user/<str:id>', views.request_user, name='request_user'),
+    path('request_user_profile/<str:id>',
+         views.request_user_profile,
+         name='request_user_profile')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

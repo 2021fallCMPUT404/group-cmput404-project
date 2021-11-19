@@ -12,6 +12,8 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from rest_framework.parsers import JSONParser
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .serializers import UserSerializer, UserProfileSerializer
 
 Post_model = apps.get_model('posts', 'Post')
@@ -67,10 +69,57 @@ def create_user_view(request):
     return render(request, 'users/create_user.html', {'form': form})
 
 
+@api_view(['GET'])
+def request_user_list(request):
+    users = User.objects.all()
+    users_serializer = UserSerializer(users, many=True)
+    print(users_serializer.data)
+    return Response(users_serializer.data)
+
+
+@api_view(['GET'])
+def request_user_profile_list(request):
+    user_profiles = User_Profile.objects.all()
+    user_profiles_serializer = UserProfileSerializer(user_profiles, many=True)
+    return Response(user_profiles_serializer.data)
+
+
+@api_view(['GET'])
+def request_user(request, id):
+    user = User.objects.get(id=id)
+    user_serializer = UserSerializer(user)
+    return Response(user_serializer.data)
+
+
+@api_view(['GET'])
+def request_user_profile(request, id):
+    user_profile = User_Profile.objects.get(id=id)
+    user_profile_serializer = UserProfileSerializer(user_profile)
+    return Response(user_profile_serializer.data)
+
+
+@api_view(['GET'])
+def request_user_inbox(request, username):
+    user = User.objects.get(username=username)
+    inbox = Inbox.objects.get(user=user)
+
+
+@api_view(['POST'])
+def upload_user(request):
+    user_serializer = UserSerializer(data=request.data)
+    if user_serializer.is_valid():
+
+        user_serializer.save()
+
+        return Response(user_profile_serializer.data,
+                        status=status.HTTP_201_CREATED)
+
+
 def register(request):
     registered_user = False
 
     if request.method == "POST":
+
         user_form = create_user_form.create_new_user(request.POST)
         user_profile_form = create_user_form.create_new_user_profile(
             request.POST)
@@ -93,6 +142,7 @@ def register(request):
             print('register failed')
             print('user form error:' + str(user_form.errors))
             print('user profile form error:' + str(user_profile_form.errors))
+
     else:
         user_form = create_user_form.create_new_user()
         user_profile_form = create_user_form.create_new_user_profile()

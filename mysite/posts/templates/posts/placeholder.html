@@ -3,29 +3,41 @@
 
 
 {% block content %}
-
+{% load markdown_ext %}
 {% if latest_post_list %}
 <ul>
     <!--<p>{{latest_post_list}}</p>-->
     {% for posts in latest_post_list %}
+    
     <li><a href="/post/{{ posts.id }}/" class="addpost-header">
-            <h2>{{ posts.title }}</h2>
+            {%if not posts.shared_user%}
+                <h2>{{ posts.title }}</h2>
+            {%else%}
+                <h2>Repost: {{ posts.title }}</h2>
+            {% endif %}
         </a></li>
     <div class='content'>
 
         {% if posts.image %}
         <img src='{{posts.image.url}}' width="30%">
         {% endif %}
-        <p>{{ posts.text }}</p>
+        <!--separate markdown and plain text-->
+        {%if posts.contentType == '1' %}
+            <p>{{ posts.text | markdown | safe }}</p>
+        {%else%}
+            <p>{{ posts.text }}</p>
+        {% endif %}
 
         <div class='pub-info'>
             <p>Pub date is: {{posts.pub_date}}</p>
             <p>Author is: {{posts.author}}</p>
         </div>
     </div>
-
-    <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'>Edit Post</a>
-
+    {%if not posts.shared_user%}
+        <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'>Edit Post</a>
+    {%else%}
+        <p>Shared by {{ posts.shared_user }}</p>
+    {% endif %}
     {% endfor %}
 </ul>
 {% else %}

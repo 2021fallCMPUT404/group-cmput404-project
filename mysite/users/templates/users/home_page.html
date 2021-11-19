@@ -24,6 +24,9 @@
       <li><a href="{% url 'logout' %}">logout</a></li>
       <li><a href="{% url 'users:edit_user_profile' %}">users:edit user profile</a></li>
       <li><a href="{% url 'users:user_home_page' %}">return to user home page.</a></li>
+      <li><a href="{% url 'users:view_requests' User_id=request.user.id %}">View your requests</a></li>
+      <li><a href="{% url 'users:view_followers' User_id=request.user.id %}">View your followers</a></li>
+      <li><a href="{% url 'users:request_page'%}">Send a friend request</a></li>
       {% endif %}
       {% if not user.is_authenticated %}
       <li><a href="{% url 'users:login' %}">users:login</a></li>

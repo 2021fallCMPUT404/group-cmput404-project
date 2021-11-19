@@ -49,3 +49,6 @@ Source: https://getbootstrap.com/docs/4.0/examples/grid/
 
 Bootstrap List-Group Examples:
 Source: https://getbootstrap.com/docs/5.1/examples/list-groups/
+
+Django Markdown Tutorial:
+Source: https://learndjango.com/tutorials/django-markdown-tutorial

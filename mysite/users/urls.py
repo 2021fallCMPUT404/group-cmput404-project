@@ -22,6 +22,7 @@ urlpatterns = [
     path('requests/accept-request/<int:User_id>/', views.accept_friend_request, name='accept_request'),
     path("requests/deny-request/<int:User_id>/", views.reject_friend_request, name='reject_request'),
     path("requests/view-request/<int:User_id>/", views.view_friend_requests, name='view_requests'),
+    path("requests/request-page/", views.send_request_page, name='request_page'),
     path('edit_user_profile',
          views.edit_user_profile_view,
          name='edit_user_profile'),

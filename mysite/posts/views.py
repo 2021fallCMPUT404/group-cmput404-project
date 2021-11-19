@@ -1,3 +1,5 @@
+from django import template
+from django.http.response import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 from . import views
@@ -11,16 +13,38 @@ from django.views.generic import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
+from django.shortcuts import render
+
+
+
 
 
 # Create your views here.
+def handle_not_found(request,exception):
+    return render(request,'not_found.html')
 
 
 def post(request, Post_id):
+    
+    current_user=User.objects.get(id=request.user.id)
     post = get_object_or_404(Post, pk=Post_id)
     share_form = ShareForm()
+
+
     
-    return render(request, 'posts/post.html', {'post':post})
+    if post.privacy==0: 
+        print("Public")
+        return render(request, 'posts/post.html', {'post':post})
+        
+    elif post.privacy==1 :
+        if post.author==current_user:
+            print("private or unlisted authorized")
+            return render(request, 'posts/post.html', {'post':post})
+    else:
+        print('Not good')
+        return redirect('401.html')
+
+
     #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
     #return HttpResponse(output)
 
@@ -32,11 +56,17 @@ def placeholder(request):
     authorized_posts=[]
     print(current_user)
     for p in latest_post_list:
-        if   p.privacy==0:          #PUBLIC POST
-            authorized_posts.append(p)
-        elif p.privacy==1:          #PRIVATE POST
+        if p.unlisted:                  #unlisted posts: always visible to creator
             if p.author==current_user:
                 authorized_posts.append(p)
+        else:                           #listed posts
+            if p.privacy==0:                #public: visible to all
+                authorized_posts.append(p)
+
+            elif p.privacy==1:              #private: visible to creator
+                if p.author==current_user:
+                    authorized_posts.append(p)
+
 
     #NEED FRIEND POST
 
@@ -99,3 +129,16 @@ class SharedPostView(UpdateView):
     model = Post
     template_name  = 'posts/sharePost.html'
     fields = ['shared_on','shared_user']
+
+
+
+
+from django.shortcuts import render
+from django.template import RequestContext
+
+
+def handler404(request, exception, template_name="not_found.html"):
+    return render(request,template_name)
+
+
+

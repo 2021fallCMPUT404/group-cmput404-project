@@ -1,7 +1,7 @@
 {% extends 'posts/base.html' %}
 
 {% block content %}
-
+<h2>Social Circle</h2>
 <div class='post-wrapper'>
     <h1>Author: {{post.author}}</h1>
     <p>Text: {{post.text}}</p>
@@ -11,10 +11,12 @@
     <p>Date: {{post.pub_date}}</p>
     <p>ID: {{post.id}}</p>
 
-    <a href="{% url 'editpost' post.pk %} " class="btn btn-primary">Edit Post</a>
-    <a href="{% url 'deletepost' post.pk %}" class="btn btn-danger">Delete Post</a>
-    <a href="{% url 'addcomment' post.pk %}" class="btn btn-danger">Comment on Post</a>
-    <a href="{% url 'sharepost' post.pk %}" class="btn btn-danger">Share Post</a>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <a href="{% url 'editpost' post.pk %} " class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> Edit</a>
+    <a href="{% url 'deletepost' post.pk %}" class="btn btn-danger"><i class="fa fa-trash"></i> Delete</a>
+    <a href="{% url 'addcomment' post.pk %}" class="btn btn-danger"><i class="fa fa-comment"></i> Comment</a>
+    <a href="{% url 'sharepost' post.pk %}" class="btn btn-danger"><i class="fa fa-share-square-o"></i> Share</a>
+    <br>
     <a class='return' href="{% url 'post'  %}">Go Back</a>
 </div>
 <br>
@@ -25,10 +27,8 @@
 
 {%if not post.comments.all %}
 No comment yet <br>
-<a href="{% url 'addcomment' post.pk %}">Add Comment</a>
 
 {%else%}
-<a href="{% url 'addcomment' post.pk %}">Add Comment</a>
 <p>
     {%for comment in post.comments.all%}
 

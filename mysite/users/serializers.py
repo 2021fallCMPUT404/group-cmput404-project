@@ -49,10 +49,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
+'''
 class InboxProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inbox
         field = author
 
-class 
+'''

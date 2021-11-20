@@ -18,6 +18,11 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from .serializers import PostSerializer
 import json
+
+from rest_framework.parsers import JSONParser
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import PostSerializer
 # Create your views here.
 
 
@@ -52,8 +57,32 @@ def placeholder(request):
 
     return HttpResponse(template.render(context, request))
 
+@api_view(['GET'])
+def request_post_list(request):
+    posts = Post.objects.all()
+    posts_serializer = PostSerializer(posts, many = True)
+    return Response(posts_serializer.data)
 
-@csrf_exempt
+@api_view(['GET'])
+def request_post(request, id):
+    post = Post.objects.get(id = id)
+    post_serializer = PostSerializer(post)
+    return Response(post_serializer.data)
+
+
+@api_view(['POST'])
+def upload_post(request):
+
+    post_serializer = PostSerializer(data = request.data)
+    for key, value in request.data.items():
+        print(key, value)
+    if post_serializer.is_valid():
+        print('post_serializer.is_valid')
+        post_serializer.save()
+    else:
+        print('upload failed in post')
+    return Response(post_serializer.data)
+
 def delete_post(request, Post_id):
     post = Post.objects.get(pk=Post_id)
     print(request.user)

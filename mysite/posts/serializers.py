@@ -1,39 +1,15 @@
+from django.db.models.fields import SlugField
 from rest_framework import serializers
 from .models import Post, Comment, Like
 
 
 class PostSerializer(serializers.ModelSerializer):
-    '''
-    PUBLIC = 0
-    PRIVATE = 1
-    # FREINDS=2    #Need friend system?
-
-    Privacy = (
-        (PUBLIC, "PUBLIC"),
-        (PRIVATE, "PRIVATE"),  #only shows to me
-        #(FREINDS,"FRIENDS"),
-        #(Unlisted,"Unlisted")
-    )
-
-    type = 'post'
-    title = serializers.CharField(default='New Post!', max_length=200)
-    text = serializers.CharField()
-    image = serializers.ImageField()
-    pub_date = serializers.DateTimeField()
-    author = serializers.ForeignKey(User, on_delete=models.CASCADE)
-    shared_user = serializers.ForeignKey(User,
-                                         on_delete=models.CASCADE,
-                                         related_name='+')
-
-    shared_on = serializers.DateTimeField()
-    privacy = serializers.IntegerField(choices=Privacy, default=PUBLIC)
-    visible = None
-
-    contentType = serializers.CharField(default="text/plain")
-    '''
+    #author = serializers.StringRelatedField(source = 'author.username')
+    #shared_user = serializers.StringRelatedField(source = 'shared_user.username', many=True)
+    
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ('title', 'text', 'image', 'pub_date', 'author', 'shared_user', 'shared_on', 'privacy', 'contentType')
 
     def create(self, validated_data):
 

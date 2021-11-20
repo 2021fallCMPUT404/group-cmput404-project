@@ -29,7 +29,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     shared_user = models.ForeignKey(User,
                                     on_delete=models.CASCADE,
-                                    null=True,
+                                    
                                     blank=True,
                                     related_name='+')
 
@@ -41,6 +41,9 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('post_placeholder', args=[str(self.id)])
+
+    def create_post(self, title, text, image, pub_date, author, shared_user, shared_on, privacy, visible, contentType):
+        Post.objects.get_or_create(title, text, image, pub_date, author, shared_user, shared_on, privacy, visible, contentType)
 
 
 class Comment(models.Model):

@@ -31,3 +31,13 @@ class PostSerializer(serializers.ModelSerializer):
                                                   instance.contentType)
         instance.save()
         return instance
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'post', 'author', 'comment_body', 'comment_created')
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ('user', 'post')

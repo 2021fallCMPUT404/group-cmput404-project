@@ -13,16 +13,17 @@ from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
-from .serializers import PostSerializer
+from .serializers import CommentSerializer, PostSerializer
 import json
-
+from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import PostSerializer
+from django.http.response import JsonResponse
+from .serializers import PostSerializer, CommentSerializer
 # Create your views here.
 
 
@@ -69,26 +70,101 @@ def request_post(request, id):
     post_serializer = PostSerializer(post)
     return Response(post_serializer.data)
 
-
 @api_view(['POST'])
-def upload_post(request):
+def create_new_post(request):
+    if request.method == 'POST':
+        try:
+            
+            data = JSONParser().parse(request)
+            post_serializer = PostSerializer(data = data)
+            if post_serializer.is_valid():
+                post_serializer.save()
+                return JsonResponse(post_serializer.data, status=status.HTTP_201_CREATED) 
+            return JsonResponse(post_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Post.DoesNotExist: 
+            return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
 
-    post_serializer = PostSerializer(data = request.data)
-    for key, value in request.data.items():
-        print(key, value)
-    if post_serializer.is_valid():
-        print('post_serializer.is_valid')
-        post_serializer.save()
-    else:
-        print('upload failed in post')
-    return Response(post_serializer.data)
+@api_view(['GET', 'PUT', 'DELETE', 'POST'])
+def crud_post(request, id):
 
-def delete_post(request, Post_id):
-    post = Post.objects.get(pk=Post_id)
-    print(request.user)
-    if request.user == post.author:
-        Post.objects.get(pk=Post_id).delete()
-    return redirect('post')
+    #post_serializer = PostSerializer(data = request.data)
+    if request.method == 'GET':
+        try: 
+            post = Post.objects.get(id = id)
+            post_serializer = PostSerializer(post)
+            return JsonResponse(post_serializer.data)
+        except Post.DoesNotExist: 
+            return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    
+
+
+    if request.method == 'PUT':
+        try:
+            related_post = Post.objects.get(id = id)
+            data = JSONParser().parse(request)
+            post_serializer = PostSerializer(related_post, data = data)
+            if post_serializer.is_valid():
+                post_serializer.save()
+                return JsonResponse(post_serializer.data, status=status.HTTP_201_CREATED) 
+            return JsonResponse(post_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Post.DoesNotExist: 
+            return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+        ''''
+        print(request.data)
+
+        data = request.data[0]
+        author = get_object_or_404(User, id = request.data['author'])
+        shared_user = get_object_or_404(User, id = request.data['shared_user'])
+        post = Post.objects.get(id = id)
+        if post:
+            Post.objects.filter(id = id).update(title = request.data['title'], text = request.data['text'], image = request.data['image'], pub_date = request.data['pub_date'], author = author, shared_user = shared_user, shared_on = request.data['shared_on'], privacy = request.data['privacy'],  contentType = request.data['contentType'])
+        else:
+            Post.objects.get_or_create( title = request.data['title'], text = request.data['text'], image = request.data['image'], pub_date = request.data['pub_date'], author = author, shared_user = shared_user, shared_on = request.data['shared_on'], privacy = request.data['privacy'],  contentType = request.data['contentType'])
+        return Response('PUT')
+        '''
+    if request.method == 'DELETE':
+        try: 
+            post = Post.objects.get(id=id) 
+            post.delete()
+            return JsonResponse({'message': 'Post was deleted'}, status=status.HTTP_204_NO_CONTENT)
+        except Post.DoesNotExist: 
+            return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+        
+@api_view(['GET', 'POST', 'DELETE'])
+def manage_post_comment(request, post_id):
+    if request.method == 'GET':
+        try:
+            related_post = Post.objects.get(id = post_id)
+            comments = Comment.objects.filter(post = related_post)
+            comments_serializer = CommentSerializer(comments, many = True)
+            return JsonResponse(comments_serializer.data, safe=False)
+        except Post.DoesNotExist:
+            return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    if request.method == 'POST':
+        try:
+            related_post = Post.objects.get(id = post_id)
+            data = JSONParser().parse(request)
+            comment_serializer = CommentSerializer(data = data)
+            if comment_serializer.is_valid():
+                comment_serializer.save()
+                return JsonResponse(comment_serializer.data, status=status.HTTP_201_CREATED) 
+            return JsonResponse(comment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Post.DoesNotExist: 
+            return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    
+    if request.method == 'DELETE':
+        try:
+            related_post = Post.objects.get(id = post_id)
+            comments = Comment.objects.filter(post = related_post)
+            for comment in comments:
+                comment.delete()
+            return JsonResponse({'message': 'Comments were deleted'}, status=status.HTTP_204_NO_CONTENT)
+
+        except Post.DoesNotExist: 
+            return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+
+
+
 
 
 @csrf_exempt

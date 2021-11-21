@@ -1,7 +1,7 @@
 from django.urls import include, path
 from . import views
 
-app_name = 'posts'
+
 
 urlpatterns = [
   path('', views.placeholder, name='post'),
@@ -13,7 +13,10 @@ urlpatterns = [
   path('<int:pk>/share/', views.SharedPostView.as_view(), name='sharepost'),
   path('select_github_activity/', views.select_github_activity, name='select_github_activity'),
   path('request_post/<str:id>', views.request_post, name = 'request_post'),
-  path('upload_post', views.upload_post, name = 'upload_post'),
+  path('crud_post/<str:id>', views.crud_post, name = 'crud_post'),
   path('request_post_list', views.request_post_list, name = 'request_post_list'),
+  #path('delete_post/<str:id>', views.delete_post, name = 'delete_post'),
+  path('manage_post_comment/<str:post_id>', views.manage_post_comment, name = 'manage_post_comment'),
+  path('create_new_post', views.create_new_post, name = 'create_new_post'),
 
 ]

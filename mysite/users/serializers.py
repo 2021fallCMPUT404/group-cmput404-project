@@ -11,12 +11,12 @@ class UserSerializer(serializers.ModelSerializer):
 class userPSerializer(serializers.ModelSerializer):
     #This puts in the type attribute since __all__ is not grabbing User_Profile.type attribute for some reason
     #Reference: https://stackoverflow.com/a/60891077
-    type = serializers.SerializerMethodField('new_field_method')
-    def new_field_method(self, modelPointer_):
-        return "author"
+
+    
     class Meta:
         model = User_Profile
-        fields = '__all__'
+        fields = ['type', 'id', 'url', 'host', 'displayName', 'github'] #TODO: ADD URL AND HOST
+        read_only_fields = ['type', 'id', 'url', 'host',]
         
 
 

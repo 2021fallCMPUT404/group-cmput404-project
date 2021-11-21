@@ -39,6 +39,7 @@ class User_Profile(models.Model):
                                 on_delete=models.CASCADE,
                                 related_name='user_profile')
     host = None
+    url = None
     displayName = models.CharField(max_length=60, blank=True)
     profileImage = models.ImageField(
         upload_to='profile_picture',

@@ -24,15 +24,27 @@ def apiOverview(request):
 
 @api_view(['GET'])
 def UserList(request):
-    users = User.objects.all()
-    serializer = UserSerializer(users, many=True)
-    return Response(serializer.data)
+    user_profiles = User_Profile.objects.all()
+    serializer = userPSerializer(user_profiles, many=True)
+    return Response({'type':'authors', 'items':serializer.data})
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def userGet(request, User_id):
     user = get_object_or_404(User, pk=User_id)
-    serializer = UserSerializer(user, many=False)
-    return Response(serializer.data)
+    print(user)
+    print(user.id, User_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    if request.method == "GET":
+        serializer = userPSerializer(user_profile, many=False)
+        return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = userPSerializer(instance=user_profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+
+        return Response(serializer.data)
+
 
 @api_view(['GET'])
 def follow_list(request, User_id):
@@ -324,8 +336,8 @@ def view_followers(request, User_id):
     'request':request, 'follows_list':follows_list})
 
 def send_request_page(request):
-    user_profile = get_object_or_404(User_Profile, pk=request.user.id)
-    users_list = User_Profile.objects.filter()
+    user_profile = get_object_or_404(User_Profile, user_id=request.user.id)
+    users_list = User_Profile.objects.filter(~Q(user=request.user))
     print(users_list)
     return render(request, 'users/send_requests.html', {'users_list':users_list})
 

@@ -18,6 +18,7 @@ urlpatterns = [
     path('login', views.login_view, name='login'),
     path('user_home_page', views.user_home_page_view, name='user_home_page'),
     path('<int:User_id>/followers/', views.follow_list, name='view_followers_REST'),
+    path('<int:User_id>/following/', views.following_list, name='view_following_GET'),
     path('<int:User_id>/view-followers/', views.view_followers, name='view_followers'),
     path('<int:User_id>/followers/<int:Foreign_id>/', views.follow_crud, name='crud_followers'),
     path('requests/send-request/<int:User_id>/', views.send_friend_request, name='send_friend_request'),

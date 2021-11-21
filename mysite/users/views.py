@@ -45,6 +45,18 @@ def follow_list(request, User_id):
     serializer = userPSerializer(actor_list, many=True)
     return Response({'type':'follow', 'items':serializer.data})
 
+
+@api_view(['GET'])
+def following_list(request, User_id):
+    user = get_object_or_404(User, pk=User_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    followers_list = UserFollows.objects.filter(actor=user_profile)
+    object_list = []
+    for followed in followers_list:
+        object_list.append(followed.object)
+    serializer = userPSerializer(object_list, many=True)
+    return Response({'type':'following', 'items':serializer.data})
+
 @api_view(['GET', 'PUT', 'DELETE'])
 def follow_crud(request, User_id, Foreign_id):
     user = get_object_or_404(User, pk=User_id)
@@ -62,6 +74,7 @@ def follow_crud(request, User_id, Foreign_id):
         UserFollows.create_user_follow(foreign_user_profile, user_profile)
         return Response('PUT')
     elif request.method=='DELETE':
+        print('{} is unfollowing {}'.format(foreign_user_profile.displayName, user_profile.displayName))
         UserFollows.delete_user_follow(foreign_user_profile, user_profile)
         return Response('DELETE')
     else:
@@ -303,13 +316,16 @@ def view_followers(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
     followers_list = UserFollows.objects.filter(object=user_profile)
+    follows_list = UserFollows.objects.filter(actor=user_profile)
     #friends_list = UserFollows.objects.filter(object_id=user_profile)
     for x in followers_list:
         print(x.actor.displayName)
-    return render(request, 'users/view_followers.html', {'followers_list':followers_list, 'user':user_profile, 'request':request})
+    return render(request, 'users/view_followers.html', {'followers_list':followers_list, 'user':user_profile, 
+    'request':request, 'follows_list':follows_list})
 
 def send_request_page(request):
-    users_list = User_Profile.objects.filter(~Q(id=request.user.id))
+    user_profile = get_object_or_404(User_Profile, pk=request.user.id)
+    users_list = User_Profile.objects.filter()
     print(users_list)
     return render(request, 'users/send_requests.html', {'users_list':users_list})
 

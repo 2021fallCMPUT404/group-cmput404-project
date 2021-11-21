@@ -53,6 +53,10 @@ class User_Profile(models.Model):
     #user_posts = models.ForeignKey(Post, on_delete=models.CASCADE, null=True)
 
 
+    def __str__(self):
+        return ', '.join((self.displayName, str(self.id), str(self.user.id)))
+
+
 class Inbox(models.Model):
     type = 'inbox'
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -66,7 +70,7 @@ class UserFollows(models.Model):
     def create_user_follow(actor, object):
         UserFollows.objects.get_or_create(actor=actor, object=object)
 
-    #The actor will stop follwing the object
+    #The actor will stop following the object
     def delete_user_follow(actor, object):
         instance = UserFollows.objects.filter(actor=actor, object=object)
         if instance.exists():

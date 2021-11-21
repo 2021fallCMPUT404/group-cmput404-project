@@ -4,9 +4,9 @@
 
 {% block content %}
 {% load markdown_ext %}
-<h2>Social Circle</h2>
 {% if latest_post_list %}
 <ul>
+    <br>
     <!--<p>{{latest_post_list}}</p>-->
     {% for posts in latest_post_list %}
     
@@ -39,6 +39,7 @@
     {%else%}
         <p>Shared by {{ posts.shared_user }}</p>
     {% endif %}
+    <br><br>
     {% endfor %}
 </ul>
 {% else %}

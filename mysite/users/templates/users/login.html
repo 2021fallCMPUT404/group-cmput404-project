@@ -1,11 +1,11 @@
 {% extends "users/home_page.html" %}
 
 {% block content %}
-<h1 class = 'Welcome'>Welcome to Social Circle</h1>
+
 <div class = 'wrapper'>
     <form action="{% url 'users:login' %}" method="post" enctype="multipart/form-data" class='form-signin'>
         {% csrf_token %}
-        <h2 class ='form-signin-heading text-center'>Login here</h2>
+        <h1 class = 'Welcome'>Welcome to Social Circle</h1>
         
                 <label for='username' class='login-form'> Please enter your username</label>
                 <input type="text" name="username" placeholder="Username" class='form-control' required="" autofocus="" /> 

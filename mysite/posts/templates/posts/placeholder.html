@@ -6,6 +6,7 @@
 {% load markdown_ext %}
 {% if latest_post_list %}
 <ul>
+    <br>
     <!--<p>{{latest_post_list}}</p>-->
     {% for posts in latest_post_list %}
     
@@ -22,7 +23,7 @@
         <img src='{{posts.image.url}}' width="30%">
         {% endif %}
         <!--separate markdown and plain text-->
-        {%if posts.contentType == '1' %}
+        {%if posts.contentType == 1 %}
             <p>{{ posts.text | markdown | safe }}</p>
         {%else%}
             <p>{{ posts.text }}</p>
@@ -34,15 +35,16 @@
         </div>
     </div>
     {%if not posts.shared_user%}
-        <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'>Edit Post</a>
+        <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'><i class="fa fa-pencil-square-o"></i> Edit</a>
     {%else%}
         <p>Shared by {{ posts.shared_user }}</p>
     {% endif %}
+    <br><br>
     {% endfor %}
 </ul>
 {% else %}
 <p>No posts are available.</p>
 {% endif %}
-<a class='return' href="">Go Back</a>
+<a class='return' href=""><i class="fa fa-arrow-left"></i> Go Back</a>
 
 {% endblock content %}

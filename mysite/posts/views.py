@@ -1,4 +1,5 @@
 from django import template
+import traceback
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User, AnonymousUser
@@ -26,24 +27,24 @@ def handle_not_found(request,exception):
 
 
 def post(request, Post_id):
-    
+    print("test1\n")
     current_user=User.objects.get(id=request.user.id)
+    print(current_user)
+    print("test2\n")
     post = get_object_or_404(Post, pk=Post_id)
-    share_form = ShareForm()
-
-
+    print("test3\n")
     
+    share_form = ShareForm()   
     if post.privacy==0: 
         print("Public")
         return render(request, 'posts/post.html', {'post':post})
         
     elif post.privacy==1 :
         if post.author==current_user:
-            print("private or unlisted authorized")
+            print("private ")
             return render(request, 'posts/post.html', {'post':post})
-    else:
-        print('Not good')
-        return redirect('401.html')
+    
+    return render(request,'not_found.html')
 
 
     #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)

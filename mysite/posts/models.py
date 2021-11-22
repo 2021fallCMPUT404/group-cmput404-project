@@ -50,7 +50,7 @@ class Post(models.Model):
     like = models.ManyToManyField(User, related_name='posts_likes')
 
     def get_absolute_url(self):
-        return reverse('post_placeholder', args=(str(self.id)))
+        return reverse('post_placeholder', args=[str(self.id)])
 
     def __str__(self):
         return self.title

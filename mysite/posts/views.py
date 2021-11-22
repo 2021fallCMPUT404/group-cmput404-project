@@ -20,8 +20,10 @@ from .forms import addPostForm
 def post(request, Post_id):
     post = get_object_or_404(Post, pk=Post_id)
     share_form = ShareForm()
-    
-    return render(request, 'posts/post.html', {'post':post})
+    user = request.user
+    username = user.username
+
+    return render(request, 'posts/post.html', {'post':post, 'user_name': username})
     #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
     #return HttpResponse(output)
 
@@ -46,7 +48,8 @@ def placeholder(request):
     #print(latest_post_list)
     
     context = {
-        'latest_post_list': authorized_posts
+        'latest_post_list': authorized_posts,
+        'current_user': current_user
     }
     
     return HttpResponse(template.render(context, request))

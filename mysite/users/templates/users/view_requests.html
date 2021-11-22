@@ -27,6 +27,7 @@
     {% else %}
         <p> You have no pending friend requests to others right now.</p>
     {% endif %}
+    <a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
     </div>
 {% endblock content %}
 

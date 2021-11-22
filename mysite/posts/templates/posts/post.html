@@ -11,8 +11,10 @@
     <p>ID: {{post.id}}</p>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <a href="{% url 'editpost' post.pk %} " class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> Edit</a>
-    <a href="{% url 'deletepost' post.pk %}" class="btn btn-danger"><i class="fa fa-trash"></i> Delete</a>
+    {% if user_name == post.author.username and not post.shared_user %}
+        <a href="{% url 'editpost' post.pk %} " class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> Edit</a>
+        <a href="{% url 'deletepost' post.pk %}" class="btn btn-danger"><i class="fa fa-trash"></i> Delete</a>
+    {% endif %}
     <a href="{% url 'addcomment' post.pk %}" class="btn btn-danger"><i class="fa fa-comment"></i> Comment</a>
     <a href="{% url 'sharepost' post.pk %}" class="btn btn-danger"><i class="fa fa-share-square-o"></i> Share</a>
     <br>

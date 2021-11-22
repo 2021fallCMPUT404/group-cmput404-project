@@ -81,6 +81,7 @@ def follow_crud(request, User_id, Foreign_id):
         print('PRINTING DATA:', serializer)
         return Response(serializer.data)
     elif request.method=='PUT':
+        #TODO: PUT METHOD NEEDS TO BE AUTHENTICATED
         #f_request, created = FriendRequest.objects.get_or_create(actor=foreign_user_profile, object=user_profile)
         FriendRequest.create_friend_request(foreign_user_profile, user_profile)
         UserFollows.create_user_follow(foreign_user_profile, user_profile)

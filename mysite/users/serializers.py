@@ -8,6 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 #User profile serializer
+#TODO: Maybe add a full user profile serialzier that includes all fields
 class userPSerializer(serializers.ModelSerializer):
     #This puts in the type attribute since __all__ is not grabbing User_Profile.type attribute for some reason
     #Reference: https://stackoverflow.com/a/60891077
@@ -15,7 +16,7 @@ class userPSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User_Profile
-        fields = ['type', 'id', 'url', 'host', 'displayName', 'github'] #TODO: ADD URL AND HOST
+        fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'bio'] #TODO: ADD URL AND HOST
         read_only_fields = ['type', 'id', 'url', 'host',]
         
 

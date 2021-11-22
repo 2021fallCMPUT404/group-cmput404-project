@@ -19,7 +19,7 @@ class CommentForm(forms.ModelForm):
         #How to set author into fields?
         fields = ('comment_body', )
         widgets = {
-            'comment_body': forms.Textarea(),
+            'comment_body': forms.Textarea(attrs={'rows':4}),
         }
 
 

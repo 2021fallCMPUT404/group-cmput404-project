@@ -26,22 +26,23 @@ def handle_not_found(request,exception):
     return render(request,'not_found.html')
 
 def post(request, Post_id):
-    print("test1\n")
+
     current_user=User.objects.get(id=request.user.id)
     print(current_user)
-    print("test2\n")
     post = get_object_or_404(Post, pk=Post_id)
-    print("test3\n")
     
-    share_form = ShareForm()   
+    share_form = ShareForm()
+    user = request.user
+    username = user.username
+    
     if post.privacy==0: 
         print("Public")
-        return render(request, 'posts/post.html', {'post':post})
+        return render(request, 'posts/post.html', {'post':post, 'user_name': username})
         
     elif post.privacy==1 :
         if post.author==current_user:
             print("private ")
-            return render(request, 'posts/post.html', {'post':post})
+            return render(request, 'posts/post.html', {'post':post, 'user_name': username})
     
     return render(request,'not_found.html')
 
@@ -76,7 +77,8 @@ def placeholder(request):
     #print(latest_post_list)
         
     context = {
-        'latest_post_list': authorized_posts
+        'latest_post_list': authorized_posts,
+        'current_user': current_user
     }
         
     return HttpResponse(template.render(context, request))

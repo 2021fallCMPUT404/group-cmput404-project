@@ -17,7 +17,7 @@ class Post(models.Model):
         (PUBLIC, "PUBLIC"),
         (PRIVATE, "PRIVATE"),  #only shows to me
         #(FREINDS,"FRIENDS"),
-        #(Unlisted,"Unlisted")
+        
     )
     
 
@@ -41,6 +41,7 @@ class Post(models.Model):
                                     related_name='+')
 
     shared_on = models.DateTimeField(blank=True, null=True)
+    unlisted = models.BooleanField(default=False)
     privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
     visible=None
 

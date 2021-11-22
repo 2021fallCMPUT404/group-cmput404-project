@@ -18,6 +18,7 @@ from django.urls import path, include
 from . import settings
 from django.conf.urls import include, url
 from users import views
+from posts import views as post_views
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -31,6 +32,18 @@ urlpatterns = [
     #path('', views.index, name='user_home_page'),
     path('users', include('users.urls')),
     path('login', include('users.urls')),
+    
     path('', views.login_view, name='login'),
-    path('logout', views.logout_view, name='logout')
+    path('logout', views.logout_view, name='logout'),
+    path('request_user_list',
+         views.request_user_list,
+         name='request_user_list'),
+    path('request_user_profile_list',
+         views.request_user_profile_list,
+         name='request_user_profile_list'),
+    path('request_user/<str:id>', views.request_user, name='request_user'),
+    path('request_user_profile/<str:id>',
+         views.request_user_profile,
+         name='request_user_profile'),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

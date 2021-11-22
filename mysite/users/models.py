@@ -45,9 +45,9 @@ class User_Profile(models.Model):
         upload_to='profile_picture',
         blank=True,
         default='profile_picture/default_picture.png')
-    github = models.URLField(
+    github = models.CharField(
         blank=True,
-        default="https://github.com/2021fallCMPUT404/group-cmput404-project")
+        default="", max_length=100)
 
     #user = models.ForeignKey(User, on_delete=models.CASCADE)
     bio = models.CharField(max_length=256, unique=False)

@@ -27,13 +27,10 @@ def handle_not_found(request,exception):
 
 
 def post(request, Post_id):
-    print("test1\n")
+
     current_user=User.objects.get(id=request.user.id)
     print(current_user)
-    print("test2\n")
     post = get_object_or_404(Post, pk=Post_id)
-
-    print("test3\n")
     
     share_form = ShareForm()
     user = request.user

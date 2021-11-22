@@ -1,5 +1,7 @@
 {% extends 'users/base.html' %} 
 {% block content %}
+{% load static %}
+<script src="{% static 'javascript/requests.js' %}" type="text/JavaScript"></script>
 <div class="container">
     {% if recieved_requests %}
         <p> You have request(s) from others right now:</p>

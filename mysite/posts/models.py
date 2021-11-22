@@ -17,7 +17,7 @@ class Post(models.Model):
         (PUBLIC, "PUBLIC"),
         (PRIVATE, "PRIVATE"),  #only shows to me
         #(FREINDS,"FRIENDS"),
-        #(Unlisted,"Unlisted")
+        
     )
 
     PLAIN = 0
@@ -35,6 +35,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     shared_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
     shared_on = models.DateTimeField(blank=True, null=True)
+    unlisted = models.BooleanField(default=False)
     privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
     visible=None
 

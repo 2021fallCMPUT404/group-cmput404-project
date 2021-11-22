@@ -23,7 +23,7 @@ class CommentForm(forms.ModelForm):
         }
 
 
-class addPostForm(forms.Form):
+class addPostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ('title', 'text', 'image', 'privacy',)

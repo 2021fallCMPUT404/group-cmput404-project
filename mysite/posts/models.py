@@ -19,13 +19,14 @@ class Post(models.Model):
         #(FREINDS,"FRIENDS"),
         #(Unlisted,"Unlisted")
     )
+    
 
     type = 'post'
-    title = models.TextField(default='New Post!', max_length=200)
+    title = models.TextField(default='New Post!', max_length=200, blank=True)
     text = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='', blank=True, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     shared_user = models.ForeignKey(User,
                                     on_delete=models.CASCADE,
                                     null=True,
@@ -37,10 +38,14 @@ class Post(models.Model):
     visible = None
 
     contentType = models.TextField(default="text/plain")
+    
+    like = models.ManyToManyField(User, related_name='posts_likes')
 
     def get_absolute_url(self):
         return reverse('post_placeholder', args=(str(self.id)))
 
+    def __str__(self):
+        return self.title
 
 class Comment(models.Model):
     #name of the user (primary key problem)
@@ -56,19 +61,10 @@ class Comment(models.Model):
                                null=True)
     comment_body = models.TextField()
     comment_created = models.DateTimeField(auto_now_add=True)
-
+    like = models.ManyToManyField(User, related_name='comments_likes')
     class Meta:
         ordering = ['comment_created']
 
     def __str__(self):
         return 'Comment {} by {}'.format(self.comment_body, self.author)
 
-
-class Like(models.Model):
-
-    user = models.ForeignKey(User,
-                             related_name='likes',
-                             on_delete=models.CASCADE)
-    post = models.ForeignKey(Post,
-                             related_name='likes',
-                             on_delete=models.CASCADE)

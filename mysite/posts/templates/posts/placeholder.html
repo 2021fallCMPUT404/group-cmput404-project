@@ -31,6 +31,6 @@
 {% else %}
 <p>No posts are available.</p>
 {% endif %}
-<a class='return' href="">Go Back</a>
+<a class='return' href="{% url 'users:user_home_page'  %} ">Go Back</a>
 
 {% endblock content %}

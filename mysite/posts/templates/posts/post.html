@@ -14,7 +14,13 @@
     <a href="{% url 'editpost' post.pk %} " class="btn btn-primary">Edit Post</a>
     <a href="{% url 'deletepost' post.pk %}" class="btn btn-danger">Delete Post</a>
     <a href="{% url 'addcomment' post.pk %}" class="btn btn-danger">Comment on Post</a>
-    <a class='return' href="{% url 'post'  %}">Go Back</a>
+    
+    <form action = "{% url 'likepost' post.pk %}" method = "POST" class="likeButton">
+        {% csrf_token %}
+        <button type = 'submit', name = 'post_id', value = "{{ post.id }}"><i class="far fa-thumbs-up"></i></button>
+    </form>
+    <p id = 'total_likes'>Number of Likes - {{ post.like.count }}</p>
+    <a class='return' href="{% url 'feed'  %}">Go Back</a>
 </div>
 <br>
 <br>
@@ -34,6 +40,11 @@ No comment yet <br>
     <br>
     <strong>
         {{user.user_profile.displayName}} &nbsp; &nbsp;&nbsp; {{comment.comment_created}}
+        <form action = "{% url 'likecomment' post.pk %}" method = "POST" class="likeButton">
+            {% csrf_token %}
+            <button type = 'submit', name = 'comment_id', value = "{{ comment.id }}"><i class="far fa-thumbs-up"></i></button>
+        </form>
+        <p>Number of Likes - {{ comment.like.count }}</p>
         <br><br>
     </strong>
     {{comment.comment_body}}
@@ -45,7 +56,17 @@ No comment yet <br>
     {% endfor %}
 
 </p>
+
 {% endif %}
 
+
+
+
 <br><br>
+
+
+<script>
+   
+</script>
 {% endblock content %}
+

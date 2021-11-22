@@ -12,6 +12,7 @@
     {% else %}
         <p> No other users.</p>
     {% endif %}
+    <a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
     </div>
 {% endblock content %}
 

@@ -34,9 +34,9 @@
             <p>Author is: {{posts.author}}</p>
         </div>
     </div>
-    {%if not posts.shared_user%}
+    {%if not posts.shared_user and current_user == posts.author %}
         <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'><i class="fa fa-pencil-square-o"></i> Edit</a>
-    {%else%}
+    {%elif posts.shared_user%}
         <p>Shared by {{ posts.shared_user }}</p>
     {% endif %}
     <br><br>
@@ -45,6 +45,6 @@
 {% else %}
 <p>No posts are available.</p>
 {% endif %}
-<a class='return' href=""><i class="fa fa-arrow-left"></i> Go Back</a>
+<a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
 
 {% endblock content %}

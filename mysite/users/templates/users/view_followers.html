@@ -24,6 +24,7 @@
 {% else %}
     <p> {{user.displayName}}  has no followers :( </p>
 {% endif %}
+
 <h1> <br>{{user.displayName}} Following List </h1>
 {% if follows_list %}
 <h4>{{user.displayName}} is following: </h4>
@@ -48,6 +49,7 @@
 
         <!--TODO: GET USER PROFILE IMAGE TO DISPLAY BESIDE THEIR USERNAME-->
     {% endfor %}
+<a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
 </div>
 {% else %}
 <p> {{user.displayName}}  is not following anybody </p>

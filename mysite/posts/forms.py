@@ -19,11 +19,11 @@ class CommentForm(forms.ModelForm):
         #How to set author into fields?
         fields = ('comment_body', )
         widgets = {
-            'comment_body': forms.Textarea(),
+            'comment_body': forms.Textarea(attrs={'rows':4}),
         }
 
 
-class addPostForm(forms.Form):
+class addPostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ('title', 'text', 'image', 'privacy',)

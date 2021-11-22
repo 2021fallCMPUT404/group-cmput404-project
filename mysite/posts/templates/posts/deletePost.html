@@ -9,7 +9,7 @@
     {% csrf_token %}
     <h2>Are you sure?</h2>
     <button type="submit">Yes</button>
-    <a class = 'btn btn-primary' href="{% url 'post'  %}">No</button>
+    <a class = 'btn btn-primary' href="{% url 'post_placeholder' post.pk %}">No</button>
 </form>
 
 

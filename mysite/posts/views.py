@@ -16,14 +16,14 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
-from .serializers import CommentSerializer, PostSerializer
+from .serializers import CommentSerializer, LikeSerializer, PostSerializer
 import json
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http.response import JsonResponse
-from .serializers import PostSerializer, CommentSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 # Create your views here.
 
 
@@ -84,7 +84,39 @@ def create_new_post(request):
         except Post.DoesNotExist: 
             return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
 
-@api_view(['GET', 'PUT', 'DELETE', 'POST'])
+@api_view(['GET', 'POST', 'DELETE'])
+def manage_user_post(request, user_id):
+    if request.method == 'GET':
+        try:
+            related_user = User.objects.get(id = user_id)
+            posts = Post.objects.filter(author = related_user)
+            posts_serializer = PostSerializer(posts, many=True)
+            return JsonResponse(posts_serializer.data, safe=False)
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'The requested user does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    if request.method == 'POST':
+        try:
+            related_user = User.objects.get(id = user_id)
+            data = JSONParser().parse(request)
+            post_serializer = PostSerializer(data = data)
+            if post_serializer.is_valid():
+                post_serializer.save()
+                return JsonResponse(post_serializer.data, status=status.HTTP_201_CREATED) 
+            return JsonResponse(post_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'The requested user does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+
+    if request.method == 'DELETE':
+        try:
+            related_user = User.objects.get(id = user_id)
+            posts = Post.objects.filter(author = related_user)
+            for post in posts:
+                post.delete()
+            return JsonResponse({'message': 'Posts were deleted'}, status=status.HTTP_204_NO_CONTENT)
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'The requested user does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+
+@api_view(['GET', 'PUT', 'DELETE'])
 def crud_post(request, id):
 
     #post_serializer = PostSerializer(data = request.data)
@@ -96,8 +128,6 @@ def crud_post(request, id):
         except Post.DoesNotExist: 
             return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
     
-
-
     if request.method == 'PUT':
         try:
             related_post = Post.objects.get(id = id)
@@ -105,23 +135,11 @@ def crud_post(request, id):
             post_serializer = PostSerializer(related_post, data = data)
             if post_serializer.is_valid():
                 post_serializer.save()
-                return JsonResponse(post_serializer.data, status=status.HTTP_201_CREATED) 
+                return JsonResponse(post_serializer.data) 
             return JsonResponse(post_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Post.DoesNotExist: 
             return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
-        ''''
-        print(request.data)
-
-        data = request.data[0]
-        author = get_object_or_404(User, id = request.data['author'])
-        shared_user = get_object_or_404(User, id = request.data['shared_user'])
-        post = Post.objects.get(id = id)
-        if post:
-            Post.objects.filter(id = id).update(title = request.data['title'], text = request.data['text'], image = request.data['image'], pub_date = request.data['pub_date'], author = author, shared_user = shared_user, shared_on = request.data['shared_on'], privacy = request.data['privacy'],  contentType = request.data['contentType'])
-        else:
-            Post.objects.get_or_create( title = request.data['title'], text = request.data['text'], image = request.data['image'], pub_date = request.data['pub_date'], author = author, shared_user = shared_user, shared_on = request.data['shared_on'], privacy = request.data['privacy'],  contentType = request.data['contentType'])
-        return Response('PUT')
-        '''
+        
     if request.method == 'DELETE':
         try: 
             post = Post.objects.get(id=id) 
@@ -163,10 +181,94 @@ def manage_post_comment(request, post_id):
         except Post.DoesNotExist: 
             return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
 
+@api_view(['GET', 'PUT', 'DELETE'])
+def crud_comment(request, comment_id):
+    if request.method == 'GET':
+        try:
+            related_comment = Comment.objects.get(id = comment_id)
+            comment_serializer = CommentSerializer(related_comment)
+            return JsonResponse(comment_serializer.data)
+        except Comment.DoesNotExist: 
+            return JsonResponse({'message': 'The requested comment does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    if request.method == 'PUT':
+        try:
+            related_comment = Comment.objects.get(id = comment_id)
+            comment_data = JSONParser().parse(request)
+            comment_serializer = CommentSerializer(related_comment, comment_data)
+            if comment_serializer.is_valid():
+                comment_serializer.save()
+                return JsonResponse(comment_serializer.data)
+            return JsonResponse(comment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Comment.DoesNotExist:
+            return JsonResponse({'message': 'The requested comment does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    if request.method == 'DELETE':
+        try:
+            related_comment = Comment.objects.get(id = comment_id)
+            related_comment.delete()
+        except Comment.DoesNotExist:
+            return JsonResponse({'message': 'The requested comment does not exist'}, status=status.HTTP_404_NOT_FOUND) 
 
+@api_view(['GET', 'POST', 'DELETE'])
+def manage_post_like(request, post_id):
+    if request.method == 'GET':
+        try:
+            related_post = Post.objects.get(id = post_id)
+            likes = Like.objects.filter(post = related_post)
+            likes_serializer = LikeSerializer(likes, many=True)
+            return JsonResponse(likes_serializer.data, safe=False)
+        except Post.DoesNotExist:
+            return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    
+    if request.method == 'POST':
+        try:
+            related_post = Post.objects.get(id = post_id)
+            data = JSONParser().parse(request)
+            like_serializer = LikeSerializer(data = data)
+            if like_serializer.is_valid():
+                like_serializer.save()
+                return JsonResponse(like_serializer.data, status=status.HTTP_201_CREATED) 
+            return JsonResponse(like_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Post.DoesNotExist: 
+            return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
+    if request.method == 'DELETE':
+        try:
+            related_post = Post.objects.get(id = post_id)
+            likes = Comment.objects.filter(post = related_post)
+            for like in likes:
+                like.delete()
+            return JsonResponse({'message': 'Likes were deleted'}, status=status.HTTP_204_NO_CONTENT)
 
+        except Post.DoesNotExist: 
+            return JsonResponse({'message': 'The requested post does not exist'}, status=status.HTTP_404_NOT_FOUND) 
 
+@api_view(['GET', 'PUT', 'DELETE'])
+def crud_like(request, like_id):
+    if request.method == 'GET':
+        try:
+            related_like = Like.objects.get(id = like_id)
+            like_serializer = LikeSerializer(related_like)
+            return JsonResponse(like_serializer.data)
+        except Like.DoesNotExist:
+            return JsonResponse({'message': 'The requested like does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    if request.method == 'PUT':
+        try:
+            related_like = Like.objects.get(id = like_id)
+            like_data = JSONParser().parse(request)
+            like_serializer = LikeSerializer(related_like, data = like_data)
+            if like_serializer.is_valid():
+                like_serializer.save()
+                return JsonResponse(like_serializer.data)
+            return JsonResponse(like_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Like.DoesNotExist:
+            return JsonResponse({'message': 'The requested like does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    if request.method == 'DELETE':
+        try:
+            related_like = Like.objects.get(id = like_id)
+            related_like.delete()
+        except Like.DoesNotExist:
+            return JsonResponse({'message': 'The requested like does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    
 @csrf_exempt
 def select_github_activity(request):
     #In this view, the webpage will allow user to observer all the recent activity on user profile.

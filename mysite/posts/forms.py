@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import fields
 from django.forms import widgets
-from .models import Post, Comment
+from .models import Post, Comment, Share
 
 
 class ShareForm(forms.Form):

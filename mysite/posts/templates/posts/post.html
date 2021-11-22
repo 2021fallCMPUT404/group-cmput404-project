@@ -1,7 +1,6 @@
 {% extends 'posts/base.html' %}
 
 {% block content %}
-
 <div class='post-wrapper'>
     <h1>Author: {{post.author}}</h1>
     <p>Text: {{post.text}}</p>
@@ -30,10 +29,8 @@
 
 {%if not post.comments.all %}
 No comment yet <br>
-<a href="{% url 'addcomment' post.pk %}">Add Comment</a>
 
 {%else%}
-<a href="{% url 'addcomment' post.pk %}">Add Comment</a>
 <p>
     {%for comment in post.comments.all%}
 
@@ -58,10 +55,14 @@ No comment yet <br>
 </p>
 
 {% endif %}
-
-
-
-
+<h2>Shares</h2>
+{%if not post.shared_user.all %}
+    Not shared yet <br>
+{%else%}
+    {%for user in post.shared_user.all%}
+        <p>{{user}}</p>
+    {% endfor %}
+{% endif %}
 <br><br>
 
 

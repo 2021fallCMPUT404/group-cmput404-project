@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 <h1>Welcome to Social Circle!</h1>
 {% block content %}
-
+<br>
 <h2 class='Display_name'>{{ insert_display_name }}</h2>
 <div>
     <p>Home Page </p>
@@ -13,7 +13,7 @@
     <img src="{{ user.user_profile.profileImage.url }}" width='400px' height="300"><br>
 
     {% endif %}
-
-    <a href="{% url 'addpost' %}" class="btn btn-lg btn-primary btn-block">Add a Post</a>
-    <a href="{% url 'feed' %}" class="btn btn-lg btn-primary btn-block">Explore Feed</a>
+    <br>
+    <a href="{% url 'addpost' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-plus-circle"></i> Add a Post</a>
+    <a href="{% url 'feed' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-globe"></i> Explore Feed</a>
     {% endblock content %}

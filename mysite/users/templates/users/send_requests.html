@@ -1,0 +1,17 @@
+{% extends 'users/base.html' %} 
+{% block content %}
+<div class="container">
+    {% if users_list %}
+        <h1>Send a friend request</h1>
+        <div class="list-group">
+        {% for User in users_list%}
+            <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true" 
+            href="{% url 'users:send_friend_request' User_id=User.user.id%}"> {{User.displayName}}</a>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p> No other users.</p>
+    {% endif %}
+    </div>
+{% endblock content %}
+

@@ -21,6 +21,13 @@ class Post(models.Model):
     )
     
 
+    PLAIN = 0
+    MARKDOWN = 1
+    Content = (
+        (PLAIN,"text/plain"),
+        (MARKDOWN,"text/markdown")
+    )
+
     type = 'post'
     title = models.TextField(default='New Post!', max_length=200, blank=True)
     text = models.TextField(blank=True, null=True)
@@ -34,8 +41,8 @@ class Post(models.Model):
                                     related_name='+')
 
     shared_on = models.DateTimeField(blank=True, null=True)
-    privacy = models.IntegerField(choices=Privacy, default=PUBLIC)
-    visible = None
+    privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
+    visible=None
 
     contentType = models.TextField(default="text/plain")
     
@@ -46,6 +53,9 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+    def is_shared_post(self):
+        return self.shared_user != None
+
 
 class Comment(models.Model):
     #name of the user (primary key problem)
@@ -67,4 +77,27 @@ class Comment(models.Model):
 
     def __str__(self):
         return 'Comment {} by {}'.format(self.comment_body, self.author)
+
+
+class Like(models.Model):
+
+    user = models.ForeignKey(User,
+                             related_name='likes',
+                             on_delete=models.CASCADE)
+    post = models.ForeignKey(Post,
+                             related_name='likes',
+                             on_delete=models.CASCADE)
+
+
+class Share(models.Model):
+    id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, blank=True, null=True,related_name="shares")
+    shared_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+    shared_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['shared_on', 'shared_user']
+
+    def __str__(self):
+        return 'Shared by {}'.format(self.author)
 

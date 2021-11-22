@@ -1,3 +1,4 @@
+from django.http.response import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from . import views
 from django.http import HttpResponse
@@ -6,11 +7,92 @@ from django.urls import reverse
 from .models import User, Create_user, User_Profile, FriendRequest, UserFollows
 from django.apps import apps
 from . import create_user_form
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
+from django.db.models import Q
+from .serializers import UserSerializer, userFollowSerializer, userPSerializer
+#rest framework imports
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 Post_model = apps.get_model('posts', 'Post')
+
+@api_view(['GET'])
+def apiOverview(request):
+    return Response("API BASE POINT", safe=False)
+
+@api_view(['GET'])
+def UserList(request):
+    user_profiles = User_Profile.objects.all()
+    serializer = userPSerializer(user_profiles, many=True)
+    return Response({'type':'authors', 'items':serializer.data})
+
+@api_view(['GET', 'POST'])
+def userGet(request, User_id):
+    user = get_object_or_404(User, pk=User_id)
+    print(user)
+    print(user.id, User_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    if request.method == "GET":
+        serializer = userPSerializer(user_profile, many=False)
+        return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = userPSerializer(instance=user_profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+def follow_list(request, User_id):
+    user = get_object_or_404(User, pk=User_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    followers_list = UserFollows.objects.filter(object=user_profile)
+    actor_list = []
+    for follow in followers_list:
+        actor_list.append(follow.actor)
+    serializer = userPSerializer(actor_list, many=True)
+    return Response({'type':'follow', 'items':serializer.data})
+
+
+@api_view(['GET'])
+def following_list(request, User_id):
+    user = get_object_or_404(User, pk=User_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    followers_list = UserFollows.objects.filter(actor=user_profile)
+    object_list = []
+    for followed in followers_list:
+        object_list.append(followed.object)
+    serializer = userPSerializer(object_list, many=True)
+    return Response({'type':'following', 'items':serializer.data})
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def follow_crud(request, User_id, Foreign_id):
+    user = get_object_or_404(User, pk=User_id)
+    foreign_user = get_object_or_404(User, pk=Foreign_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    foreign_user_profile = get_object_or_404(User_Profile, user=foreign_user)
+    if request.method=='GET':
+        thing = UserFollows.objects.filter(actor=foreign_user_profile, object=user_profile).first()
+        serializer = userFollowSerializer(thing, many=False)
+        print('PRINTING DATA:', serializer)
+        return Response(serializer.data)
+    elif request.method=='PUT':
+        #TODO: PUT METHOD NEEDS TO BE AUTHENTICATED
+        #f_request, created = FriendRequest.objects.get_or_create(actor=foreign_user_profile, object=user_profile)
+        FriendRequest.create_friend_request(foreign_user_profile, user_profile)
+        UserFollows.create_user_follow(foreign_user_profile, user_profile)
+        return Response('PUT')
+    elif request.method=='DELETE':
+        print('{} is unfollowing {}'.format(foreign_user_profile.displayName, user_profile.displayName))
+        UserFollows.delete_user_follow(foreign_user_profile, user_profile)
+        return Response('DELETE')
+    else:
+        return HttpResponseBadRequest('Bad')
+    return Response()
 
 
 def homepage(request):
@@ -196,12 +278,9 @@ def send_friend_request(request, User_id):
     request_profile = User_Profile.objects.get(user=request.user)
     #Checks if the object_profile is valid
     object_profile = get_object_or_404(User_Profile, user_id=User_id)
-    #object_profile = User_Profile.objects.get(user_id=User_id)
     #TODO: CHECK IF THE ACTOR IS ALREADY FOLLOWING THE OBJECT
-    f_request, created = FriendRequest.objects.get_or_create(actor=request_profile, object=object_profile)
-    print("Friend request created")
-    print(f_request.summary())
-    return HttpResponseRedirect('/authors/{}'.format(User_id))
+    FriendRequest.create_friend_request(request_profile, object_profile)
+    return HttpResponseRedirect(reverse('users:request_page'))
 
 def accept_friend_request(request, User_id):
     #User id is from the actor, the person who sent the friend request
@@ -250,8 +329,16 @@ def view_followers(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
     followers_list = UserFollows.objects.filter(object=user_profile)
+    follows_list = UserFollows.objects.filter(actor=user_profile)
     #friends_list = UserFollows.objects.filter(object_id=user_profile)
     for x in followers_list:
         print(x.actor.displayName)
-    return render(request, 'users/view_followers.html', {'followers_list':followers_list, 'user':user_profile})
+    return render(request, 'users/view_followers.html', {'followers_list':followers_list, 'user':user_profile, 
+    'request':request, 'follows_list':follows_list})
+
+def send_request_page(request):
+    user_profile = get_object_or_404(User_Profile, user_id=request.user.id)
+    users_list = User_Profile.objects.filter(~Q(user=request.user))
+    print(users_list)
+    return render(request, 'users/send_requests.html', {'users_list':users_list})
 

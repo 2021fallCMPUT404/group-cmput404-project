@@ -1,27 +1,53 @@
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, HttpResponseForbidden
+from django import template
+import traceback
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from . import views
-from django.http import HttpResponse, Http404
+from django.urls.base import reverse
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from django.utils import timezone
-from .models import Post, Comment
+from .models import Post, Comment, Like, Share
 from .forms import ShareForm,CommentForm, addPostForm
 from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView, FormView, View, ListView
 from django.urls import reverse_lazy, reverse
 from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
+from django.shortcuts import render
+
+
+
 
 
 # Create your views here.
+def handle_not_found(request,exception):
+    return render(request,'not_found.html')
 
 def post(request, Post_id):
-        post = get_object_or_404(Post, pk=Post_id)
-        return render(request, 'posts/post.html', {'post':post} )
-        #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
-        #return HttpResponse(output)
+    print("test1\n")
+    current_user=User.objects.get(id=request.user.id)
+    print(current_user)
+    print("test2\n")
+    post = get_object_or_404(Post, pk=Post_id)
+    print("test3\n")
+    
+    share_form = ShareForm()   
+    if post.privacy==0: 
+        print("Public")
+        return render(request, 'posts/post.html', {'post':post})
+        
+    elif post.privacy==1 :
+        if post.author==current_user:
+            print("private ")
+            return render(request, 'posts/post.html', {'post':post})
+    
+    return render(request,'not_found.html')
 
+
+    #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
+    #return HttpResponse(output)
 
 
 def placeholder(request):
@@ -31,11 +57,18 @@ def placeholder(request):
     authorized_posts=[]
     print(current_user)
     for p in latest_post_list:
-        if   p.privacy==0:          #PUBLIC POST
-            authorized_posts.append(p)
-        elif p.privacy==1:          #PRIVATE POST
+        if p.unlisted:                  #unlisted posts: always visible to creator
             if p.author==current_user:
                 authorized_posts.append(p)
+        else:                           #listed posts
+            if p.privacy==0:                #public: visible to all
+                authorized_posts.append(p)
+
+            elif p.privacy==1:              #private: visible to creator
+                if p.author==current_user:
+                    authorized_posts.append(p)
+
+
     #NEED FRIEND POST
 
         
@@ -100,10 +133,25 @@ class deletePost(DeleteView):
     template_name = 'posts/deletePost.html'
     success_url = reverse_lazy('feed')
 
-class SharedPostView(UpdateView):
+
+class SharedPostView(View):
+
     model = Post
     template_name  = 'posts/sharePost.html'
     fields = ['shared_on','shared_user']
+    def get(self, request, pk):
+        post_object = get_object_or_404(Post, pk=pk)
+        current_user = request.user
+        if current_user == AnonymousUser:
+            return HttpResponseRedirect(reverse('post_placeholder', args=(str(current_user), post_object.ID)))
 
-
+        sharedPost = Post.objects.create(
+            title=post_object.title,
+            text=post_object.text,
+            image=post_object.image,
+            pub_date=post_object.pub_date,
+            author=post_object.author,
+            shared_user=current_user,
+            contentType=post_object.contentType
+            ).save()
 

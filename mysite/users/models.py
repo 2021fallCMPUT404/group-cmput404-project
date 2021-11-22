@@ -8,6 +8,7 @@ from django import forms
 from django.forms.widgets import Textarea
 import datetime
 from posts.models import Post
+from django.urls import reverse
 '''
 #TODO: MERGE USER_PROFILE INTO USER
 class User(AbstractUser):
@@ -38,6 +39,7 @@ class User_Profile(models.Model):
                                 on_delete=models.CASCADE,
                                 related_name='user_profile')
     host = None
+    url = None
     displayName = models.CharField(max_length=60, blank=True)
     profileImage = models.ImageField(
         upload_to='profile_picture',
@@ -52,6 +54,10 @@ class User_Profile(models.Model):
     #user_posts = models.ForeignKey(Post, on_delete=models.CASCADE, null=True)
 
 
+    def __str__(self):
+        return ', '.join((self.displayName, str(self.id), str(self.user.id)))
+
+
 class Inbox(models.Model):
     type = 'inbox'
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -60,10 +66,36 @@ class UserFollows(models.Model):
     actor = models.ForeignKey(User_Profile, related_name="following", on_delete=models.CASCADE, default='')
     object = models.ForeignKey(User_Profile, related_name="followers", on_delete=models.CASCADE, default='')
 
+    #Creates new instance of Userfollow with the actor following the object
+    #Parameters are User_Profile objects
+    def create_user_follow(actor, object):
+        UserFollows.objects.get_or_create(actor=actor, object=object)
+
+    #The actor will stop following the object
+    def delete_user_follow(actor, object):
+        instance = UserFollows.objects.filter(actor=actor, object=object)
+        if instance.exists():
+            instance.delete()
+        return None
+
+
 class FriendRequest(models.Model):
     type = "Follow"
     actor = models.ForeignKey(User_Profile, on_delete=models.CASCADE, related_name="actor", default='')
     object = models.ForeignKey(User_Profile, on_delete=models.CASCADE, related_name="object", default='')
+
+    def create_friend_request(actor, object):
+        '''Creates a friend request instance with the actor being the person who follows
+        and the object is the person whom is being followed. The actor and object paramaters
+        are user_profile objects.'''
+        print(actor, object)
+        if UserFollows.objects.filter(actor=object, object=actor).exists():  #Checks if the object is already following the actor
+            # Returns so it doesn't create constant friend requests
+            print("{} is already following {}".format(object.displayName, actor.displayName))
+            return
+        f_request, created = FriendRequest.objects.get_or_create(actor=actor, object=object)
+        print("Friend request created")
+        print(f_request.summary())
 
     def summary(self):
         return '{} wants to follow {}'.format(self.actor.displayName, self.object.displayName)

@@ -6,7 +6,7 @@
 {% block content %}
 
 <h1>Add new comment</h1>
-<form method="POST" >
+<form method="POST" action = "{% url 'post_placeholder' post.pk %}">
     {% csrf_token %}
     {{form.as_p}}
     <button>Add Comment</button>

@@ -19,6 +19,7 @@ class Post(models.Model):
         #(FREINDS,"FRIENDS"),
         #(Unlisted,"Unlisted")
     )
+    
 
     PLAIN = 0
     MARKDOWN = 1
@@ -28,21 +29,30 @@ class Post(models.Model):
     )
 
     type = 'post'
-    title = models.TextField(default='New Post!', max_length=200)
+    title = models.TextField(default='New Post!', max_length=200, blank=True)
     text = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='', blank=True, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    shared_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    shared_user = models.ForeignKey(User,
+                                    on_delete=models.CASCADE,
+                                    null=True,
+                                    blank=True,
+                                    related_name='+')
+
     shared_on = models.DateTimeField(blank=True, null=True)
     privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
     visible=None
 
-    contentType = models.IntegerField(choices=Content, default=PLAIN)
+    contentType = models.TextField(default="text/plain")
+    
+    like = models.ManyToManyField(User, related_name='posts_likes')
 
     def get_absolute_url(self):
         return reverse('post_placeholder', args=(str(self.id)))
 
+    def __str__(self):
+        return self.title
     def is_shared_post(self):
         return self.shared_user != None
 
@@ -61,7 +71,7 @@ class Comment(models.Model):
                                null=True)
     comment_body = models.TextField()
     comment_created = models.DateTimeField(auto_now_add=True)
-
+    like = models.ManyToManyField(User, related_name='comments_likes')
     class Meta:
         ordering = ['comment_created']
 

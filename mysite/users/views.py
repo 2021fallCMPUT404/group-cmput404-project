@@ -16,6 +16,7 @@ from .serializers import UserSerializer, userFollowSerializer, userPSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.authtoken.models import Token
 
 Post_model = apps.get_model('posts', 'Post')
 
@@ -197,6 +198,14 @@ def login_view(request):
         password = request.POST['password']
 
         user = authenticate(username=username, password=password)
+        if user:
+            try:
+
+                token = Token.objects.get(user_id=user.id)
+
+            except Token.DoesNotExist:
+
+                token = Token.objects.create(user=user)
 
         if user:
             if user.is_active:
@@ -368,3 +377,15 @@ def send_request_page(request):
     print(users_list)
     return render(request, 'users/send_requests.html',
                   {'users_list': users_list})
+
+
+@login_required
+def generate_token(request):
+    user = request.user
+    new_token = Token.objects.get(user=user)
+    user.token = new_token
+    user.save()
+    return HttpResponseRedirect('user_home_page')
+
+
+#curl -X GET http://127.0.0.1:8000/post/request_post_list -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'

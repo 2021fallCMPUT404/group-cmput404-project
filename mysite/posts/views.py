@@ -26,6 +26,7 @@ from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
+from rest_framework.authentication import TokenAuthentication
 
 
 # Create your views here.
@@ -110,8 +111,8 @@ def likePost(request, pk):
 
 
 @api_view(['GET'])
-#@authentication_classes([UsernamePasswordAuthentication])
-#@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def request_post_list(request):
     posts = Post.objects.all()
     posts_serializer = PostSerializer(posts, many=True)

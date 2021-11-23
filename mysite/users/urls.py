@@ -18,6 +18,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('login', views.login_view, name='login'),
     path('user_home_page', views.user_home_page_view, name='user_home_page'),
+    path('generate_token', views.generate_token, name='generate_token'),
     path('<int:User_id>/followers/',
          views.follow_list,
          name='view_followers_REST'),

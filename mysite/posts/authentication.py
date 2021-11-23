@@ -3,17 +3,26 @@ from rest_framework import authentication
 from rest_framework import exceptions
 
 
-class ExampleAuthentication(authentication.BaseAuthentication):
+class UsernamePasswordAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        username = request.META.get(
-            'X_USERNAME')  # get the username request header
-        if not username:  # no username passed in request headers
-            return None  # authentication did not succeed
 
+        username = request.META.get('USERNAME')
+        print(request.META)
+        password = request.META.get('PASSWORD')
+        print(username)
+        print(password)
+
+        if not username:
+            return None
+        if not password:
+            return None
         try:
-            user = User.objects.get(username=username)  # get the user
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
-            raise exceptions.AuthenticationFailed(
-                'No such user')  # raise exception if user does not exist
+            raise exceptions.AuthenticationFailed('No such user')
 
-        return (user, None)  # authentication successful
+        user = User.objects.get(username=username)
+        if user.password != password:
+            return None
+
+        return (user, None)

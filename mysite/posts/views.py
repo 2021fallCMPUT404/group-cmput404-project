@@ -17,11 +17,15 @@ from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
 from django.shortcuts import render
 from users.models import User_Profile
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 import json
 import ast
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer
+from .authentication import UsernamePasswordAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import authentication_classes
 
 
 # Create your views here.
@@ -106,6 +110,8 @@ def likePost(request, pk):
 
 
 @api_view(['GET'])
+#@authentication_classes([UsernamePasswordAuthentication])
+#@permission_classes([IsAuthenticated])
 def request_post_list(request):
     posts = Post.objects.all()
     posts_serializer = PostSerializer(posts, many=True)
@@ -113,6 +119,8 @@ def request_post_list(request):
 
 
 @api_view(['GET'])
+#@authentication_classes([UsernamePasswordAuthentication])
+#@permission_classes([IsAuthenticated])
 def request_post(request, id):
     post = Post.objects.get(id=id)
     post_serializer = PostSerializer(post)

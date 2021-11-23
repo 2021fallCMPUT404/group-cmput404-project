@@ -99,3 +99,11 @@ class FriendRequest(models.Model):
 
     def summary(self):
         return '{} wants to follow {}'.format(self.actor.displayName, self.object.displayName)
+    
+    def friends_list(request):
+        current_user=request.user
+        user_profile=get_object_or_404(User_Profile, user=current_user)
+        followers_list = UserFollows.objects.filter(object=user_profile)
+        follows_list = UserFollows.objects.filter(actor=user_profile)
+        f_list=(set(follows_list) & set(followers_list))
+        return f_list

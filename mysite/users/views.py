@@ -342,3 +342,5 @@ def send_request_page(request):
     print(users_list)
     return render(request, 'users/send_requests.html', {'users_list':users_list})
 
+
+    

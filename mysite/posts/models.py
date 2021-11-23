@@ -11,12 +11,12 @@ class Post(models.Model):
 
     PUBLIC = 0
     PRIVATE = 1
-    # FREINDS=2    #Need friend system?
+    FREINDS=2    #Need friend system?
 
     Privacy = (
         (PUBLIC, "PUBLIC"),
         (PRIVATE, "PRIVATE"),  #only shows to me
-        #(FREINDS,"FRIENDS"),
+        (FREINDS,"FRIENDS"),
         
     )
     

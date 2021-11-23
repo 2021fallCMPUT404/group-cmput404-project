@@ -8,7 +8,7 @@ from django.urls.base import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from django.utils import timezone
-from .models import Post, Comment, Like, Share
+from .models import Post, Comment, Like, Share,User
 from .forms import ShareForm,CommentForm, addPostForm
 from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView, FormView, View, ListView
@@ -43,7 +43,11 @@ def post(request, Post_id):
         if post.author==current_user:
             print("private ")
             return render(request, 'posts/post.html', {'post':post, 'user_name': username})
-    
+    elif post.privacy==2:              #friends: visible to friends(follow each other)
+        if post.author in current_user.friends_list:
+             return render(request, 'posts/post.html', {'post':post, 'user_name': username})
+
+
     return render(request,'not_found.html')
 
 
@@ -68,7 +72,10 @@ def placeholder(request):
             elif p.privacy==1:              #private: visible to creator
                 if p.author==current_user:
                     authorized_posts.append(p)
-
+            elif p.privacy==2:              #friends: visible to friends(follow each other)
+                if p.author in current_user.friends_list:
+                    authorized_posts.append(p)
+ 
 
     #NEED FRIEND POST
 

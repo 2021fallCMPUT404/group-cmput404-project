@@ -3,6 +3,9 @@ from . import views
 
 urlpatterns = [
     path('feed', views.placeholder, name='feed'),
+    path('select_github_activity/',
+         views.select_github_activity,
+         name='select_github_activity'),
     path('<int:pk>/share/', views.SharedPostView.as_view(), name='sharepost'),
     path('likePost/<int:pk>/', views.likePost, name='likepost'),
     path('likeComment/<int:pk>/', views.likeComment, name='likecomment'),

@@ -16,10 +16,12 @@ from django.urls import reverse_lazy, reverse
 from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
 from django.shortcuts import render
-
+from users.models import User_Profile
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
+import json
+import ast
 
 
 # Create your views here.
@@ -383,6 +385,25 @@ def select_github_activity(request):
     #The user will be allowed to select one activity and add it inot stream.
     the_user_profile = User_Profile.objects.get(user=request.user)
     github_username = the_user_profile.github
+
+    #print(request.GET)
+    if request.method == 'POST':
+        user_profile = User_Profile.objects.get(user=request.user)
+
+        ast.literal_eval(request.POST['select_event'])
+
+        github_data = json.loads(request.POST['select_event'])
+        github_activity_post = Post(
+            title=github_data['type'],
+            text=' '.join([value for value in github_data.values()]),
+            author=request.user)
+        github_activity_post.save()
+
+        return render(request, 'users/user_home_page.html')
+    else:
+        return render(request,
+                      'posts/display_github_activities.html',
+                      context={'insert_github_username': github_username})
 
 
 def likeComment(request, pk):

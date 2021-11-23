@@ -17,6 +17,10 @@ from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
 from django.shortcuts import render
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
+
 
 # Create your views here.
 def handle_not_found(request, exception):

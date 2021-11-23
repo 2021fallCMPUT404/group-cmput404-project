@@ -13,10 +13,13 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer
 #rest framework imports
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import authentication_classes
+from rest_framework.authentication import TokenAuthentication
 
 Post_model = apps.get_model('posts', 'Post')
 
@@ -27,6 +30,8 @@ def apiOverview(request):
 
 
 @api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
 def UserList(request):
     user_profiles = User_Profile.objects.all()
     serializer = userPSerializer(user_profiles, many=True)
@@ -34,6 +39,8 @@ def UserList(request):
 
 
 @api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
 def userGet(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     print(user)
@@ -51,6 +58,8 @@ def userGet(request, User_id):
 
 
 @api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
 def follow_list(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
@@ -63,6 +72,8 @@ def follow_list(request, User_id):
 
 
 @api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
 def following_list(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
@@ -75,6 +86,8 @@ def following_list(request, User_id):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([])
+@permission_classes([])
 def follow_crud(request, User_id, Foreign_id):
     user = get_object_or_404(User, pk=User_id)
     foreign_user = get_object_or_404(User, pk=Foreign_id)

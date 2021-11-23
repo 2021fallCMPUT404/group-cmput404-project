@@ -9,6 +9,7 @@ from django.forms.widgets import Textarea
 import datetime
 from posts.models import Post
 from django.urls import reverse
+
 '''
 #TODO: MERGE USER_PROFILE INTO USER
 class User(AbstractUser):
@@ -110,6 +111,8 @@ class FriendRequest(models.Model):
                                                                  object=object)
         print("Friend request created")
         print(f_request.summary())
+
+        return f_request
 
     def summary(self):
         return '{} wants to follow {}'.format(self.actor.displayName,

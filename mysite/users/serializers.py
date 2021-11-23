@@ -28,11 +28,11 @@ class userFollowSerializer(serializers.ModelSerializer):
 
 
 class friend_request_serializer(serializers.ModelSerializer):
-
+    type = 'Follow'
     actor = userPSerializer(many=False, read_only=True)
     object = userPSerializer(many=False, read_only=True)
-
+    summary = "{} wants to follow {}".format(actor.data['displayName'], object.data['displayName'])
 
     class Meta:
         model = FriendRequest
-        fields = '__all__'
+        fields = ['type', 'summary', 'actor', 'object', ]

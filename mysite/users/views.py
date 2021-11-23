@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.db.models import Q
-from .serializers import UserSerializer, userFollowSerializer, userPSerializer
+from .serializers import UserSerializer, userFollowSerializer, userPSerializer, friend_request_serializer
 #rest framework imports
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -307,8 +307,12 @@ def send_friend_request(request, User_id):
     #Checks if the object_profile is valid
     object_profile = get_object_or_404(User_Profile, user_id=User_id)
     #TODO: CHECK IF THE ACTOR IS ALREADY FOLLOWING THE OBJECT
-    FriendRequest.create_friend_request(request_profile, object_profile)
-    return HttpResponseRedirect(reverse('users:request_page'))
+    f_request = FriendRequest.create_friend_request(request_profile, object_profile)
+    serializer = friend_request_serializer(f_request, many=False)
+    print(serializer)
+    print(serializer.data)
+    #return HttpResponseRedirect(reverse('users:request_page'))
+    return JsonResponse(serializer.data)
 
 
 def accept_friend_request(request, User_id):

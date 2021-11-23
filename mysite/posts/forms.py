@@ -4,6 +4,8 @@ from django.forms import widgets
 from .models import Post, Comment, Share
 
 
+
+
 class ShareForm(forms.Form):
     body = forms.CharField(
         label='',
@@ -26,4 +28,6 @@ class CommentForm(forms.ModelForm):
 class addPostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('title', 'text', 'image', 'privacy',)
+        exclude=['author','pub-date']
+    
+    

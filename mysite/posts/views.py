@@ -16,14 +16,14 @@ from django.urls import reverse_lazy, reverse
 from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
 from django.shortcuts import render
+import datetime
 
 
 
 
 
 # Create your views here.
-def handle_not_found(request,exception):
-    return render(request,'not_found.html')
+
 
 def post(request, Post_id):
 
@@ -105,8 +105,14 @@ def likeComment(request, pk):
 class addPost(CreateView):
     model = Post
     form_class = addPostForm
+
     template_name  = 'posts/addPost.html'
     success_url = reverse_lazy('feed')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.pub_date=datetime.datetime.now()
+        return super().form_valid(form)
 
 class addComment(CreateView):
     model = Comment

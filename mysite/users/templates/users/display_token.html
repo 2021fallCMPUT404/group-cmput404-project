@@ -1,0 +1,9 @@
+{% extends "users/home_page.html" %}
+
+{% load crispy_forms_tags %}
+<h1>Here is your authentication token</h1>
+{% block content %}
+<br>
+<h2>{{ user_token }}</h2>
+<a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block">Go Back</a>
+{% endblock content %}

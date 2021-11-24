@@ -1,6 +1,7 @@
 from django.http.response import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from . import views
+import requests
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
@@ -12,15 +13,17 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.db.models import Q
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer
-#rest framework imports
-from rest_framework.decorators import api_view, permission_classes
+import json
+from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication
-
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+from posts.authentication import UsernamePasswordAuthentication
+from rest_framework import exceptions
 Post_model = apps.get_model('posts', 'Post')
 
 
@@ -392,13 +395,14 @@ def send_request_page(request):
                   {'users_list': users_list})
 
 
+
+
+
 @login_required
-def generate_token(request):
-    user = request.user
-    new_token = Token.objects.get(user=user)
-    user.token = new_token
-    user.save()
-    return HttpResponseRedirect('user_home_page')
-
-
+def display_token(request):
+    token = Token.objects.get(user=request.user).key
+    return render(request,
+                  'users/display_token.html',
+                  context={'user_token': token})
 #curl -X GET http://127.0.0.1:8000/post/request_post_list -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'
+#curl -X GET http://127.0.0.1:8000/authors/send_token -H 'Authorization: Usrname doge Password abcde'

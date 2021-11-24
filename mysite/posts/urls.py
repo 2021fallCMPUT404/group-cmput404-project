@@ -1,6 +1,7 @@
 from django.urls import include, path
 from . import views
 
+
 urlpatterns = [
     path('feed', views.placeholder, name='feed'),
     path('select_github_activity/',
@@ -39,5 +40,6 @@ urlpatterns = [
     path('manage_post_like/<int:post_id>',
          views.manage_post_like,
          name='manage_post_like'),
-    path('crud_like/<int:like_id>', views.crud_like, name='crud_like')
+    path('crud_like/<int:like_id>', views.crud_like, name='crud_like'),
+    path('send_token/<str:username>/<str:password>', views.send_token, name='send_token'),
 ]

@@ -6,9 +6,9 @@ from rest_framework import exceptions
 class UsernamePasswordAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
 
-        username = request.META.get('USERNAME')
+        username = request.META.get('username')
         print(request.META)
-        password = request.META.get('PASSWORD')
+        password = request.META.get('password')
         print(username)
         print(password)
 

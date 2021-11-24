@@ -27,8 +27,11 @@ from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication
-
-
+from django.http.response import JsonResponse
+from rest_framework.parsers import JSONParser 
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework import exceptions
 # Create your views here.
 def handle_not_found(request, exception):
     return render(request, 'not_found.html')
@@ -120,8 +123,8 @@ def request_post_list(request):
 
 
 @api_view(['GET'])
-#@authentication_classes([UsernamePasswordAuthentication])
-#@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def request_post(request, id):
     post = Post.objects.get(id=id)
     post_serializer = PostSerializer(post)
@@ -129,6 +132,8 @@ def request_post(request, id):
 
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def create_new_post(request):
     if request.method == 'POST':
         try:
@@ -148,6 +153,8 @@ def create_new_post(request):
 
 
 @api_view(['GET', 'POST', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def manage_user_post(request, user_id):
     if request.method == 'GET':
         try:
@@ -190,6 +197,8 @@ def manage_user_post(request, user_id):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def crud_post(request, id):
 
     #post_serializer = PostSerializer(data = request.data)
@@ -231,6 +240,8 @@ def crud_post(request, id):
 
 
 @api_view(['GET', 'POST', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def manage_post_comment(request, post_id):
     if request.method == 'GET':
         try:
@@ -274,6 +285,8 @@ def manage_post_comment(request, post_id):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def crud_comment(request, comment_id):
     if request.method == 'GET':
         try:
@@ -310,6 +323,8 @@ def crud_comment(request, comment_id):
 
 
 @api_view(['GET', 'POST', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def manage_post_like(request, post_id):
     if request.method == 'GET':
         try:
@@ -354,6 +369,8 @@ def manage_post_like(request, post_id):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def crud_like(request, like_id):
     if request.method == 'GET':
         try:
@@ -475,3 +492,23 @@ class SharedPostView(View):
             author=post_object.author,
             shared_user=current_user,
             contentType=post_object.contentType).save()
+
+def send_token(request, username, password):
+    '''
+    new_token = Token.objects.get(user=request.user).key
+    token_data = {'token': new_token}
+    json_data = json.dumps(token_data)
+    response = requests.post('http://127.0.0.1:8000/', json = token_data)
+    print(response)
+    return HttpResponseRedirect('user_home_page')
+    '''
+    
+    user = User.objects.get(username=username)
+    token = Token.objects.get(user=user)
+    user_password = user.password
+    if user_password == password:
+        #return Response(token.key, safe=False)
+    
+    
+        print(token)
+    return {'message': 'The user or password does not exist'}

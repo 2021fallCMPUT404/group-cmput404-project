@@ -5,6 +5,8 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from .models import User, Create_user, User_Profile, FriendRequest, UserFollows
+from posts.views import *  #Will change this later on
+from posts.serializers import * #Also will change this too
 from django.apps import apps
 from . import create_user_form
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
@@ -12,6 +14,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.db.models import Q
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer, friend_request_serializer
+
 #rest framework imports
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -28,7 +31,7 @@ Post_model = apps.get_model('posts', 'Post')
 def apiOverview(request):
     return Response("API BASE POINT", safe=False)
 
-
+#TODO: ADD PAGINATION WHERE NEEDED
 @api_view(['GET'])
 @authentication_classes([])
 @permission_classes([])
@@ -115,6 +118,25 @@ def follow_crud(request, User_id, Foreign_id):
     return Response()
 
 
+@api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
+def get_post_comments(request, User_id, post_id):
+    user = get_object_or_404(User, pk=User_id)
+    post = get_object_or_404(Post_model, pk=post_id, author=user)
+
+    if request.method == "GET":
+        comments = Comment.objects.filter(post=post_id)
+        serializers = CommentSerializer(comments, many=True)
+        return Response(serializers.data)
+    elif request.method == "POST":
+        return
+    else:
+        return HttpResponseBadRequest("Method {} is not allowed".format(request.method))
+
+    return Response()
+
+    return Response('')
 def homepage(request):
     return HttpResponse("Placeholder homepage")
 

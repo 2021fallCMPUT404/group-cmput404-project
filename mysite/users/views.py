@@ -4,14 +4,14 @@ from . import views
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from .models import User, Create_user, User_Profile, FriendRequest, UserFollows
+from .models import User, Create_user, User_Profile, FriendRequest, UserFollows,Node
 from django.apps import apps
 from . import create_user_form
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.db.models import Q
-from .serializers import UserSerializer, userFollowSerializer, userPSerializer
+from .serializers import UserSerializer, userFollowSerializer, userPSerializer, nodeSerializer
 #rest framework imports
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -342,3 +342,8 @@ def send_request_page(request):
     print(users_list)
     return render(request, 'users/send_requests.html', {'users_list':users_list})
 
+
+
+@api_view(['GET'])
+def get_nodes(request):
+        return Response(nodeSerializer(Node.objects.all(), many=True).data)

@@ -99,3 +99,9 @@ class FriendRequest(models.Model):
 
     def summary(self):
         return '{} wants to follow {}'.format(self.actor.displayName, self.object.displayName)
+
+
+class Node(models.Model):
+    host_URI = models.CharField(primary_key=True)
+    user = models.CharField()
+    password = models.CharField()

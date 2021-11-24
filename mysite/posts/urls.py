@@ -1,10 +1,11 @@
 from django.urls import include, path
 from . import views
+from django.contrib.auth.decorators import login_required
 
 
 urlpatterns = [
   path('feed', views.placeholder, name='feed'),
-  path('addpost/', views.addPost.as_view(), name="addpost"),
+  path('addpost/', login_required(views.addPost.as_view()), name="addpost"),
   path('<int:pk>/comment/', views.addComment.as_view(), name="addcomment"),
   path('<int:Post_id>/', views.post, name='post_placeholder'),
   path('<int:pk>/edit/', views.updatePost.as_view(), name='editpost'),

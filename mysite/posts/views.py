@@ -16,6 +16,8 @@ from django.urls import reverse_lazy, reverse
 from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
 
@@ -102,6 +104,7 @@ def likeComment(request, pk):
     return HttpResponseRedirect(reverse('post_placeholder', args=[str(pk)]))
 
 
+@method_decorator(login_required, name='dispatch')
 class addPost(CreateView):
     model = Post
     form_class = addPostForm
@@ -121,8 +124,6 @@ class addComment(CreateView):
 
 
         
-    
-    
     
 class updatePost(UpdateView):
     model = Post

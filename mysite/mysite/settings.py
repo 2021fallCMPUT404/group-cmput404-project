@@ -51,9 +51,10 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        #'posts.authentication.UsernamePasswordAuthentication',
+        'posts.authentication.UsernamePasswordAuthentication',
         'rest_framework.authentication.TokenAuthentication'
-    ]
+    ],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
 
 MIDDLEWARE = [

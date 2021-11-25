@@ -7,7 +7,7 @@
         <p> You have request(s) from others right now:</p>
         <div class="list-group">
         {% for requests in recieved_requests %}
-            <li class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true"> Request from {{requests.actor.displayName}}
+            <li class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true"><img src="{{ requests.actor.profileImage.url }}" width='30px' height="30"> Request from {{requests.actor.displayName}}
                 <!--<a href="">Accept</a>
                 <a href="">Reject</a>-->
                 <a href="{% url 'users:accept_request' User_id=requests.actor.user.id%}">Accept</a>
@@ -23,7 +23,7 @@
         <div class="list-group">
         {% for pending in sent_requests%}
             <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true" 
-            href="{% url 'users:placeholder' User_id=pending.object.user.id%}"> {{pending.object.displayName}}</a>
+            href="{% url 'users:placeholder' User_id=pending.object.user.id%}"><img src="{{ pending.object.profileImage.url }}" width='30px' height="30"> {{pending.object.displayName}}</a>
         {% endfor %}
         </div>
     {% else %}

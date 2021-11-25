@@ -160,13 +160,7 @@ def request_post_list(request):
     return Response(posts_serializer.data)
 
 
-@api_view(['GET'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def request_post(request, id):
-    post = Post.objects.get(id=id)
-    post_serializer = PostSerializer(post)
-    return Response(post_serializer.data)
+
 
 
 @api_view(['POST'])
@@ -189,11 +183,10 @@ def create_new_post(request):
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
-
-@api_view(['GET', 'POST', 'DELETE'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def manage_user_post(request, username):
+@api_view(['GET'])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
+def get_posts_from_user(request, username):
     if request.method == 'GET':
         try:
             related_user = User.objects.get(username=username)
@@ -204,6 +197,10 @@ def manage_user_post(request, username):
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
+@api_view(['POST', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def manage_user_post(request, username):
     if request.method == 'POST':
         try:
             related_user = User.objects.get(username=username)
@@ -256,8 +253,21 @@ def manage_user_post(request, username):
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['GET'])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
+def request_post(request, id):
+    if request.method == 'GET':
+        try:
+            post = Post.objects.get(id=id)
+            post_serializer = PostSerializer(post)
+            return Response(post_serializer.data)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['PUT', 'DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def crud_post(request, id):
@@ -321,11 +331,10 @@ def crud_post(request, id):
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
-
-@api_view(['GET', 'POST', 'DELETE'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def manage_post_comment(request, post_id):
+@api_view(['GET'])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
+def get_comments_from_post(request, post_id):
     if request.method == 'GET':
         try:
             related_post = Post.objects.get(id=post_id)
@@ -336,6 +345,12 @@ def manage_post_comment(request, post_id):
             return JsonResponse(
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def manage_post_comment(request, post_id):
+ 
     if request.method == 'POST':
         try:
             related_post = Post.objects.get(id=post_id)
@@ -388,11 +403,10 @@ def manage_post_comment(request, post_id):
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
-
-@api_view(['GET', 'PUT', 'DELETE'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def crud_comment(request, comment_id):
+@api_view(['GET'])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
+def request_comment(request, comment_id):
     if request.method == 'GET':
         try:
             related_comment = Comment.objects.get(id=comment_id)
@@ -402,6 +416,11 @@ def crud_comment(request, comment_id):
             return JsonResponse(
                 {'message': 'The requested comment does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def crud_comment(request, comment_id):
     if request.method == 'PUT':
         try:
             related_comment = Comment.objects.get(id=comment_id)
@@ -426,11 +445,10 @@ def crud_comment(request, comment_id):
                 {'message': 'The requested comment does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
-
-@api_view(['GET', 'POST', 'DELETE'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def manage_post_like(request, post_id):
+@api_view(['GET'])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
+def get_likes_from_post(request, post_id):
     if request.method == 'GET':
         try:
             related_post = Post.objects.get(id=post_id)
@@ -441,6 +459,12 @@ def manage_post_like(request, post_id):
             return JsonResponse(
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def manage_post_like(request, post_id):
 
     if request.method == 'POST':
         try:
@@ -472,11 +496,10 @@ def manage_post_like(request, post_id):
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
-
-@api_view(['GET', 'PUT', 'DELETE'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def crud_like(request, like_id):
+@api_view(['GET'])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
+def request_like(request, like_id):
     if request.method == 'GET':
         try:
             related_like = Like.objects.get(id=like_id)
@@ -486,6 +509,12 @@ def crud_like(request, like_id):
             return JsonResponse(
                 {'message': 'The requested like does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def crud_like(request, like_id):
+    
     if request.method == 'PUT':
         try:
             related_like = Like.objects.get(id=like_id)

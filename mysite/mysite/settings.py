@@ -1,3 +1,5 @@
+import django_on_heroku 
+import dj_database_url
 """
 Django settings for mysite project.
 
@@ -28,7 +30,7 @@ SECRET_KEY = '%r+yr+7($o8*#7#&f+12#aofu2x!^)5ww61_e7h2)qc@+(i0#$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -142,3 +144,4 @@ PASSWORD_HASHERS = [
 
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+django_on_heroku.settings(locals())

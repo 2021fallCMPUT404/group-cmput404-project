@@ -67,6 +67,7 @@ def post(request, Post_id):
 
 def placeholder(request):
     latest_post_list = Post.objects.order_by('-pub_date')[:5]
+    backup_list = Post.objects.order_by('-pub_date')[5:]
     template = loader.get_template('posts/placeholder.html')
     current_user = User.objects.get(id=request.user.id)
     authorized_posts = []
@@ -82,6 +83,22 @@ def placeholder(request):
             elif p.privacy == 1:  #private: visible to creator
                 if p.author == current_user:
                     authorized_posts.append(p)
+    
+    if len(authorized_posts)<5: #fill up the list if necessary
+        if len(backup_list)>0:
+            for p in backup_list:
+                if p.unlisted:  #unlisted posts: always visible to creator
+                    if p.author == current_user:
+                        authorized_posts.append(p)
+                else:  #listed posts
+                    if p.privacy == 0:  #public: visible to all
+                        authorized_posts.append(p)
+
+                    elif p.privacy == 1:  #private: visible to creator
+                        if p.author == current_user:
+                            authorized_posts.append(p)
+                if len(authorized_posts)==5:
+                    break
 
     #NEED FRIEND POST
 
@@ -455,10 +472,6 @@ class deletePost(DeleteView):
 
 class SharedPostView(View):
 
-    model = Post
-    template_name = 'posts/sharePost.html'
-    fields = ['shared_on', 'shared_user']
-
     def get(self, request, pk):
         post_object = get_object_or_404(Post, pk=pk)
         current_user = request.user
@@ -475,3 +488,4 @@ class SharedPostView(View):
             author=post_object.author,
             shared_user=current_user,
             contentType=post_object.contentType).save()
+        return HttpResponseRedirect(reverse('feed'))

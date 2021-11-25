@@ -10,7 +10,8 @@ app_name = 'users'
 
 urlpatterns = [
     path('', views.UserList, name='homepage'),
-    path('<int:User_id>/', views.userGet, name='placeholder'),
+    path('userGet/<int:User_id>/', views.userGet, name='placeholder'),
+    path('userPost/<int:User_id>/', views.userPost, name='placeholder'),
     path('users_test', views.index, name='index'),
     path('create_user/', views.create_user_view, name='create_user'),
     path('<int:User_id>/posts/', views.user_post_view, name='view_user_posts'),
@@ -31,7 +32,10 @@ urlpatterns = [
     path('<int:User_id>/view-followers/',
          views.view_followers,
          name='view_followers'),
-    path('<int:User_id>/followers/<int:Foreign_id>/',
+    path('<int:User_id>/get-followers/<int:Foreign_id>/',
+         views.get_follow,
+         name='get_followers'),
+     path('<int:User_id>/followers/<int:Foreign_id>/',
          views.follow_crud,
          name='crud_followers'),
     path('requests/send-request/<int:User_id>/',

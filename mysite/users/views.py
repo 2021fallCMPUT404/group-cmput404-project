@@ -61,17 +61,16 @@ def apiOverview(request):
 
 #TODO: ADD PAGINATION WHERE NEEDED
 @api_view(['GET'])
-@authentication_classes(['CustomAuthentication'])
-@permission_classes(['AccessPermission'])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
 def UserList(request):
     user_profiles = User_Profile.objects.all()
     serializer = userPSerializer(user_profiles, many=True)
     return Response({'type': 'authors', 'items': serializer.data})
 
-
-@api_view(['GET', 'POST'])
-@authentication_classes([])
-@permission_classes([])
+@api_view(['GET'])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
 def userGet(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     print(user)
@@ -80,7 +79,16 @@ def userGet(request, User_id):
     if request.method == "GET":
         serializer = userPSerializer(user_profile, many=False)
         return Response(serializer.data)
-    elif request.method == "POST":
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def userPost(request, User_id):
+    user = get_object_or_404(User, pk=User_id)
+    print(user)
+    print(user.id, User_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    
+    if request.method == "POST":
         serializer = userPSerializer(instance=user_profile, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -89,8 +97,8 @@ def userGet(request, User_id):
 
 
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
 def follow_list(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
@@ -103,8 +111,8 @@ def follow_list(request, User_id):
 
 
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
 def following_list(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
@@ -115,11 +123,10 @@ def following_list(request, User_id):
     serializer = userPSerializer(object_list, many=True)
     return Response({'type': 'following', 'items': serializer.data})
 
-
-@api_view(['GET', 'PUT', 'DELETE'])
-@authentication_classes([])
-@permission_classes([])
-def follow_crud(request, User_id, Foreign_id):
+@api_view(['GET'])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
+def get_follow(request, User_id, Foreign_id):
     user = get_object_or_404(User, pk=User_id)
     foreign_user = get_object_or_404(User, pk=Foreign_id)
     user_profile = get_object_or_404(User_Profile, user=user)
@@ -130,7 +137,17 @@ def follow_crud(request, User_id, Foreign_id):
         serializer = userFollowSerializer(thing, many=False)
         print('PRINTING DATA:', serializer)
         return Response(serializer.data)
-    elif request.method == 'PUT':
+
+@api_view(['PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def follow_crud(request, User_id, Foreign_id):
+    user = get_object_or_404(User, pk=User_id)
+    foreign_user = get_object_or_404(User, pk=Foreign_id)
+    user_profile = get_object_or_404(User_Profile, user=user)
+    foreign_user_profile = get_object_or_404(User_Profile, user=foreign_user)
+    
+    if request.method == 'PUT':
         #TODO: PUT METHOD NEEDS TO BE AUTHENTICATED
         #f_request, created = FriendRequest.objects.get_or_create(actor=foreign_user_profile, object=user_profile)
         FriendRequest.create_friend_request(foreign_user_profile, user_profile)

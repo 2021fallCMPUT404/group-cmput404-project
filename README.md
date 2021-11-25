@@ -20,6 +20,9 @@ Working functions:
 - commenting
 - friend request
 - feed displayed
+- share post
+- likes on posts and comments
+- posting markdown texts
 
 
 Citations:

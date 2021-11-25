@@ -47,9 +47,7 @@ class AccessPermission(permissions.BasePermission):
         expected = base64.b64encode(b'socialdistribution_t05:c404t05').decode()
         if token_type == 'Basic' and credentials == expected:
             return True
-        elif token_type == 'Token':
-            return permissions.IsAuthenticated().has_permission(
-                request=request, view=view)
+
         else:
             return False
 

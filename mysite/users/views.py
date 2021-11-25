@@ -25,8 +25,35 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication
 
+from rest_framework import authentication, permissions
+import base64
+
 Post_model = apps.get_model('posts', 'Post')
 
+class AccessPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+        token_type, _, credentials = auth_header.partition(' ')
+
+        expected = base64.b64encode(b'socialdistribution_t05:c404t05').decode()
+        if token_type == 'Basic' and credentials == expected:
+            return True
+
+        else:
+            return False
+
+
+class CustomAuthentication(authentication.BaseAuthentication):
+    def authenticate(self, request):
+        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+        token_type, _, credentials = auth_header.partition(' ')
+
+        expected = base64.b64encode(b'socialdistribution_t05:c404t05').decode()
+        if token_type == 'Basic' and credentials == expected:
+            return (True, None)
+
+        else:
+            return None
 
 @api_view(['GET'])
 def apiOverview(request):
@@ -34,8 +61,8 @@ def apiOverview(request):
 
 #TODO: ADD PAGINATION WHERE NEEDED
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes(['CustomAuthentication'])
+@permission_classes(['AccessPermission'])
 def UserList(request):
     user_profiles = User_Profile.objects.all()
     serializer = userPSerializer(user_profiles, many=True)

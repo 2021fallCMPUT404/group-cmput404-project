@@ -5,11 +5,10 @@
 <h1>{{ insert_github_username }}</h1>
 <div class="all_activities">
     <div class="activity_list">
-        <a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block">Go back</a>
         <form id='event_form' method='post'>
-            <input type="submit" class="btn btn-lg btn-primary btn-block" value='Add selected Activity'>
             {% csrf_token %}
-
+            <input type="submit" class="btn btn-lg btn-primary btn-block" value='Add selected Activity'>
+            <br>
         </form>
 
         <script type="text/javascript">
@@ -99,7 +98,7 @@
                             //var dd = document.createElement('dd');
 
                             for (let key in event_json) {
-                                if (key != 'type') {
+                                if (key != 'type' && key != 'created_at') {
                                     inner_text += ' ' + event_json[key];
                                 }
 
@@ -140,7 +139,7 @@
 
         </script>
 
-
+    <a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-arrow-left"></i> Go back</a> 
     </div>
 </div>
 

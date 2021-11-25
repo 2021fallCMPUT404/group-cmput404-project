@@ -4,19 +4,20 @@
 <h1>Welcome to Social Circle!</h1>
 {% block content %}
 <br>
-<h2 class='Display_name'>{{ insert_display_name }}</h2>
+<h2>{{user.username}}'s Home Page</h2>
+<br>
 <div>
-    <p>Home Page </p>
-
     {{ request.user.User_Profile.profileImage.url }}
     {% if user.is_authenticated %}
-    <img src="{{ user.user_profile.profileImage.url }}" width='400px' height="300"><br>
-
+    <img src="{{ user.user_profile.profileImage.url }}" width='300px' height="300"><br>
+    <br>
     {% endif %}
+    <h2 class='Display_name'>{{ insert_display_name }}</h2>
+    <p>{{user.user_profile.bio}}</p>
     <br>
     <a href="{% url 'addpost' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-plus-circle"></i> Add a
         Post</a>
-    <a href="{% url 'select_github_activity' %}" class="btn btn-lg btn-primary btn-block">Add a Github Activity</a>
+    <a href="{% url 'select_github_activity' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-github"></i> Add a Github Activity</a>
     <a href="{% url 'feed' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-globe"></i> Explore Feed</a>
     {% endblock content %}
 </div>

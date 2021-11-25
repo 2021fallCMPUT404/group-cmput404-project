@@ -9,7 +9,16 @@
     <br>
     <!--<p>{{latest_post_list}}</p>-->
     {% for posts in latest_post_list %}
-    
+    <div class='pub-info'>
+        <p>{{posts.author}}</p>
+        <p>{{posts.pub_date}} 
+            {%if posts.privacy == 0%}
+                <i class="fa fa-globe"></i>
+            {%else%}
+                <i class="fa fa-users"></i>
+            {%endif%}
+        </p>
+    </div>
     <li><a href="/post/{{ posts.id }}/" class="addpost-header">
             {%if not posts.shared_user%}
                 <h2>{{ posts.title }}</h2>
@@ -28,11 +37,6 @@
         {%else%}
             <p>{{ posts.text }}</p>
         {% endif %}
-
-        <div class='pub-info'>
-            <p>Pub date is: {{posts.pub_date}}</p>
-            <p>Author is: {{posts.author}}</p>
-        </div>
     </div>
     {%if not posts.shared_user and current_user == posts.author %}
         <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'><i class="fa fa-pencil-square-o"></i> Edit</a>

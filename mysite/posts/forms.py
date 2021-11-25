@@ -27,3 +27,7 @@ class addPostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ('title', 'text', 'image', 'privacy',)
+        widgets={
+            'title': forms.Textarea(attrs={'rows': 1}),
+            'text': forms.Textarea(attrs={'rows': 7}),
+        }

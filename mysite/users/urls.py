@@ -14,6 +14,7 @@ urlpatterns = [
     path('users_test', views.index, name='index'),
     path('create_user/', views.create_user_view, name='create_user'),
     path('<int:User_id>/posts/', views.user_post_view, name='view_user_posts'),
+    path('<int:User_id>/page/', views.get_user_page, name='get_user_page'),
     path('<int:User_id>/posts/<int:post_id>/comments', views.get_post_comments, name='get_post_comments'),
     path('user_login/', views.login_view, name='user_login'),
     path('register/', views.register, name='register'),

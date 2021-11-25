@@ -417,6 +417,12 @@ def send_request_page(request):
     return render(request, 'users/send_requests.html',
                   {'users_list': users_list})
 
+                  
+def get_user_page(request, User_id):
+    user = get_object_or_404(User, pk=User_id)
+    user_profile = get_object_or_404(User_Profile, user_id = User_id)
+    return render(request, 'users/author_page_json.html', {'user_id':User_id})
+
 
 @login_required
 def generate_token(request):

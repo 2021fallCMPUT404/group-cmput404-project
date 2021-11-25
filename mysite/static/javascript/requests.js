@@ -1,10 +1,23 @@
-const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+var tokenBool = false;
+if (document.querySelector('[name=csrfmiddlewaretoken]')){
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    tokenBool = true;
+}
+
 
 function fetchJSON(uri, m='GET', b=''){
     if (m === "GET" || m === "DELETE"){
-        var request = new Request(uri, {method:m, headers:{'X-CSRFToken':csrfToken}});
+        if (tokenBool){
+            var request = new Request(uri, {method:m, headers:{'X-CSRFToken':csrfToken}});
+        } else {
+            var request = new Request(uri, {method:m});
+        }
     } else if (m ==='POST' || m === "PUT") {
-        var request = new Request(uri, {method:m, headers:{'X-CSRFToken':csrfToken}, body:JSON.stringify(b)});
+        if (tokenBool){
+            var request = new Request(uri, {method:m, headers:{'X-CSRFToken':csrfToken}, body:JSON.stringify(b)});
+        } else {
+            var request = new Request(uri, {method:m, body:JSON.stringify(b)});
+        }
     }
     //console.log(request.method);
     return fetch(request).then((response) => {
@@ -102,6 +115,28 @@ function viewFollowingList(user_id){
     });
 
 }
+
+function fetchUserPage(user_id, host=location.host){
+    var url = 'http://' + host + '/authors/' + user_id + '/'
+
+    var frame = document.getElementsByTagName('body');
+    console.log(frame)
+    
+    fetchJSON(url).then((json) => {
+
+        var list = json
+        console.log("Printing json: " + JSON.stringify(list));
+        //var node = document.createElement("div");
+        var item = "<div><h1>" + list.displayName + "</h1>"
+        item += "<img src=" + list.profileImage + " alt = 'NO IMAGE'>"
+        item += "<p>" + list.bio + "</p>"
+        //node.innerHTML = item
+        //rame.appendChild(node)
+        frame[0].innerHTML += item
+    
+    });
+}
+    
 
 function update(user_id){
     viewFollowerList(user_id);

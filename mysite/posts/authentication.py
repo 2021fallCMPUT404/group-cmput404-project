@@ -5,12 +5,10 @@ from rest_framework import exceptions
 
 class UsernamePasswordAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-
-        username = request.META.get('username')
         print(request.META)
+        username = request.META.get('username')
+
         password = request.META.get('password')
-        print(username)
-        print(password)
 
         if not username:
             return None

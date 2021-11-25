@@ -72,9 +72,10 @@ def placeholder(request):
             elif p.privacy==1:              #private: visible to creator
                 if p.author==current_user:
                     authorized_posts.append(p)
-            elif p.privacy==2:              #friends: visible to friends(follow each other)
-                if p.author in current_user.friends_list:
-                    authorized_posts.append(p)
+        
+            #elif p.privacy==2:              #friends: visible to friends(follow each other)
+                #if p.author in current_user.friends_list:
+                    #authorized_posts.append(p)
  
 
     #NEED FRIEND POST

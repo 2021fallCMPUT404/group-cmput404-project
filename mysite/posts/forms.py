@@ -1,6 +1,6 @@
 from django import forms
 from django.db.models import fields
-from django.forms import widgets
+from django.forms import widgets,Textarea
 from .models import Post, Comment, Share
 
 
@@ -28,6 +28,11 @@ class CommentForm(forms.ModelForm):
 class addPostForm(forms.ModelForm):
     class Meta:
         model = Post
-        exclude=['author','pub-date']
+        exclude=['author','pub-date','like']
+        widgets={
+            'title': Textarea(attrs={'rows':3, 'cols':40}),
+            'text': Textarea(attrs={'rows':8, 'cols':40}),
+            
+        }
     
-    
+   

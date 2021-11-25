@@ -1,15 +1,17 @@
-{% extends 'users/base.html' %} 
-{% block content %}
+{% extends "users/home_page.html" %}
+
 {% load static %}
-<script src="{% static 'javascript/requests.js' %}" type="text/JavaScript"></script>
-<div class="container">
-    {% if recieved_requests %}
-        <p> You have request(s) from others right now:</p>
-        <div class="list-group">
-        {% for requests in recieved_requests %}
-            <li class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true"> Request from {{requests.actor.displayName}}
-                <!--<a href="">Accept</a>
-                <a href="">Reject</a>-->
+{% block content %}
+
+    <script src="{% static 'javascript/requests.js' %}" type="text/JavaScript"></script>
+    <div class="container">
+        {% if recieved_requests %}
+            <p> You have request(s) from others right now:</p>
+            <div class="list-group">
+            {% for requests in recieved_requests %}
+                <li class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true"> Request from {{requests.actor.displayName}}
+                 <!--<a href="">Accept</a>
+                    <a href="">Reject</a>-->
                 <a href="{% url 'users:accept_request' User_id=requests.actor.user.id%}">Accept</a>
                 <a href="{% url 'users:reject_request' User_id=requests.actor.user.id%}">Reject</a>
             </li>

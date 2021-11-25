@@ -29,7 +29,7 @@ class Post(models.Model):
     )
 
     type = 'post'
-    title = models.TextField(default='New Post!', max_length=200, blank=True)
+    title = models.TextField(default='New Post!', max_length=100, blank=True)
     text = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='', blank=True, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)

@@ -27,6 +27,13 @@ from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication
+from django.http.response import JsonResponse
+from rest_framework.parsers import JSONParser 
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework import exceptions
+import requests
+import re
 
 
 # Create your views here.
@@ -112,6 +119,7 @@ def likePost(request, pk):
 
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
+#@authentication_classes([UsernamePasswordAuthentication])
 @permission_classes([IsAuthenticated])
 def request_post_list(request):
     posts = Post.objects.all()
@@ -120,8 +128,8 @@ def request_post_list(request):
 
 
 @api_view(['GET'])
-#@authentication_classes([UsernamePasswordAuthentication])
-#@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def request_post(request, id):
     post = Post.objects.get(id=id)
     post_serializer = PostSerializer(post)
@@ -129,6 +137,8 @@ def request_post(request, id):
 
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def create_new_post(request):
     if request.method == 'POST':
         try:
@@ -148,10 +158,12 @@ def create_new_post(request):
 
 
 @api_view(['GET', 'POST', 'DELETE'])
-def manage_user_post(request, user_id):
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def manage_user_post(request, username):
     if request.method == 'GET':
         try:
-            related_user = User.objects.get(id=user_id)
+            related_user = User.objects.get(username=username)
             posts = Post.objects.filter(author=related_user)
             posts_serializer = PostSerializer(posts, many=True)
             return JsonResponse(posts_serializer.data, safe=False)
@@ -161,7 +173,13 @@ def manage_user_post(request, user_id):
                 status=status.HTTP_404_NOT_FOUND)
     if request.method == 'POST':
         try:
-            related_user = User.objects.get(id=user_id)
+            related_user = User.objects.get(username=username)
+
+            user_token = Token.objects.get(user = related_user)
+            entered_token = re.findall('(?:Token\s)(\w*)', request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse({'message': 'The token user does not match the post user'}, status = status.HTTP_403_FORBIDDEN)
+
             data = JSONParser().parse(request)
             post_serializer = PostSerializer(data=data)
             if post_serializer.is_valid():
@@ -176,8 +194,15 @@ def manage_user_post(request, user_id):
                 status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'DELETE':
+        
         try:
-            related_user = User.objects.get(id=user_id)
+            related_user = User.objects.get(username=username)
+            
+            user_token = Token.objects.get(user = related_user)
+            entered_token = re.findall('(?:Token\s)(\w*)', request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse({'message': 'The token user does not match the post user'}, status = status.HTTP_403_FORBIDDEN)
+            
             posts = Post.objects.filter(author=related_user)
             for post in posts:
                 post.delete()
@@ -190,6 +215,8 @@ def manage_user_post(request, user_id):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def crud_post(request, id):
 
     #post_serializer = PostSerializer(data = request.data)
@@ -206,6 +233,15 @@ def crud_post(request, id):
     if request.method == 'PUT':
         try:
             related_post = Post.objects.get(id=id)
+            '''
+            related_user = related_post.author
+            print(related_user.username)
+            user_token = Token.objects.get(user = related_user)
+            entered_token = re.findall('(?:Token\s)(\w*)', request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse({'message': 'The token user does not match the post user'}, status = status.HTTP_403_FORBIDDEN)
+            '''
+
             data = JSONParser().parse(request)
             post_serializer = PostSerializer(related_post, data=data)
             if post_serializer.is_valid():
@@ -231,6 +267,8 @@ def crud_post(request, id):
 
 
 @api_view(['GET', 'POST', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def manage_post_comment(request, post_id):
     if request.method == 'GET':
         try:
@@ -274,6 +312,8 @@ def manage_post_comment(request, post_id):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def crud_comment(request, comment_id):
     if request.method == 'GET':
         try:
@@ -310,6 +350,8 @@ def crud_comment(request, comment_id):
 
 
 @api_view(['GET', 'POST', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def manage_post_like(request, post_id):
     if request.method == 'GET':
         try:
@@ -354,6 +396,8 @@ def manage_post_like(request, post_id):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def crud_like(request, like_id):
     if request.method == 'GET':
         try:
@@ -475,3 +519,30 @@ class SharedPostView(View):
             author=post_object.author,
             shared_user=current_user,
             contentType=post_object.contentType).save()
+
+def send_token(request, username, password):
+    
+    
+    data = {'username': username, 'password': password}
+    
+    response = requests.post('http://127.0.0.1:8000/api-token-auth/', json = data)
+    dict_data = ast.literal_eval(response.text)
+    print(ast.literal_eval(response.text))
+    return JsonResponse(dict_data, safe=False)
+    
+    '''
+    user = User.objects.get(username=username)
+    token = Token.objects.get(user=user)
+    user_password = user.password
+    if user_password == password:
+        #return Response(token.key, safe=False)
+    
+    
+        print(token)
+    return {'message': 'The user or password does not exist'}
+    '''
+#curl -X POST -d "username=1&password=12345" http://127.0.0.1:8000/api-token-auth/
+#curl -X POST -d '{"title":"This is a new post","text":"a new post is here","image":null,"pub_date":"2021-11-09T21:51:55.850726Z","author":2,"shared_user":null,"shared_on":null,"privacy":0,"contentType":"text/plain"}' http://127.0.0.1:8000/post/create_new_post -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'
+#curl -X GET http://127.0.0.1:8000/post/manage_user_post/1 -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'
+#curl -X POST -d '{"title":"This is a new post","text":"a new post is here","image":null,"pub_date":"2021-11-09T21:51:55.850726Z","author":2,"shared_user":null,"shared_on":null,"privacy":0,"contentType":"text/plain"}' http://127.0.0.1:8000/post/manage_user_post/9 -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'
+#curl -X PUT -d '{"title":"This is a new post","text":"a new post is here","image":null,"pub_date":"2021-11-09T21:51:55.850726Z","author":2,"shared_user":null,"shared_on":null,"privacy":0,"contentType":"text/plain"}' http://127.0.0.1:8000/post/crud_post/42 -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'

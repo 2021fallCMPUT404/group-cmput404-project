@@ -26,7 +26,7 @@ urlpatterns = [
          name='request_post_list'),
     path('request_post/<int:id>', views.request_post, name='request_post'),
     path('create_new_post', views.create_new_post, name='create_new_post'),
-    path('manage_user_post/<int:user_id>',
+    path('manage_user_post/<str:username>',
          views.manage_user_post,
          name='manage_user_post'),
     path('crud_post/<int:id>', views.crud_post, name='crud_post'),
@@ -39,5 +39,6 @@ urlpatterns = [
     path('manage_post_like/<int:post_id>',
          views.manage_post_like,
          name='manage_post_like'),
-    path('crud_like/<int:like_id>', views.crud_like, name='crud_like')
+    path('crud_like/<int:like_id>', views.crud_like, name='crud_like'),
+    path('send_token/<str:username>/<str:password>', views.send_token, name='send_token'),
 ]

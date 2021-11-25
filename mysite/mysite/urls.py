@@ -34,5 +34,5 @@ urlpatterns = [
     path('login', include('users.urls')),
     path('', views.login_view, name='login'),
     path('logout', views.logout_view, name='logout'),
-    path('api-token-auth', obtain_auth_token, name='api-token-auth'),
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

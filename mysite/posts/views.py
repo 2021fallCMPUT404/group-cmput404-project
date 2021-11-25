@@ -454,6 +454,7 @@ def get_likes_from_post(request, post_id):
             related_post = Post.objects.get(id=post_id)
             likes = Like.objects.filter(post=related_post)
             likes_serializer = LikeSerializer(likes, many=True)
+            print(likes_serializer.data)
             return JsonResponse(likes_serializer.data, safe=False)
         except Post.DoesNotExist:
             return JsonResponse(
@@ -632,21 +633,11 @@ def send_token(request, username, password):
 
     data = {'username': username, 'password': password}
 
-    response = requests.post('./api-token-auth/', json=data)
+    response = requests.post('https://cmput404-socialdist-project.herokuapp.com/api-token-auth/', json=data)
     dict_data = ast.literal_eval(response.text)
     print(ast.literal_eval(response.text))
     return JsonResponse(dict_data, safe=False)
-    '''
-    user = User.objects.get(username=username)
-    token = Token.objects.get(user=user)
-    user_password = user.password
-    if user_password == password:
-        #return Response(token.key, safe=False)
     
-    
-        print(token)
-    return {'message': 'The user or password does not exist'}
-    '''
 
 
 #curl -X POST -d "username=1&password=12345" http://127.0.0.1:8000/api-token-auth/

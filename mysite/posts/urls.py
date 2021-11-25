@@ -39,7 +39,7 @@ urlpatterns = [
     path('crud_comment/<int:comment_id>',
          views.crud_comment,
          name='crud_comment'),
-    path('get_likes_from_post', views.get_likes_from_post, name='get_likes_from_post'),
+    path('get_likes_from_post/<int:post_id>', views.get_likes_from_post, name='get_likes_from_post'),
 
     path('manage_post_like/<int:post_id>',
          views.manage_post_like,

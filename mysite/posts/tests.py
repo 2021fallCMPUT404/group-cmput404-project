@@ -1,41 +1,40 @@
-from django.test import TestCase
-from ..test_users_models import *
-from .models import Post, Comment
+from django.test import TestCase, Client
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+from .models import Post, Comment, Like
+from .serializers import PostSerializer
 
-class test_post(TestCase):
+client = Client()
+
+class GetAllPostsTest(TestCase):
     def setUp(self):
-        user1 = User.objects.create(username='testcase',
-                                    first_name='test',
-                                    last_name='case',
-                                    email='testcase@ualberta.ca',
-                                    password='12345')
-        User_Profile.objects.create(
-            displayName='case_1',
-            user=user1,
-            profileImage='test_image.jpg',
-            github='https://github.com/orgs/2021fallCMPUT404/dashboard',
-            bio='test_bio1')
+        Post.objects.create(title="Post 1", text="This is post 1", image=None, privacy=1, contentType=1)
+        Post.objects.create(title="Post 2", text="This is post 2", image=None, privacy=1, contentType=0)
+        Post.objects.create(title="Post 3", text="*This is post 3*", image=None, privacy=1, contentType=1)
+        Post.objects.create(title="Post 4", text="*This is post 4*", image=None, privacy=1, contentType=0)
 
-        test_user_1 = User.objects.get(username="testcase")
-        test_profile_1 = User_Profile.objects.get(user=test_user_1)
+    def test_get_all(self):
+        headers = {"Authorization": "Token 959ddf93ce016a02c887172d1a11bbeb697ccf80"}
+        response = client.get(reverse('request_post_list'), headers=headers)
+        all_post = Post.objects.all()
+        serializer = PostSerializer(all_post, many=True)
+        
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        Post.objects.create{
-            #type = 'post',
-            text = 'trial',
-            image='test_image.jpg',
-            pub_date = models.DateTimeField(auto_now_add=True)
-            author = test_profile_1.displayName,
-            shared_user = None,
-            shared_on = None,
-            privacy=models.IntegerField(choices=Privacy,default=PUBLIC),
-            visible=None)
+class getSinglePostsTest(TestCase):
+    def setUp(self):
+        self.p1 = Post.objects.create(title="Post 1", text="This is post 1", image=None, privacy=1, contentType=1)
+        self.p2 = Post.objects.create(title="Post 2", text="This is post 2", image=None, privacy=1, contentType=0)
+        self.p3 = Post.objects.create(title="Post 3", text="*This is post 3*", image=None, privacy=1, contentType=1)
+        self.p4 = Post.objects.create(title="Post 4", text="*This is post 4*", image=None, privacy=1, contentType=0)
 
-            
-
-    def test_post_cases(self):
-        test_ps = Post.objects.get(author='case_1')
-        self.assertEqual(test_ps.text, 'trial')
-        self.assertEqual(test_ps.image, 'test_image.jpg')
-
-    def test_comment(self):
-        pass
+    def test_get_valid_one(self):
+        headers = {"Authorization": "Token 959ddf93ce016a02c887172d1a11bbeb697ccf80"}
+        print(self.p1)
+        response = client.get(reverse('request_post', kwargs={'pk': self.p1.pk}))
+        this_post = Post.objects.get(pk=self.p1.pk)
+        serializer = PostSerializer(this_post, many=True)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -40,9 +40,5 @@ urlpatterns = [
          views.manage_post_like,
          name='manage_post_like'),
     path('crud_like/<int:like_id>', views.crud_like, name='crud_like'),
-<<<<<<< HEAD
-    path('api_auth/', include('rest_framework.urls', namespace='rest_framework'))
-=======
     path('send_token/<str:username>/<str:password>', views.send_token, name='send_token'),
->>>>>>> 5c5808d91cc02731e84a19d53dafc66e4f7a6117
 ]

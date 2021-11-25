@@ -532,9 +532,7 @@ class SharedPostView(View):
             author=post_object.author,
             shared_user=current_user,
             contentType=post_object.contentType).save()
-<<<<<<< HEAD
         return HttpResponseRedirect(reverse('feed'))
-=======
 
 def send_token(request, username, password):
     
@@ -562,4 +560,3 @@ def send_token(request, username, password):
 #curl -X GET http://127.0.0.1:8000/post/manage_user_post/1 -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'
 #curl -X POST -d '{"title":"This is a new post","text":"a new post is here","image":null,"pub_date":"2021-11-09T21:51:55.850726Z","author":2,"shared_user":null,"shared_on":null,"privacy":0,"contentType":"text/plain"}' http://127.0.0.1:8000/post/manage_user_post/9 -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'
 #curl -X PUT -d '{"title":"This is a new post","text":"a new post is here","image":null,"pub_date":"2021-11-09T21:51:55.850726Z","author":2,"shared_user":null,"shared_on":null,"privacy":0,"contentType":"text/plain"}' http://127.0.0.1:8000/post/crud_post/42 -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'
->>>>>>> 5c5808d91cc02731e84a19d53dafc66e4f7a6117

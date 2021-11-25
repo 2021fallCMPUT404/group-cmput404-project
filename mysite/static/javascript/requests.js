@@ -1,6 +1,7 @@
 var tokenBool = false;
 if (document.querySelector('[name=csrfmiddlewaretoken]')){
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    console.log(csrfToken);
     tokenBool = true;
 }
 

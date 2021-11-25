@@ -32,7 +32,7 @@ window.onload = function() {
     
     function viewUsersExternal(request){
         var wrapper = document.getElementById('list-group')
-        url = request.build_absolute_uri('/ext-users/')
+        url = "https://unhindled.herokuapp.com/service/authors"
 
         fetchJSON(url).then((json) => {
             console.log("Printing JSON:" + json)

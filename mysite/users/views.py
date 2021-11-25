@@ -14,7 +14,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.db.models import Q
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer, friend_request_serializer
-
+from users.connect import get_authors
 #rest framework imports
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -22,7 +22,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication, get_authorization_header
 
 Post_model = apps.get_model('posts', 'Post')
 
@@ -392,15 +392,10 @@ def view_friend_requests(request, User_id):
         'sent_requests': sent_requests
     })
 
-def view_external_users(request, node, User_id):
-
-    if request.user.id != User_id:
-        return HttpResponseForbidden("You are forbidden")
-    user= get_object_or_404(User, user_id=User_id)
-    external_users = User.objects.filter(object = user)
-    return render(request, 'users/server_2.html', {
-        'external_users': external_users
-    })
+def view_external_users(request):
+    url = "https://unhindled.herokuapp.com/service/authors"
+    authors = get_authors(url)
+    return render(request, 'users/server-2.html', {'authors': authors})
 
 def view_followers(request, User_id):
     user = get_object_or_404(User, pk=User_id)

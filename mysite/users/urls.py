@@ -52,5 +52,5 @@ urlpatterns = [
     path('edit_user_profile',
          views.edit_user_profile_view,
          name='edit_user_profile'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
-path('external-users/', views.view_external_users, name='external_users'),
+     path('external-users/', views.view_external_users, name='external_users'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

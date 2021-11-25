@@ -107,3 +107,4 @@ function update(user_id){
     viewFollowerList(user_id);
     viewFollowingList(user_id);
 }
+

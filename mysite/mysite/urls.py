@@ -20,6 +20,7 @@ from django.conf.urls import include, url
 from users import views
 from django.conf.urls.static import static
 from django.conf import settings
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('post/', include('posts.urls')),
@@ -32,5 +33,6 @@ urlpatterns = [
     path('users', include('users.urls')),
     path('login', include('users.urls')),
     path('', views.login_view, name='login'),
-    path('logout', views.logout_view, name='logout')
+    path('logout', views.logout_view, name='logout'),
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User, User_Profile, UserFollows
+from .models import FriendRequest, User, User_Profile, UserFollows
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,8 +16,8 @@ class userPSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User_Profile
-        fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'bio'] #TODO: ADD URL AND HOST
-        read_only_fields = ['type', 'id', 'url', 'host',]
+        fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'bio', 'profileImage', 'user'] #TODO: ADD URL AND HOST
+        read_only_fields = ['type', 'id', 'url', 'host','user']
         
 
 
@@ -25,3 +25,14 @@ class userFollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFollows
         fields = '__all__'
+
+
+class friend_request_serializer(serializers.ModelSerializer):
+    type = 'Follow'
+    actor = userPSerializer(many=False, read_only=True)
+    object = userPSerializer(many=False, read_only=True)
+    summary = "{} wants to follow {}".format(actor.data['displayName'], object.data['displayName'])
+
+    class Meta:
+        model = FriendRequest
+        fields = ['type', 'summary', 'actor', 'object', ]

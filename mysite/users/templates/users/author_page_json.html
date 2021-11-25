@@ -1,0 +1,21 @@
+{% extends "users/home_page.html" %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+{% load static %}
+
+
+<script src="{% static 'javascript/requests.js' %}" type="text/javascript">
+        window.onload = function(){
+            fetchUserPage({{user_id}})
+        }
+   
+</script>
+<script>
+    fetchUserPage({{user_id}});
+    var test = document.getElementsByTagName('body');
+    console.log(test);
+</script>
+{% endblock content %}
+
+

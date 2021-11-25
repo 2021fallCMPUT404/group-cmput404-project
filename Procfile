@@ -1,2 +1,2 @@
-web: gunicorn /mysite/mysite.wsgi
+web: gunicorn --chdir mysite/ mysite.wsgi
 release: python mysite/manage.py migrate

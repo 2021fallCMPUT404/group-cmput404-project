@@ -70,3 +70,6 @@ Source: https://getbootstrap.com/docs/5.1/examples/list-groups/
 
 Django Markdown Tutorial:
 Source: https://learndjango.com/tutorials/django-markdown-tutorial
+
+Rest API for GET/POST/PUT/DELETE:
+https://www.bezkoder.com/django-rest-api/

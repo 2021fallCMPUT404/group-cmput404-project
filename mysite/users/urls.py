@@ -53,4 +53,6 @@ urlpatterns = [
          views.edit_user_profile_view,
          name='edit_user_profile'),
      path('external-users/', views.view_t15_users, name='external_users'),
+     path('external-users/t-03/users/', views.view_t3_users, name='t03_users'),
+     path('external-users/t-03/posts/', views.view_t3_posts, name='t03_posts'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

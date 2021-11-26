@@ -24,7 +24,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication, get_authorization_header
 import requests
-
+import json
 Post_model = apps.get_model('posts', 'Post')
 
 
@@ -409,6 +409,30 @@ def view_t15_users(request):
     for i in authors['items']:
         list_of_authors.append(i)
     return render(request, 'users/server-2.html', {'authors': list_of_authors})
+
+def make_external_request(url, auth):
+    ext_request = requests.get(url, auth=auth, headers={'Referer': "http://127.0.0.1:8000/"})
+
+    ext_request = ext_request.json()
+    return ext_request
+
+def view_t3_users(request):
+    url = "https://social-dis.herokuapp.com/authors/"
+    auth = ('socialdistribution_t03', 'c404t03')
+    ext_json = make_external_request(url, auth)
+    
+    print(ext_json['items'])
+    return render(request, 'users/t03_users.html', {'authors':ext_json['items']})
+
+def view_t3_posts(request):
+    url = "https://social-dis.herokuapp.com/posts/"
+    auth = ('socialdistribution_t03', 'c404t03')
+    ext_json = make_external_request(url, auth)
+
+    #print(ext_json['items'])
+    return render(request, 'users/t03_posts.html', {'post_list':ext_json['items']})
+
+
 
 def view_followers(request, User_id):
     user = get_object_or_404(User, pk=User_id)

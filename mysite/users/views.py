@@ -16,7 +16,7 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer, friend_request_serializer
 from rest_framework import routers
-from users.connect import get_authors
+
 #rest framework imports
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response

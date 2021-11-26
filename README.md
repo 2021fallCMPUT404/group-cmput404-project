@@ -1,13 +1,16 @@
 Project: social Circle (social network app)
 
-Heroku link: 
+https://cmput404-socialdist-project.herokuapp.com/
 
 What has been done for Part 2 (Update):
+Completed (20/42 user stories)
+Will review all of our completed parts to ensure they work without any errors for part 3
+
 - rest API implemented for almost all functions.
 - Basic athentification to allow other groups to access our data
 - UI updated and more friendly for users
 - Able to display and access post and user data from other groups
-
+- communicated with group 15 and 03
 WORK IN PROGRESS NOT FULLY FUNCTIONING
 2021fallCMPUT404, group-cmput404-project
 
@@ -67,3 +70,6 @@ Source: https://getbootstrap.com/docs/5.1/examples/list-groups/
 
 Django Markdown Tutorial:
 Source: https://learndjango.com/tutorials/django-markdown-tutorial
+
+Rest API for GET/POST/PUT/DELETE:
+https://www.bezkoder.com/django-rest-api/

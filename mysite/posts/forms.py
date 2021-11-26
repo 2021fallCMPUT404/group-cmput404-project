@@ -21,7 +21,7 @@ class CommentForm(forms.ModelForm):
         #How to set author into fields?
         fields = ('comment_body', )
         widgets = {
-            'comment_body': forms.Textarea(attrs={'rows':4}),
+            'comment_body': forms.Textarea(attrs={'rows':4, 'placeholder':'Leave your comment here!'}),
         }
 
 
@@ -36,8 +36,8 @@ class addPostForm(forms.ModelForm):
 
         exclude=['author','pub-date','like']
         widgets={
-            'title': Textarea(attrs={'rows':1, 'cols':60 , 'placeholder':'Title'}),
-            'text': Textarea(attrs={'rows':8, 'cols':60,'placeholder':'Write your post here !'}),
+            'title': Textarea(attrs={'rows':1, 'placeholder':'Title'}),
+            'text': Textarea(attrs={'rows':8, 'placeholder':'Write your post here!'}),
             
         }
     

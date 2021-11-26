@@ -1,7 +1,6 @@
 Project: social Circle (social network app)
 
-Heroku link: https://cmput404-socialdist-project.herokuapp.com/post/request_post_list
-
+Heroku link: https://cmput404-socialdist-project.herokuapp.com/
 What has been done for Part 2 (Update):
 Completed (20/42 user stories)
 Will review all of our completed parts to ensure they work without any errors for part 3

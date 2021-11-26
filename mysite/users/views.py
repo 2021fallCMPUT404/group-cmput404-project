@@ -408,7 +408,7 @@ def view_t15_users(request):
     list_of_authors = []
     for i in authors['items']:
         list_of_authors.append(i)
-    return render(request, 'users/server-2.html', {'authors': list_of_authors})
+    return render(request, 'users/team15users.html', {'authors': list_of_authors})
 
 def make_external_request(url, auth):
     ext_request = requests.get(url, auth=auth, headers={'Referer': "http://127.0.0.1:8000/"})

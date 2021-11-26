@@ -27,7 +27,10 @@ from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication
-
+from rest_framework.parsers import JSONParser
+from django.http.response import JsonResponse
+from rest_framework import status
+import requests
 
 # Create your views here.
 def handle_not_found(request, exception):
@@ -475,3 +478,17 @@ class SharedPostView(View):
             author=post_object.author,
             shared_user=current_user,
             contentType=post_object.contentType).save()
+
+
+def get_t15_posts(url):
+
+    ext_request = requests.get(url, auth=('connectionsuperuser','404connection'), headers={'Referer': "http://127.0.0.1:8000/"})
+
+    ext_request = ext_request.json()
+    return ext_request
+
+
+def view_t15_posts(request):
+    url = "https://unhindled.herokuapp.com/service/allposts/"
+    posts = get_t15_posts(url)
+    return render(request, 'posts/team15posts.html', {'posts': posts})

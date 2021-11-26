@@ -115,6 +115,5 @@ class FriendRequest(models.Model):
         return f_request
 
     def summary(self):
-
         return '{} wants to follow {}'.format(self.actor.displayName,
                                               self.object.displayName)

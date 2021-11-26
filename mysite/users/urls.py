@@ -22,7 +22,7 @@ urlpatterns = [
     path('login', views.login_view, name='login'),
     path('user_home_page', views.user_home_page_view, name='user_home_page'),
     path('display_token', views.display_token, name='display_token'),
-    
+    path('generate_token', views.generate_token, name='generate_token'),
     path('<int:User_id>/followers/',
          views.follow_list,
          name='view_followers_REST'),
@@ -58,4 +58,7 @@ urlpatterns = [
     path('edit_user_profile',
          views.edit_user_profile_view,
          name='edit_user_profile'),
+     path('external-users/', views.view_t15_users, name='external_users'),
+     path('external-users/t-03/users/', views.view_t3_users, name='t03_users'),
+     path('external-users/t-03/posts/', views.view_t3_posts, name='t03_posts'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

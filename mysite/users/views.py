@@ -408,7 +408,7 @@ def view_t15_users(request):
     list_of_authors = []
     for i in authors['items']:
         list_of_authors.append(i)
-    return render(request, 'users/server-2.html', {'authors': list_of_authors})
+    return render(request, 'users/team15users.html', {'authors': list_of_authors})
 
 def view_followers(request, User_id):
     user = get_object_or_404(User, pk=User_id)

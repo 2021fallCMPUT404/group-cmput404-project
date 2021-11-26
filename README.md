@@ -7,6 +7,7 @@ What has been done for Part 2 (Update):
 - Basic athentification to allow other groups to access our data
 - UI updated and more friendly for users
 - Able to display and access post and user data from other groups
+
 WORK IN PROGRESS NOT FULLY FUNCTIONING
 2021fallCMPUT404, group-cmput404-project
 
@@ -33,6 +34,7 @@ Working functions:
 - share post
 - likes on posts and comments
 - posting markdown texts
+- posting Github activities
 
 
 Citations:

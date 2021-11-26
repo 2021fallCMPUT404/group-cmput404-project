@@ -56,6 +56,13 @@ class create_new_user(forms.ModelForm):
 
 
 class create_new_user_profile(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['displayName'].required = True
+        self.fields['bio'].required = True
+
+
+
     class Meta():
         model = User_Profile
         fields = ['displayName', 'github', 'profileImage', 'bio']

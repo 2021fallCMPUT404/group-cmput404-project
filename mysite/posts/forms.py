@@ -26,12 +26,17 @@ class CommentForm(forms.ModelForm):
 
 
 class addPostForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['title'].required = True
+        self.fields['text'].required = True
+
     class Meta:
         model = Post
         exclude=['author','pub-date','like']
         widgets={
-            'title': Textarea(attrs={'rows':3, 'cols':40}),
-            'text': Textarea(attrs={'rows':8, 'cols':40}),
+            'title': Textarea(attrs={'rows':1, 'cols':60 , 'placeholder':'Title'}),
+            'text': Textarea(attrs={'rows':8, 'cols':60,'placeholder':'Write your post here !'}),
             
         }
     

@@ -9,6 +9,7 @@
     <br>
     <!--<p>{{latest_post_list}}</p>-->
     {% for posts in latest_post_list %}
+    <hr class="mt-2 mb-3"/>
     
     <li><a href="/post/{{ posts.id }}/" class="addpost-header">
             {%if not posts.shared_user%}

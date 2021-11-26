@@ -6,10 +6,10 @@
     <script src="{% static 'javascript/requests.js' %}" type="text/JavaScript"></script>
     <div class="container">
         {% if recieved_requests %}
-            <p> You have request(s) from others right now:</p>
+            <h6 class="display-6"> You have request(s) from others right now:</h6>
             <div class="list-group">
             {% for requests in recieved_requests %}
-                <li class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true"> Request from {{requests.actor.displayName}}
+                <li class="list-group-item list-group-item-action list-group-item-dark list-group-item-action d-flex gap-3 py-3" aria-current="true"> Request from {{requests.actor.displayName}}
                  <!--<a href="">Accept</a>
                     <a href="">Reject</a>-->
                 <a href="{% url 'users:accept_request' User_id=requests.actor.user.id%}">Accept</a>
@@ -18,19 +18,22 @@
         {% endfor %}
         </div>
     {% else %}
-        <p>You have no requests from others right now.</p>
+        <h6 class="display-6">You have no requests from others right now.</h6>
+        <br>
     {% endif %}
+    <br><br>
     {% if sent_requests %}
-        <p>You have pending requests to others right now:</p>
+        <h6 class="display-6">You have pending requests to others right now:</h6>
         <div class="list-group">
         {% for pending in sent_requests%}
-            <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true" 
+            <a class="list-group-item list-group-item-action list-group-item-secondary list-group-item-action d-flex gap-3 py-3" aria-current="true" 
             href="{% url 'users:placeholder' User_id=pending.object.user.id%}"> {{pending.object.displayName}}</a>
         {% endfor %}
         </div>
     {% else %}
-        <p> You have no pending friend requests to others right now.</p>
+        <h6 class="display-6"> You have no pending friend requests to others right now.</h6>
     {% endif %}
+    <br><br>
     <a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
     </div>
 {% endblock content %}

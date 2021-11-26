@@ -1,14 +1,18 @@
 {% extends 'posts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}}
 
 
 
 {% block content %}
 <h1 class="post-header">Edit Post</h1>
 
-<div class= 'post-wrapper'>
+<div id= 'post-wrapper'>
     <form method="POST" enctype = 'multipart/form-data'>
         {% csrf_token %}
-        {{form.as_p}}
+        <table border="1" class="table table-striped table-bordered table-hover">
+            {{form.as_table}}
+        </table>
         <button class="btn btn-primary">Update</button>
         {% if post %}
             <a href="{% url 'deletepost' post.pk %}" class="btn btn-danger">Delete Post</a>

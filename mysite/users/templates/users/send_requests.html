@@ -7,14 +7,14 @@
     <div class="container align-middle">
     {% if users_list %}
         <h1>Send a friend request</h1>
-        <div class="list-group align-middle" >
+        <div class="table table-striped table-bordered table-dark table-hover table-dark align-middle" >
         {% for User in users_list%}
-            <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true" 
+            <a class="list-group-item list-group-item-action  list-group-item-dark d-flex gap-3 py-3" aria-current="true"  
             href="{% url 'users:send_friend_request' User_id=User.user.id%}"> {{User.displayName}}</a>
         {% endfor %}
         </div>
     {% else %}
-        <p> No other users.</p>
+        <h1 class="display-3"> No other users.</h1>
     {% endif %}
     <a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
         </div>

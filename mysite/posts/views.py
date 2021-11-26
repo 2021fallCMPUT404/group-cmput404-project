@@ -111,6 +111,7 @@ def likeComment(request, pk):
 
 
 class addPost(CreateView):
+    print("aa")
     model = Post
     form_class = addPostForm
 

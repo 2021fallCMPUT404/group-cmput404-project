@@ -1,4 +1,12 @@
 Project: social Circle (social network app)
+
+Heroku link: 
+
+What has been done for Part 2 (Update):
+- rest API implemented for almost all functions.
+- Basic athentification to allow other groups to access our data
+- UI updated and more friendly for users
+- Able to display and access post and user data from other groups
 WORK IN PROGRESS NOT FULLY FUNCTIONING
 2021fallCMPUT404, group-cmput404-project
 

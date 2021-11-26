@@ -6,7 +6,7 @@
     {% if authors %}
     <div class="list-users">
         {% for user in authors %}
-        <li class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true"> {{user.username}}</li>
+        <p> {{user.username}}</p>
     
         {% endfor %}
     {% endif %}

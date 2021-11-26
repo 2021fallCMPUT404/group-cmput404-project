@@ -23,6 +23,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication, get_authorization_header
+import requests
 
 Post_model = apps.get_model('posts', 'Post')
 
@@ -392,10 +393,22 @@ def view_friend_requests(request, User_id):
         'sent_requests': sent_requests
     })
 
-def view_external_users(request):
+
+def get_t15_authors(url):
+
+    ext_request = requests.get(url, auth=('connectionsuperuser','404connection'), headers={'Referer': "http://127.0.0.1:8000/"})
+
+    ext_request = ext_request.json()
+    return ext_request
+
+
+def view_t15_users(request):
     url = "https://unhindled.herokuapp.com/service/authors"
-    authors = get_authors(url)
-    return render(request, 'users/server-2.html', {'authors': authors})
+    authors = get_t15_authors(url)
+    list_of_authors = []
+    for i in authors['items']:
+        list_of_authors.append(i)
+    return render(request, 'users/server-2.html', {'authors': list_of_authors})
 
 def view_followers(request, User_id):
     user = get_object_or_404(User, pk=User_id)

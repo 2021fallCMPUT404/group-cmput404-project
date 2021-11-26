@@ -442,7 +442,7 @@ def view_friend_requests(request, User_id):
 
 def get_t15_authors(url):
 
-    ext_request = requests.get(url, auth=('connectionsuperuser','404connection'), headers={'Referer': "http://127.0.0.1:8000/"})
+    ext_request = requests.get(url, auth=('connectionsuperuser','404connection'), headers={'Referer': "https://cmput404-socialdist-project.herokuapp.com/"})
 
     ext_request = ext_request.json()
     return ext_request
@@ -457,7 +457,7 @@ def view_t15_users(request):
     return render(request, 'users/team15users.html', {'authors': list_of_authors})
 
 def make_external_request(url, auth):
-    ext_request = requests.get(url, auth=auth, headers={'Referer': "http://127.0.0.1:8000/"})
+    ext_request = requests.get(url, auth=auth, headers={'Referer': "https://cmput404-socialdist-project.herokuapp.com/"})
 
     ext_request = ext_request.json()
     return ext_request

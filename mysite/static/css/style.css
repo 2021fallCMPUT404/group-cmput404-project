@@ -13,6 +13,9 @@ div  .navbar {
     width: 30%;
   }
 
+  ul{
+    list-style: none;
+}
 
 .Welcome  {
     color: black;

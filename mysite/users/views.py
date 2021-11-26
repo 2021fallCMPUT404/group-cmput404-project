@@ -469,6 +469,7 @@ def get_user_page(request, User_id):
     return render(request, 'users/author_page_json.html', {'user_id':User_id})
 
 
+
 @login_required
 def display_token(request):
     token = Token.objects.get(user=request.user).key
@@ -477,3 +478,4 @@ def display_token(request):
                   context={'user_token': token})
 #curl -X GET http://127.0.0.1:8000/post/request_post_list -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'
 #curl -X GET http://127.0.0.1:8000/authors/send_token -H 'Authorization: Username doge Password abcde'
+

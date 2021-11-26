@@ -1,7 +1,9 @@
 from django import forms
 from django.db.models import fields
-from django.forms import widgets
+from django.forms import widgets,Textarea
 from .models import Post, Comment, Share
+
+
 
 
 class ShareForm(forms.Form):
@@ -24,10 +26,20 @@ class CommentForm(forms.ModelForm):
 
 
 class addPostForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['title'].required = True
+        self.fields['text'].required = True
+
     class Meta:
         model = Post
-        fields = ('title', 'text', 'image', 'privacy',)
+
+        exclude=['author','pub-date','like']
         widgets={
-            'title': forms.Textarea(attrs={'rows': 1}),
-            'text': forms.Textarea(attrs={'rows': 7}),
+            'title': Textarea(attrs={'rows':1, 'cols':60 , 'placeholder':'Title'}),
+            'text': Textarea(attrs={'rows':8, 'cols':60,'placeholder':'Write your post here !'}),
+            
         }
+    
+   
+

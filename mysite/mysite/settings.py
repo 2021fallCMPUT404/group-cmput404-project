@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 ]
 
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -60,6 +61,9 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT':
     'json'
 }
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -135,6 +139,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+TIME_ZONE='America/Edmonton'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

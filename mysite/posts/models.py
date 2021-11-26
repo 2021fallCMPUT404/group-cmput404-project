@@ -11,12 +11,12 @@ class Post(models.Model):
 
     PUBLIC = 0
     PRIVATE = 1
-    # FREINDS=2    #Need friend system?
+    FREINDS=2    #Need friend system?
 
     Privacy = (
         (PUBLIC, "PUBLIC"),
         (PRIVATE, "PRIVATE"),  #only shows to me
-        #(FREINDS,"FRIENDS"),
+        (FREINDS,"FRIENDS"),
         
     )
     
@@ -29,7 +29,7 @@ class Post(models.Model):
     )
 
     type = 'post'
-    title = models.TextField(default='New Post!', max_length=200, blank=True)
+    title = models.TextField( max_length=100, blank=True )
     text = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='', blank=True, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)
@@ -45,7 +45,7 @@ class Post(models.Model):
     privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
     visible=None
 
-    contentType = models.TextField(default="text/plain")
+    contentType = models.IntegerField(choices=Content,default="text/plain")
     
     like = models.ManyToManyField(User, related_name='posts_likes')
 

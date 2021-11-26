@@ -1,23 +1,70 @@
 {% extends 'posts/base.html' %}
-
+{% load static %}
+{% load crispy_forms_tags %}}
 
 
 {% block content %}
     {% if user.is_authenticated %}
+        <p></p>
+        <p></p>
         <h1 class ='post-header'>Add New Post</h1>
-        <p>What's on your mind?</p>
-        <div class= 'post-wrapper'>
+
+
+        <div class="row justify-content-center" id="post-wrapper">
+
         
-            <form method="POST"  enctype = 'multipart/form-data'>
+            <form method="POST"  enctype = 'multipart/form-data' >
                 {% csrf_token %}
-                {{form}}
-                <input type="submit" value="submit" class="btn btn-lg btn-primary btn-block">
+                <table border="1" class="table table-striped table-bordered table-hover">
+                    {{form.as_table}}
+                </table>
+                
+                
+                
+                <!--
+                <div class="form-group">
+                    {{form.title|as_crispy_field}}
+                    {{form.text|as_crispy_field}}
+
+                
+
+                
+                    {{form.image|as_crispy_field}}
+                    {{form.shared_user|as_crispy_field}}
+                    {{form.shared_on|as_crispy_field}}
+                    {{form.unlisted|as_crispy_field}}
+                    {{form.privacy|as_crispy_field}}
+                </div>
+                -->
+
+
+                
+                <!--
+                    {{form.title.errors}}
+                    
+                    {{form.text.errors}}
+                
+
+                
+                    
+                    {{form.image.errors}}
+                    {{form.shared_user.errors}}
+                    {{form.shared_on.errors}}
+                    {{form.unlisted.errors}}
+                    {{form.privacy.errors}}
+                
+                -->
+                <br><br>
+                <input type="submit" value="submit" class="btn btn-lg btn-primary btn-block" >
+                
             </form>
 
         {% else %}
             <h1>Permission Denied</h1>
 
         {% endif %}
-        <a class='return' href="{% url 'users:user_home_page'  %} ">Go Back</a>
+        
+        <a class='return' href="{% url 'users:user_home_page'  %} ">Go Back</a>  
     </div>
+    
 {% endblock content %}

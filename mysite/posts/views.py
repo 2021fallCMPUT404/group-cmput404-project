@@ -35,7 +35,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import exceptions
 import requests
 import re
-
+import datetime
 from rest_framework import authentication, permissions
 import base64
 
@@ -599,6 +599,10 @@ class addPost(CreateView):
     template_name = 'posts/addPost.html'
     success_url = reverse_lazy('feed')
 
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.pub_date=datetime.datetime.now()
+        return super().form_valid(form)
 
 class addComment(CreateView):
     model = Comment

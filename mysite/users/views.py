@@ -16,6 +16,7 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer, friend_request_serializer
 from rest_framework import routers
+from users.connect import get_authors
 #rest framework imports
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -23,10 +24,11 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
-from rest_framework.authentication import TokenAuthentication
-
+from rest_framework.authentication import TokenAuthentication, get_authorization_header
 from rest_framework import authentication, permissions
 import base64
+import requests
+import json
 
 Post_model = apps.get_model('posts', 'Post')
 
@@ -438,6 +440,46 @@ def view_friend_requests(request, User_id):
     })
 
 
+def get_t15_authors(url):
+
+    ext_request = requests.get(url, auth=('connectionsuperuser','404connection'), headers={'Referer': "http://127.0.0.1:8000/"})
+
+    ext_request = ext_request.json()
+    return ext_request
+
+
+def view_t15_users(request):
+    url = "https://unhindled.herokuapp.com/service/authors"
+    authors = get_t15_authors(url)
+    list_of_authors = []
+    for i in authors['items']:
+        list_of_authors.append(i)
+    return render(request, 'users/team15users.html', {'authors': list_of_authors})
+
+def make_external_request(url, auth):
+    ext_request = requests.get(url, auth=auth, headers={'Referer': "http://127.0.0.1:8000/"})
+
+    ext_request = ext_request.json()
+    return ext_request
+
+def view_t3_users(request):
+    url = "https://social-dis.herokuapp.com/authors/"
+    auth = ('socialdistribution_t03', 'c404t03')
+    ext_json = make_external_request(url, auth)
+    
+    print(ext_json['items'])
+    return render(request, 'users/t03_users.html', {'authors':ext_json['items']})
+
+def view_t3_posts(request):
+    url = "https://social-dis.herokuapp.com/posts/"
+    auth = ('socialdistribution_t03', 'c404t03')
+    ext_json = make_external_request(url, auth)
+
+    #print(ext_json['items'])
+    return render(request, 'users/t03_posts.html', {'post_list':ext_json['items']})
+
+
+
 def view_followers(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
@@ -479,3 +521,13 @@ def display_token(request):
 #curl -X GET http://127.0.0.1:8000/post/request_post_list -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'
 #curl -X GET http://127.0.0.1:8000/authors/send_token -H 'Authorization: Username doge Password abcde'
 
+@login_required
+def generate_token(request):
+    user = request.user
+    new_token = Token.objects.get(user=user)
+    user.token = new_token
+    user.save()
+    return HttpResponseRedirect('user_home_page')
+
+
+#curl -X GET http://127.0.0.1:8000/post/request_post_list -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'

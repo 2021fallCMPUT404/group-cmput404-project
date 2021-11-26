@@ -35,33 +35,35 @@ from rest_framework.authtoken.models import Token
 from rest_framework import exceptions
 import requests
 import re
-
+import datetime
 from rest_framework import authentication, permissions
 import base64
 
 
 class AccessPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
-        token_type, _, credentials = auth_header.partition(' ')
 
-        expected = base64.b64encode(b'socialdistribution_t05:c404t05').decode()
+        http_authorization = request.META.get('HTTP_AUTHORIZATION', '')
+        
+        token_type, _, credentials = http_authorization.partition(' ')
+        
+        expected = base64.b64encode(b'socialcircleauth:cmput404').decode()
         if token_type == 'Basic' and credentials == expected:
             return True
-
         else:
             return False
 
 
 class CustomAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
-        token_type, _, credentials = auth_header.partition(' ')
+       
+        http_authorization = request.META.get('HTTP_AUTHORIZATION', '')
+        
+        token_type, _, credentials = http_authorization.partition(' ')
 
-        expected = base64.b64encode(b'socialdistribution_t05:c404t05').decode()
+        expected = base64.b64encode(b'socialcircleauth:cmput404').decode()
         if token_type == 'Basic' and credentials == expected:
             return (True, None)
-
         else:
             return None
 
@@ -566,7 +568,9 @@ def select_github_activity(request):
     #print(request.GET)
     if request.method == 'POST':
         user_profile = User_Profile.objects.get(user=request.user)
-
+        event = request.POST.get('select_event', False)
+        if event == False:
+            return render(request, 'users/user_home_page.html')
         ast.literal_eval(request.POST['select_event'])
 
         github_data = json.loads(request.POST['select_event'])
@@ -595,11 +599,10 @@ class addPost(CreateView):
     template_name = 'posts/addPost.html'
     success_url = reverse_lazy('feed')
 
-
     def form_valid(self, form):
-        form.instance.post_id=self.kwargs['pk']
+        form.instance.author = self.request.user
+        form.instance.pub_date=datetime.datetime.now()
         return super().form_valid(form)
-
 
 class addComment(CreateView):
     model = Comment
@@ -655,6 +658,19 @@ def send_token(request, username, password):
     dict_data = ast.literal_eval(response.text)
     print(ast.literal_eval(response.text))
     return JsonResponse(dict_data, safe=False)
+
+def get_t15_posts(url):
+
+    ext_request = requests.get(url, auth=('connectionsuperuser','404connection'), headers={'Referer': "http://127.0.0.1:8000/"})
+
+    ext_request = ext_request.json()
+    return ext_request
+
+
+def view_t15_posts(request):
+    url = "https://unhindled.herokuapp.com/service/allposts/"
+    posts = get_t15_posts(url)
+    return render(request, 'posts/team15posts.html', {'posts': posts})
     
 
 

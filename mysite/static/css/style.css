@@ -13,6 +13,13 @@ div  .navbar {
     width: 30%;
   }
 
+  ul{
+    list-style: none;
+}
+
+li.nav-item:hover{
+    background-color:darkgrey;
+}
 
 .Welcome  {
     color: black;
@@ -127,3 +134,6 @@ div #post-options{
     color: red;
 }
 
+a.navbar-brand{
+    font-weight:bold;
+}

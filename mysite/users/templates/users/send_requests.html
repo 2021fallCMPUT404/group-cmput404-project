@@ -10,8 +10,10 @@
         <div class="table table-striped table-bordered table-dark table-hover table-dark align-middle" >
         {% for User in users_list%}
 
+
             <a class="list-group-item list-group-item-action  list-group-item-dark d-flex gap-3 py-3" aria-current="true"  
-                href="{% url 'users:send_friend_request' User_id=User.user.id%}"> {{User.displayName}}</a>
+                href="{% url 'users:send_friend_request' User_id=User.user.id%}"> <img src="{{ User.profileImage.url }}" width='30px' height="30"> {{User.displayName}}</a>
+
 
         {% endfor %}
         </div>

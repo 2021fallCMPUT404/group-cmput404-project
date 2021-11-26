@@ -596,6 +596,11 @@ class addPost(CreateView):
     success_url = reverse_lazy('feed')
 
 
+    def form_valid(self, form):
+        form.instance.post_id=self.kwargs['pk']
+        return super().form_valid(form)
+
+
 class addComment(CreateView):
     model = Comment
     form_class = CommentForm

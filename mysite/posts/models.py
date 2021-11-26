@@ -45,7 +45,7 @@ class Post(models.Model):
     privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
     visible=None
 
-    contentType = models.IntegerField(choices=Content,default="text/plain")
+    contentType = models.IntegerField(choices=Content,default=PLAIN)
     
     like = models.ManyToManyField(User, related_name='posts_likes')
 

@@ -3,6 +3,8 @@ Project: social Circle (social network app)
 Heroku link: 
 
 What has been done for Part 2 (Update):
+Completed (20/42 user stories)
+Will review all of our completed parts to ensure they work without any errors for part 3
 - rest API implemented for almost all functions.
 - Basic athentification to allow other groups to access our data
 - UI updated and more friendly for users

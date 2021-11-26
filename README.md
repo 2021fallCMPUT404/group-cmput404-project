@@ -10,7 +10,7 @@ Will review all of our completed parts to ensure they work without any errors fo
 - Basic athentification to allow other groups to access our data
 - UI updated and more friendly for users
 - Able to display and access post and user data from other groups
-
+- communicated with group 15 and 03
 WORK IN PROGRESS NOT FULLY FUNCTIONING
 2021fallCMPUT404, group-cmput404-project
 

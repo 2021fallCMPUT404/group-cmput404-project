@@ -134,3 +134,6 @@ div #post-options{
     color: red;
 }
 
+a.navbar-brand{
+    font-weight:bold;
+}

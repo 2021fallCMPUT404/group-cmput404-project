@@ -17,6 +17,10 @@ div  .navbar {
     list-style: none;
 }
 
+li.nav-item:hover{
+    background-color:darkgrey;
+}
+
 .Welcome  {
     color: black;
     font-size: 3em;

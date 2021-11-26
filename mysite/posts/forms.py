@@ -34,7 +34,7 @@ class addPostForm(forms.ModelForm):
     class Meta:
         model = Post
 
-        exclude=['author','pub-date','like']
+        exclude=['author','pub-date','like','shared_on']
         widgets={
             'title': Textarea(attrs={'rows':1, 'cols':60 , 'placeholder':'Title'}),
             'text': Textarea(attrs={'rows':8, 'cols':60,'placeholder':'Write your post here !'}),

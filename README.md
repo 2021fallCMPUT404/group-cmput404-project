@@ -1,6 +1,20 @@
 Project: social Circle (social network app)
+
+https://cmput404-socialdist-project.herokuapp.com/
+
+What has been done for Part 2 (Update):
+Completed (20/42 user stories)
+Will review all of our completed parts to ensure they work without any errors for part 3
+
+- rest API implemented for almost all functions.
+- Basic athentification to allow other groups to access our data
+- UI updated and more friendly for users
+- Able to display and access post and user data from other groups
+
 WORK IN PROGRESS NOT FULLY FUNCTIONING
 2021fallCMPUT404, group-cmput404-project
+
+
 
 CCID: 
 - srezwan
@@ -23,6 +37,7 @@ Working functions:
 - share post
 - likes on posts and comments
 - posting markdown texts
+- posting Github activities
 
 
 Citations:

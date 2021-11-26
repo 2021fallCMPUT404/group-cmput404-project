@@ -50,7 +50,7 @@ class CustomAuthentication(authentication.BaseAuthentication):
         auth_header = request.META.get('HTTP_AUTHORIZATION', '')
         token_type, _, credentials = auth_header.partition(' ')
 
-        expected = base64.b64encode(b'socialdistribution_t05:c404t05').decode()
+        expected = base64.b64encode(b'socialcircleauth:cmput404').decode()
         if token_type == 'Basic' and credentials == expected:
             return (True, None)
 
@@ -380,8 +380,8 @@ def send_friend_request(request, User_id):
     serializer = friend_request_serializer(f_request, many=False)
     print(serializer)
     print(serializer.data)
-    #return HttpResponseRedirect(reverse('users:request_page'))
-    return JsonResponse(serializer.data)
+    return HttpResponseRedirect(reverse('users:request_page'))
+    #return JsonResponse(serializer.data)
 
 
 def accept_friend_request(request, User_id):

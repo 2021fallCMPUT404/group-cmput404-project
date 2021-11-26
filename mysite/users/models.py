@@ -10,6 +10,8 @@ import datetime
 from posts.models import Post
 from django.urls import reverse
 
+SITE_URL = "https://cmput404-socialdist-project.herokuapp.com/"
+
 '''
 #TODO: MERGE USER_PROFILE INTO USER
 class User(AbstractUser):
@@ -39,8 +41,8 @@ class User_Profile(models.Model):
     user = models.OneToOneField(User,
                                 on_delete=models.CASCADE,
                                 related_name='user_profile')
-    host = None
-    url = None
+    host = SITE_URL
+    url = SITE_URL
     displayName = models.CharField(max_length=60, blank=True)
     profileImage = models.ImageField(
         upload_to='profile_picture',

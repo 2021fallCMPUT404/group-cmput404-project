@@ -32,23 +32,23 @@
             <ul class="navbar-nav me-auto">
   
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'users:edit_user_profile' %}"><i class="fa fa-pencil-square-o"></i>Edit profile</a>
+                <a class="nav-link active" aria-current="page" href="{% url 'users:edit_user_profile' %}"><i class="fa fa-pencil-square-o"></i> Edit Profile</a>
               </li>
   
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'users:view_requests' User_id=request.user.id %}"><i class="fa fa-search"></i>View Requests</a>
+                <a class="nav-link active" aria-current="page" href="{% url 'users:view_requests' User_id=request.user.id %}"><i class="fa fa-search"></i> View Requests</a>
               </li>
   
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'users:view_followers' User_id=request.user.id %}"><i class="fa fa-child"></i>View Followers</a>
+                <a class="nav-link active" aria-current="page" href="{% url 'users:view_followers' User_id=request.user.id %}"><i class="fa fa-child"></i> View Followers</a>
               </li>
   
-              <li class="nav-ite0">
-                <a class="nav-link active" aria-current="page" href="{% url 'users:request_page'%}"><i class="fa fa-paper-plane"></i>Send request</a>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'users:request_page'%}"><i class="fa fa-paper-plane"></i> Send Request</a>
               </li>
               
   
-              <li class="nav-item" >
+              <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{% url 'logout' %}"><i class="fa fa-power-off"></i> Logout</a>
               </li>
             

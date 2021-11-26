@@ -4,14 +4,16 @@
 
 {% block content %}
 {% load markdown_ext %}
+<a href = '/post/team15-posts/'>UNHINDLED (Group 15)</a><a href="{% url 'users:t03_posts' %}">Group 3 Posts</a>
 {% if latest_post_list %}
+
 <ul>
     <br>
     <!--<p>{{latest_post_list}}</p>-->
     {% for posts in latest_post_list %}
 
     <div class='pub-info'>
-        <p>{{posts.author}}</p>
+        <p><img src="{{ posts.author.user_profile.profileImage.url }}" width='30px' height="30"> {{posts.author}}</p>
         <p>{{posts.pub_date}} 
             {%if posts.privacy == 0%}
                 <i class="fa fa-globe"></i>
@@ -20,8 +22,6 @@
             {%endif%}
         </p>
     </div>
-
-    <hr class="mt-2 mb-3"/>
     
 
     <li><a href="/post/{{ posts.id }}/" class="addpost-header">
@@ -48,7 +48,7 @@
     {%elif posts.shared_user%}
         <p>Shared by {{ posts.shared_user }}</p>
     {% endif %}
-    <br><br>
+    <br><hr class="mt-2 mb-3"/><br>
     {% endfor %}
 </ul>
 {% else %}

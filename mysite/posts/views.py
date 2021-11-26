@@ -566,7 +566,9 @@ def select_github_activity(request):
     #print(request.GET)
     if request.method == 'POST':
         user_profile = User_Profile.objects.get(user=request.user)
-
+        event = request.POST.get('select_event', False)
+        if event == False:
+            return render(request, 'users/user_home_page.html')
         ast.literal_eval(request.POST['select_event'])
 
         github_data = json.loads(request.POST['select_event'])

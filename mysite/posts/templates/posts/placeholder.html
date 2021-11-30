@@ -19,6 +19,8 @@
         <p>{{posts.pub_date}} 
             {%if posts.privacy == 0%}
                 <i class="fa fa-globe"></i>
+            {%elif posts.privacy == 1%}
+                <i class="fa fa-user"></i>
             {%else%}
                 <i class="fa fa-users"></i>
             {%endif%}

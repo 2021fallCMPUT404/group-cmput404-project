@@ -1,4 +1,3 @@
-
 from django.http.response import HttpResponseRedirect, HttpResponseForbidden
 from django import template
 import traceback
@@ -27,7 +26,7 @@ from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
-from rest_framework.authentication import TokenAuthentication, BaseAuthentication
+from rest_framework.authentication import TokenAuthentication, BaseAuthentication, SessionAuthentication, BasicAuthentication
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
@@ -38,32 +37,31 @@ import re
 import datetime
 from rest_framework import authentication, permissions
 import base64
+from rest_framework.views import APIView
 
 
 class AccessPermission(permissions.BasePermission):
     def has_permission(self, request, view):
+        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+        token_type, _, credentials = auth_header.partition(' ')
 
-        http_authorization = request.META.get('HTTP_AUTHORIZATION', '')
-        
-        token_type, _, credentials = http_authorization.partition(' ')
-        
-        expected = base64.b64encode(b'socialcircleauth:cmput404').decode()
+        expected = base64.b64encode(b'socialdistribution_t05:c404t05').decode()
         if token_type == 'Basic' and credentials == expected:
             return True
+
         else:
             return False
 
 
 class CustomAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-       
-        http_authorization = request.META.get('HTTP_AUTHORIZATION', '')
-        
-        token_type, _, credentials = http_authorization.partition(' ')
+        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+        token_type, _, credentials = auth_header.partition(' ')
 
         expected = base64.b64encode(b'socialcircleauth:cmput404').decode()
         if token_type == 'Basic' and credentials == expected:
             return (True, None)
+
         else:
             return None
 
@@ -125,9 +123,9 @@ def placeholder(request):
             elif p.privacy == 1:  #private: visible to creator
                 if p.author == current_user:
                     authorized_posts.append(p)
-    
-    if len(authorized_posts)<5: #fill up the list if necessary
-        if len(backup_list)>0:
+
+    if len(authorized_posts) < 5:  #fill up the list if necessary
+        if len(backup_list) > 0:
             for p in backup_list:
                 if p.unlisted:  #unlisted posts: always visible to creator
                     if p.author == current_user:
@@ -139,7 +137,7 @@ def placeholder(request):
                     elif p.privacy == 1:  #private: visible to creator
                         if p.author == current_user:
                             authorized_posts.append(p)
-                if len(authorized_posts)==5:
+                if len(authorized_posts) == 5:
                     break
 
     #NEED FRIEND POST
@@ -169,6 +167,207 @@ def likePost(request, pk):
     return HttpResponseRedirect(reverse('post_placeholder', args=[str(pk)]))
 
 
+class HandleAuthorPost(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, AUTHOR_ID, POST_ID, format=None):
+        try:
+            user = User.objects.get(id=AUTHOR_ID)
+            post = Post.objects.get(id=POST_ID)
+            if post.author.username != user.username:
+                return JsonResponse(
+                    {
+                        'message':
+                        'The post author id does not match the provided user id'
+                    },
+                    status=status.HTTP_403_FORBIDDEN)
+            if post.privacy != 0:
+                return JsonResponse({'message': 'This is not a public post.'},
+                                    status=status.HTTP_403_FORBIDDEN)
+            post_serializer = PostSerializer(post)
+            return Response(post_serializer.data)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, AUTHOR_ID, POST_ID, format=None):
+        try:
+            #related_post = Post.objects.get(id=id)
+
+            #This part of code will check if the token from request matches the token of author.
+            user = User.objects.get(id=AUTHOR_ID)
+            '''
+            user_token = Token.objects.get(user=user)
+            entered_token = re.findall('(?:Token\s)(\w*)',
+                                       request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse(
+                    {'message': 'The token user does not match the post user'},
+                    status=status.HTTP_403_FORBIDDEN)
+            '''
+            #End of this part of code.
+
+            data = JSONParser().parse(request)
+            data['author'] = AUTHOR_ID
+            data['id'] = POST_ID
+            '''
+            if Post.objects.filter(id=POST_ID).exists():
+                post_serializer = PostSerializer(post, data=data)
+            else:
+                post_serializer = PostSerializer(data=data)
+            '''
+            try:
+                post = Post.objects.get(id=POST_ID)
+
+                #post = Post.objects.get(id=POST_ID)
+                post_serializer = PostSerializer(post, data=data)
+                if post_serializer.is_valid():
+
+                    post_serializer.save()
+                    print(post_serializer.data)
+                    return JsonResponse(post_serializer.data)
+            except Post.DoesNotExist:
+                post_serializer = PostSerializer(data=data)
+                if post_serializer.is_valid():
+
+                    post_serializer.save()
+                    print(post_serializer.data)
+                    return JsonResponse(post_serializer.data)
+            return JsonResponse(post_serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, AUTHOR_ID, POST_ID, format=None):
+        try:
+            #This part of code will check if the token from request matches the token of author.
+            user = User.objects.get(id=AUTHOR_ID)
+            '''
+            user_token = Token.objects.get(user=user)
+            entered_token = re.findall('(?:Token\s)(\w*)',
+                                       request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse(
+                    {'message': 'The token user does not match the post user'},
+                    status=status.HTTP_403_FORBIDDEN)
+            '''
+            #End of this part of code.
+
+            post = Post.objects.get(id=POST_ID)
+            if post.author.id != user.id:
+                return JsonResponse(
+                    {
+                        'message':
+                        'The post author id does not match the provided user id'
+                    },
+                    status=status.HTTP_403_FORBIDDEN)
+            data = JSONParser().parse(request)
+            post_serializer = PostSerializer(post, data=data)
+            if post_serializer.is_valid():
+                post_serializer.save()
+                return JsonResponse(post_serializer.data)
+            return JsonResponse(post_serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, AUTHOR_ID, POST_ID, format=None):
+        try:
+
+            #This part of code will check if the token from request matches the token of author.
+            user = User.objects.get(id=AUTHOR_ID)
+            '''
+            user_token = Token.objects.get(user=related_post.author)
+            entered_token = re.findall('(?:Token\s)(\w*)',
+                                       request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse(
+                    {'message': 'The token user does not match the post user'},
+                    status=status.HTTP_403_FORBIDDEN)
+            '''
+            #End of this part of code
+
+            post = Post.objects.get(id=POST_ID)
+            if post.author.id != user.id:
+                return JsonResponse(
+                    {
+                        'message':
+                        'The post author id does not match the provided user id'
+                    },
+                    status=status.HTTP_403_FORBIDDEN)
+
+            post.delete()
+            return JsonResponse({'message': 'Post was deleted'},
+                                status=status.HTTP_204_NO_CONTENT)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+
+class MangePostUnderUser(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, AUTHOR_ID, format=None):
+        try:
+            user = User.objects.get(id=AUTHOR_ID)
+            posts = Post.objects.filter(author=user)
+            posts_serializer = PostSerializer(posts, many=True)
+            return JsonResponse(posts_serializer.data, safe=False)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, AUTHOR_ID, format=None):
+        try:
+            user = User.objects.get(id=AUTHOR_ID)
+
+            #This part of code will check if the token from request matches the token of author.
+            '''
+            user_token = Token.objects.get(user=user)
+            entered_token = re.findall('(?:Token\s)(\w*)',
+                                       request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse(
+                    {'message': 'The token user does not match the post user'},
+                    status=status.HTTP_403_FORBIDDEN)
+            '''
+            #End of this part of code.
+
+            data = JSONParser().parse(request)
+            post_serializer = PostSerializer(data=data)
+            if post_serializer.is_valid():
+                post_serializer.save()
+                return JsonResponse(post_serializer.data,
+                                    status=status.HTTP_201_CREATED)
+            return JsonResponse(post_serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+
 @api_view(['GET'])
 @authentication_classes([CustomAuthentication])
 @permission_classes([AccessPermission])
@@ -178,16 +377,12 @@ def request_post_list(request):
     return Response(posts_serializer.data)
 
 
-
-
-
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def create_new_post(request):
     if request.method == 'POST':
         try:
-
             data = JSONParser().parse(request)
             post_serializer = PostSerializer(data=data)
             if post_serializer.is_valid():
@@ -200,6 +395,7 @@ def create_new_post(request):
             return JsonResponse(
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['GET'])
 @authentication_classes([CustomAuthentication])
@@ -215,6 +411,8 @@ def get_posts_from_user(request, username):
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
+
+
 @api_view(['POST', 'DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -271,6 +469,7 @@ def manage_user_post(request, username):
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['GET'])
 @authentication_classes([CustomAuthentication])
 @permission_classes([AccessPermission])
@@ -284,6 +483,7 @@ def request_post(request, id):
             return JsonResponse(
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['PUT', 'DELETE'])
 @authentication_classes([TokenAuthentication])
@@ -349,6 +549,7 @@ def crud_post(request, id):
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['GET'])
 @authentication_classes([CustomAuthentication])
 @permission_classes([AccessPermission])
@@ -364,11 +565,12 @@ def get_comments_from_post(request, post_id):
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['POST', 'DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def manage_post_comment(request, post_id):
- 
+
     if request.method == 'POST':
         try:
             related_post = Post.objects.get(id=post_id)
@@ -421,6 +623,7 @@ def manage_post_comment(request, post_id):
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['GET'])
 @authentication_classes([CustomAuthentication])
 @permission_classes([AccessPermission])
@@ -434,6 +637,7 @@ def request_comment(request, comment_id):
             return JsonResponse(
                 {'message': 'The requested comment does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['PUT', 'DELETE'])
 @authentication_classes([TokenAuthentication])
@@ -462,6 +666,7 @@ def crud_comment(request, comment_id):
             return JsonResponse(
                 {'message': 'The requested comment does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['GET'])
 @authentication_classes([CustomAuthentication])
@@ -515,6 +720,7 @@ def manage_post_like(request, post_id):
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['GET'])
 @authentication_classes([CustomAuthentication])
 @permission_classes([AccessPermission])
@@ -529,11 +735,12 @@ def request_like(request, like_id):
                 {'message': 'The requested like does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['PUT', 'DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def crud_like(request, like_id):
-    
+
     if request.method == 'PUT':
         try:
             related_like = Like.objects.get(id=like_id)
@@ -601,8 +808,9 @@ class addPost(CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.pub_date=datetime.datetime.now()
+        form.instance.pub_date = datetime.datetime.now()
         return super().form_valid(form)
+
 
 class addComment(CreateView):
     model = Comment
@@ -630,7 +838,6 @@ class deletePost(DeleteView):
 
 
 class SharedPostView(View):
-
     def get(self, request, pk):
         post_object = get_object_or_404(Post, pk=pk)
         current_user = request.user
@@ -654,14 +861,19 @@ def send_token(request, username, password):
 
     data = {'username': username, 'password': password}
 
-    response = requests.post('https://cmput404-socialdist-project.herokuapp.com/api-token-auth/', json=data)
+    response = requests.post(
+        'https://cmput404-socialdist-project.herokuapp.com/api-token-auth/',
+        json=data)
     dict_data = ast.literal_eval(response.text)
     print(ast.literal_eval(response.text))
     return JsonResponse(dict_data, safe=False)
 
+
 def get_t15_posts(url):
 
-    ext_request = requests.get(url, auth=('connectionsuperuser','404connection'), headers={'Referer': "http://127.0.0.1:8000/"})
+    ext_request = requests.get(url,
+                               auth=('connectionsuperuser', '404connection'),
+                               headers={'Referer': "http://127.0.0.1:8000/"})
 
     ext_request = ext_request.json()
     return ext_request
@@ -671,7 +883,6 @@ def view_t15_posts(request):
     url = "https://unhindled.herokuapp.com/service/allposts/"
     posts = get_t15_posts(url)
     return render(request, 'posts/team15posts.html', {'posts': posts})
-    
 
 
 #curl -X POST -d "username=1&password=12345" http://127.0.0.1:8000/api-token-auth/

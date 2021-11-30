@@ -1,13 +1,19 @@
-{% extends "users/home_page.html" %}
+{% extends "users/login-picture.html" %}
+
+
+
+
 
 {% block content %}
 
-<div class = 'wrapper'>
+
+
+<div class = "wrapper" style="margin-top: 200px;">
     <form action="{% url 'users:login' %}" method="post" enctype="multipart/form-data" class='form-signin'>
         {% csrf_token %}
-        <h1 class = 'Welcome'>Social Circle</h1>
+        <h1 class = "Welcome">Social Circle</h1>
         
-                <label for='username' class='login-form'> Please enter your username</label>
+                <label for="username" class="login-form"> Please enter your username</label>
                 <input type="text" name="username" placeholder="Username" class='form-control' required="" autofocus=""  > 
             
                 <label for='password' class='login-form'> Please enter your password</label>
@@ -20,4 +26,5 @@
         </div>
     </form>
 </div>
+
 {% endblock content %}

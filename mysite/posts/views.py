@@ -16,7 +16,7 @@ from django.urls import reverse_lazy, reverse
 from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
 from django.shortcuts import render
-from users.models import User_Profile
+from users.models import User_Profile, UserFollows
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -110,6 +110,8 @@ def placeholder(request):
     backup_list = Post.objects.order_by('-pub_date')[5:]
     template = loader.get_template('posts/placeholder.html')
     current_user = User.objects.get(id=request.user.id)
+    user_profile = get_object_or_404(User_Profile, user=current_user)
+    followers = UserFollows.objects.filter(object=user_profile)
     authorized_posts = []
     print(current_user)
     for p in latest_post_list:
@@ -123,6 +125,10 @@ def placeholder(request):
             elif p.privacy == 1:  #private: visible to creator
                 if p.author == current_user:
                     authorized_posts.append(p)
+                else:
+                    for f in followers:
+                        if f.actor.displayName == p.author.user_profile.displayName:
+                            authorized_posts.append(p)
 
     if len(authorized_posts) < 5:  #fill up the list if necessary
         if len(backup_list) > 0:
@@ -137,6 +143,10 @@ def placeholder(request):
                     elif p.privacy == 1:  #private: visible to creator
                         if p.author == current_user:
                             authorized_posts.append(p)
+                        else:
+                            for f in followers:
+                                if f.actor.displayName == p.author.user_profile.displayName:
+                                    authorized_posts.append(p)
                 if len(authorized_posts) == 5:
                     break
 
@@ -147,7 +157,7 @@ def placeholder(request):
 
     context = {
         'latest_post_list': authorized_posts,
-        'current_user': current_user
+        'current_user': current_user,
     }
 
     return HttpResponse(template.render(context, request))

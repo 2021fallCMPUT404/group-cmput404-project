@@ -6,18 +6,19 @@ if (document.querySelector('[name=csrfmiddlewaretoken]')){
 }
 
 
-function fetchJSON(uri, m='GET', b=''){
+function fetchJSON(uri, m='GET', b='',){
+    var auth = {'Authorization': 'Basic' + btoa('socialcircleauth:cmput404')}
     if (m === "GET" || m === "DELETE"){
         if (tokenBool){
             var request = new Request(uri, {method:m, headers:{'X-CSRFToken':csrfToken}});
         } else {
-            var request = new Request(uri, {method:m});
+            var request = new Request(uri, {method:m, headers:auth});
         }
     } else if (m ==='POST' || m === "PUT") {
         if (tokenBool){
             var request = new Request(uri, {method:m, headers:{'X-CSRFToken':csrfToken}, body:JSON.stringify(b)});
         } else {
-            var request = new Request(uri, {method:m, body:JSON.stringify(b)});
+            var request = new Request(uri, {method:m, headers:auth, body:JSON.stringify(b)});
         }
     }
     //console.log(request.method);
@@ -35,7 +36,7 @@ function fetchJSON(uri, m='GET', b=''){
 function unfollowUser(user_id, foreign_id){
     // This will make a DELETE request to the url
     // The foreign_id user will unfollow the user_id user
-    var url = 'http://' + location.host + '/authors/' + user_id + '/followers/' + foreign_id + '/'
+    var url = 'https://' + location.host + '/authors/' + user_id + '/followers/' + foreign_id + '/'
 
     fetchJSON(url, m="DELETE").then((json) => {
         console.log("Delete request json: " + json);
@@ -53,7 +54,7 @@ function viewFollowerList(user_id){
     //console.log("CALLING FOLLOWER FUNCTION")
     var wrapper = document.getElementById('followers')
     //console.log(wrapper.length)
-    var url = 'http://' + location.host + '/authors/' + user_id + '/followers/'
+    var url = 'https://' + location.host + '/authors/' + user_id + '/followers/'
 
     fetchJSON(url).then((json) => {
         console.log("Printing Follower list JSON:");
@@ -65,7 +66,7 @@ function viewFollowerList(user_id){
         for (var i in list){
             var user = list[i]
             console.log('PRINTING LIST' + Object.keys(list[i]));
-            var userPage = 'http://' + location.host + "/authors/" + list[i].user + "/";
+            var userPage = 'https://' + location.host + "/authors/" + list[i].user + "/";
             var item = '<div class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">';
             item += "<a href=" + userPage + '>';
             item += '<img src=' + list[i].profileImage + ' alt="NO IMAGE" class="rounded-circle flex-shrink-0" width="100"></a>';
@@ -99,7 +100,7 @@ function viewFollowingList(user_id){
         for (var i in list){
             var user = list[i]
             console.log('PRINTING LIST' + Object.keys(list[i]));
-            var userPage = 'http://' + location.host + "/authors/" + list[i].user + "/";
+            var userPage = 'https://' + location.host + "/authors/" + list[i].user + "/";
             var item = '<div class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">';
             item += "<a href=" + userPage + '>';
             item += '<img src=' + list[i].profileImage + ' alt="NO IMAGE" class="rounded-circle flex-shrink-0" width="100"></a>';
@@ -118,7 +119,7 @@ function viewFollowingList(user_id){
 }
 
 function fetchUserPage(user_id, host=location.host){
-    var url = 'http://' + host + '/authors/' + user_id + '/'
+    var url = 'https://' + host + '/authors/' + user_id + '/'
 
     var frame = document.getElementsByTagName('body');
     console.log(frame)

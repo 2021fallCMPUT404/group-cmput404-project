@@ -10,7 +10,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('title', 'text', 'image', 'pub_date', 'author',
+        fields = ('id', 'title', 'text', 'image', 'pub_date', 'author',
                   'shared_user', 'shared_on', 'privacy', 'contentType')
 
     def create(self, validated_data):
@@ -19,6 +19,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
 
+        instance.id = validated_data.get('id', instance.id)
         instance.title = validated_data.get('title', instance.title)
         instance.text = validated_data.get('text', instance.text)
         instance.image = validated_data.get('image', instance.image)
@@ -38,9 +39,11 @@ class PostSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
 
     author = userPSerializer(many=False, read_only=True)
+
     class Meta:
         model = Comment
-        fields = ('type', 'author', 'post', 'comment_body', 'comment_created', 'id')
+        fields = ('type', 'author', 'post', 'comment_body', 'comment_created',
+                  'id')
 
 
 class LikeSerializer(serializers.ModelSerializer):

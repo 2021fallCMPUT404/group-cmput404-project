@@ -22,6 +22,10 @@ li.nav-item:hover{
     background-color:darkgrey;
 }
 
+li.nav-item-spec:hover{
+    background-color:red;
+}
+
 .Welcome  {
     color: black;
     font-size: 3em;
@@ -136,4 +140,12 @@ div #post-options{
 
 a.navbar-brand{
     font-weight:bold;
+}
+
+a.nav-link{
+    color: white;
+}
+
+a.nav-link:hover{
+    color: white;
 }

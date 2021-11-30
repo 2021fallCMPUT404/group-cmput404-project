@@ -127,13 +127,17 @@ def placeholder(request):
             elif p.privacy == 1:  #private: visible to creator
                 if p.author == current_user:
                     authorized_posts.append(p)
+
+            else: #friend: visible to creator and friends only
+                if p.author == current_user:
+                    authorized_posts.append(p)
                 else:
                     for f in followers:
-                        if f.actor.displayName==p.author.user_profile.displayName:
+                        if f.actor.displayName == p.author.user_profile.displayName:
                             authorized_posts.append(p)
     
-    if len(authorized_posts)<5: #fill up the list if necessary
-        if len(backup_list)>0:
+    if len(authorized_posts) < 5: #fill up the list if necessary
+        if len(backup_list) > 0:
             for p in backup_list:
                 if p.unlisted:  #unlisted posts: always visible to creator
                     if p.author == current_user:
@@ -145,11 +149,16 @@ def placeholder(request):
                     elif p.privacy == 1:  #private: visible to creator
                         if p.author == current_user:
                             authorized_posts.append(p)
+
+                    else: #friend: visible to creator and friends only
+                        if p.author == current_user:
+                            authorized_posts.append(p)
                         else:
                             for f in followers:
-                                if f.actor.displayName==p.author.user_profile.displayName:
+                                if f.actor.displayName == p.author.user_profile.displayName:
                                     authorized_posts.append(p)
-                if len(authorized_posts)==5:
+
+                if len(authorized_posts) == 5:
                     break
 
     #NEED FRIEND POST

@@ -81,6 +81,8 @@ def post(request, Post_id):
     current_user = User.objects.get(id=request.user.id)
     print(current_user)
     post = get_object_or_404(Post, pk=Post_id)
+    user_profile = get_object_or_404(User_Profile, user=current_user)
+    followers = UserFollows.objects.filter(object=user_profile)
 
     share_form = ShareForm()
     user = request.user
@@ -100,6 +102,23 @@ def post(request, Post_id):
                 'post': post,
                 'user_name': username
             })
+
+    elif post.privacy == 2:
+        if post.author == current_user:
+            print("friend ")
+            return render(request, 'posts/post.html', {
+                'post': post,
+                'user_name': username
+            })
+        else:
+            for f in followers:
+                if f.actor.displayName == post.author.user_profile.displayName:
+                    print("friend ")
+                    return render(request, 'posts/post.html', {
+                        'post': post,
+                        'user_name': username
+                    })
+
 
     return render(request, 'not_found.html')
 
@@ -128,7 +147,7 @@ def placeholder(request):
                 if p.author == current_user:
                     authorized_posts.append(p)
 
-            else: #friend: visible to creator and friends only
+            elif p.privacy == 2: #friend: visible to creator and friends only
                 if p.author == current_user:
                     authorized_posts.append(p)
                 else:
@@ -150,7 +169,7 @@ def placeholder(request):
                         if p.author == current_user:
                             authorized_posts.append(p)
 
-                    else: #friend: visible to creator and friends only
+                    elif p.privacy == 2: #friend: visible to creator and friends only
                         if p.author == current_user:
                             authorized_posts.append(p)
                         else:

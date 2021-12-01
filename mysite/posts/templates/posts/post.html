@@ -6,9 +6,7 @@
     <p>Text: {{post.text}}</p>
     {% if post.image %}
     <img src='{{post.image.url}}' width="30%">
-    {% endif %}
-
-    {% if post.image_link %}
+    {% elif post.image_link %}
         <img src='{{post.image_link}}' width="30%">
     {% endif %}
     <p>Date: {{post.pub_date}}</p>

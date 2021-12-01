@@ -116,6 +116,16 @@ def post(request, Post_id):
                         'post': post,
                         'user_name': username
                     })
+                else:
+                    if post.shared_user != None:
+                        friend = User.objects.get(id=post.shared_user.id)
+                        friends_profile = get_object_or_404(User_Profile, user=friend)
+                        if f.actor.displayName == friends_profile.displayName:
+                            print("friend ")
+                            return render(request, 'posts/post.html', {
+                                'post': post,
+                                'user_name': username
+                            })
 
 
     return render(request, 'not_found.html')
@@ -152,6 +162,12 @@ def placeholder(request):
                     for f in followers:
                         if f.actor.displayName == p.author.user_profile.displayName:
                             authorized_posts.append(p)
+                        else:
+                            if p.shared_user != None:
+                                friend = User.objects.get(id=p.shared_user.id)
+                                friends_profile = get_object_or_404(User_Profile, user=friend)
+                                if f.actor.displayName == friends_profile.displayName:
+                                    authorized_posts.append(p)
 
     if len(authorized_posts) < 5:  #fill up the list if necessary
         if len(backup_list) > 0:
@@ -174,6 +190,12 @@ def placeholder(request):
                             for f in followers:
                                 if f.actor.displayName == p.author.user_profile.displayName:
                                     authorized_posts.append(p)
+                                else:
+                                    if p.shared_user != None:
+                                        friend = User.objects.get(id=p.shared_user.id)
+                                        friends_profile = get_object_or_404(User_Profile, user=friend)
+                                        if f.actor.displayName == friends_profile.displayName:
+                                            authorized_posts.append(p)
 
                 if len(authorized_posts) == 5:
                     break
@@ -892,6 +914,7 @@ class SharedPostView(View):
             pub_date=post_object.pub_date,
             author=post_object.author,
             shared_user=current_user,
+            privacy=post_object.privacy,
             contentType=post_object.contentType).save()
         return HttpResponseRedirect(reverse('feed'))
 

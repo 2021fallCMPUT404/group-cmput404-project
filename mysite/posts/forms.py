@@ -38,7 +38,7 @@ class addPostForm(forms.ModelForm):
         widgets={
             'title': Textarea(attrs={'rows':1, 'placeholder':'Title'}),
             'text': Textarea(attrs={'rows':8, 'placeholder':'Write your post here!'}),
-            
+            'image_link': Textarea(attrs={'rows':3, 'placeholder':'Add link to your image here!'}),
         }
     
    

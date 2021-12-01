@@ -865,7 +865,7 @@ class addComment(CreateView):
 class updatePost(UpdateView):
     model = Post
     template_name = 'posts/editPost.html'
-    fields = ['title', 'text', 'image']
+    fields = ['title', 'text', 'image', 'image_link']
     success_url = reverse_lazy('feed')
 
 
@@ -888,6 +888,7 @@ class SharedPostView(View):
             title=post_object.title,
             text=post_object.text,
             image=post_object.image,
+            image_link=post_object.image_link,
             pub_date=post_object.pub_date,
             author=post_object.author,
             shared_user=current_user,

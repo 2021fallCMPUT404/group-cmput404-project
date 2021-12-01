@@ -1,4 +1,3 @@
-
 from django.http.response import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from . import views
@@ -7,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from .models import User, Create_user, User_Profile, FriendRequest, UserFollows
 from posts.views import *  #Will change this later on
-from posts.serializers import * #Also will change this too
+from posts.serializers import *  #Also will change this too
 from django.apps import apps
 from . import create_user_form
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
@@ -31,6 +30,7 @@ import requests
 import json
 
 Post_model = apps.get_model('posts', 'Post')
+
 
 class AccessPermission(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -57,9 +57,14 @@ class CustomAuthentication(authentication.BaseAuthentication):
         else:
             return None
 
+    def authenticate_header(self, request):
+        return '{"username" : <username>, "password" : <password>}'
+
+
 @api_view(['GET'])
 def apiOverview(request):
     return Response("API BASE POINT", safe=False)
+
 
 #TODO: ADD PAGINATION WHERE NEEDED
 @api_view(['GET'])
@@ -69,6 +74,7 @@ def UserList(request):
     user_profiles = User_Profile.objects.all()
     serializer = userPSerializer(user_profiles, many=True)
     return Response({'type': 'authors', 'items': serializer.data})
+
 
 @api_view(['GET'])
 @authentication_classes([CustomAuthentication])
@@ -81,6 +87,8 @@ def userGet(request, User_id):
     if request.method == "GET":
         serializer = userPSerializer(user_profile, many=False)
         return Response(serializer.data)
+
+
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -89,7 +97,7 @@ def userPost(request, User_id):
     print(user)
     print(user.id, User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
-    
+
     if request.method == "POST":
         serializer = userPSerializer(instance=user_profile, data=request.data)
         if serializer.is_valid():
@@ -125,6 +133,7 @@ def following_list(request, User_id):
     serializer = userPSerializer(object_list, many=True)
     return Response({'type': 'following', 'items': serializer.data})
 
+
 @api_view(['GET'])
 @authentication_classes([CustomAuthentication])
 @permission_classes([AccessPermission])
@@ -140,6 +149,7 @@ def get_follow(request, User_id, Foreign_id):
         print('PRINTING DATA:', serializer)
         return Response(serializer.data)
 
+
 @api_view(['PUT', 'DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -148,7 +158,7 @@ def follow_crud(request, User_id, Foreign_id):
     foreign_user = get_object_or_404(User, pk=Foreign_id)
     user_profile = get_object_or_404(User_Profile, user=user)
     foreign_user_profile = get_object_or_404(User_Profile, user=foreign_user)
-    
+
     if request.method == 'PUT':
         #TODO: PUT METHOD NEEDS TO BE AUTHENTICATED
         #f_request, created = FriendRequest.objects.get_or_create(actor=foreign_user_profile, object=user_profile)
@@ -179,11 +189,14 @@ def get_post_comments(request, User_id, post_id):
     elif request.method == "POST":
         return
     else:
-        return HttpResponseBadRequest("Method {} is not allowed".format(request.method))
+        return HttpResponseBadRequest("Method {} is not allowed".format(
+            request.method))
 
     return Response()
 
     return Response('')
+
+
 def homepage(request):
     return HttpResponse("Placeholder homepage")
 
@@ -376,7 +389,8 @@ def send_friend_request(request, User_id):
     #Checks if the object_profile is valid
     object_profile = get_object_or_404(User_Profile, user_id=User_id)
     #TODO: CHECK IF THE ACTOR IS ALREADY FOLLOWING THE OBJECT
-    f_request = FriendRequest.create_friend_request(request_profile, object_profile)
+    f_request = FriendRequest.create_friend_request(request_profile,
+                                                    object_profile)
     serializer = friend_request_serializer(f_request, many=False)
     print(serializer)
     print(serializer.data)
@@ -442,7 +456,12 @@ def view_friend_requests(request, User_id):
 
 def get_t15_authors(url):
 
-    ext_request = requests.get(url, auth=('connectionsuperuser','404connection'), headers={'Referer': "https://cmput404-socialdist-project.herokuapp.com/"})
+    ext_request = requests.get(
+        url,
+        auth=('connectionsuperuser', '404connection'),
+        headers={
+            'Referer': "https://cmput404-socialdist-project.herokuapp.com/"
+        })
 
     ext_request = ext_request.json()
     return ext_request
@@ -454,21 +473,31 @@ def view_t15_users(request):
     list_of_authors = []
     for i in authors['items']:
         list_of_authors.append(i)
-    return render(request, 'users/team15users.html', {'authors': list_of_authors})
+    return render(request, 'users/team15users.html',
+                  {'authors': list_of_authors})
+
 
 def make_external_request(url, auth):
-    ext_request = requests.get(url, auth=auth, headers={'Referer': "https://cmput404-socialdist-project.herokuapp.com/"})
+    ext_request = requests.get(
+        url,
+        auth=auth,
+        headers={
+            'Referer': "https://cmput404-socialdist-project.herokuapp.com/"
+        })
 
     ext_request = ext_request.json()
     return ext_request
+
 
 def view_t3_users(request):
     url = "https://social-dis.herokuapp.com/authors/"
     auth = ('socialdistribution_t03', 'c404t03')
     ext_json = make_external_request(url, auth)
-    
+
     print(ext_json['items'])
-    return render(request, 'users/t03_users.html', {'authors':ext_json['items']})
+    return render(request, 'users/t03_users.html',
+                  {'authors': ext_json['items']})
+
 
 def view_t3_posts(request):
     url = "https://social-dis.herokuapp.com/posts/"
@@ -476,8 +505,8 @@ def view_t3_posts(request):
     ext_json = make_external_request(url, auth)
 
     #print(ext_json['items'])
-    return render(request, 'users/t03_posts.html', {'post_list':ext_json['items']})
-
+    return render(request, 'users/t03_posts.html',
+                  {'post_list': ext_json['items']})
 
 
 def view_followers(request, User_id):
@@ -504,12 +533,11 @@ def send_request_page(request):
     return render(request, 'users/send_requests.html',
                   {'users_list': users_list})
 
-                  
+
 def get_user_page(request, User_id):
     user = get_object_or_404(User, pk=User_id)
-    user_profile = get_object_or_404(User_Profile, user_id = User_id)
-    return render(request, 'users/author_page_json.html', {'user_id':User_id})
-
+    user_profile = get_object_or_404(User_Profile, user_id=User_id)
+    return render(request, 'users/author_page_json.html', {'user_id': User_id})
 
 
 @login_required
@@ -518,8 +546,11 @@ def display_token(request):
     return render(request,
                   'users/display_token.html',
                   context={'user_token': token})
+
+
 #curl -X GET http://127.0.0.1:8000/post/request_post_list -H 'Authorization: Token 8a91340fa2849cdc7e0e7aa07f4b2c0e91f09a3a'
 #curl -X GET http://127.0.0.1:8000/authors/send_token -H 'Authorization: Username doge Password abcde'
+
 
 @login_required
 def generate_token(request):

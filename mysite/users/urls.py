@@ -68,5 +68,10 @@ urlpatterns = [
          name='HandleAuthorPost'),
     path('<int:AUTHOR_ID>',
          post_views.MangePostUnderUser.as_view(),
-         name='MangePostUnderUser')
+         name='MangePostUnderUser'),
+     path('<int:AUTHOR_ID>/posts/<int:POST_ID>/comments', post_views.HandleAuthorPostComment.as_view(), name = 'HandleAuthorPostComment'),
+     path('<int:AUTHOR_ID>/inbox/', post_views.HandleInboxLike.as_view(), name = 'HandleInboxLike'),
+     path('<int:AUTHOR_ID>/post/<int:POST_ID>/likes', post_views.HandlePostLikeList.as_view(), name = 'HandlePostLikeList'),
+     path('<int:AUTHOR_ID>/post/<int:POST_ID>/comments/<int:COMMENT_ID>/likes', post_views.HandleCommentLike.as_view(), name = 'HandleCommentLike')
+     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

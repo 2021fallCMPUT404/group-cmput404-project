@@ -1,11 +1,19 @@
 from django.db import models
 from django.conf import settings
-#from django.contrib.auth.models import User
+from django.db.models.fields import related
+from django.contrib.auth.models import User
+from django.apps import apps
 from django.db.models.fields.related import ForeignKey
-from users.models import User
+#from users.models import Inbox
+#from users.models import User
+#Inbox = apps.get_model('users', 'Inbox')
+#import django
+#django.setup()
+
+from django.apps import apps
 import uuid
 from django.urls import reverse
-
+#Inbox = apps.get_model('users', 'Inbox')
 
 class Post(models.Model):
 
@@ -88,8 +96,12 @@ class Like(models.Model):
                              on_delete=models.CASCADE)
     post = models.ForeignKey(Post,
                              related_name='likes',
+                             blank=True, null=True,
                              on_delete=models.CASCADE)
 
+    #inbox = models.ForeignKey(Inbox, related_name='inbox', blank=True, null=True, on_delete=models.CASCADE)
+
+    comment = models.ForeignKey(Comment, related_name='comment', blank=True, null=True, on_delete=models.CASCADE)
 
 class Share(models.Model):
     id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

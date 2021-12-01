@@ -39,9 +39,7 @@
 
         {% if posts.image %}
         <img src='{{posts.image.url}}' width="30%">
-        {% endif %}
-
-        {% if posts.image_link %}
+        {% elif posts.image_link %}
         <img src='{{posts.image_link}}' width="30%">
         {% endif %}
         

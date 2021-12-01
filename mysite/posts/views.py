@@ -90,7 +90,8 @@ def post(request, Post_id):
         print("Public")
         return render(request, 'posts/post.html', {
             'post': post,
-            'user_name': username
+            'user_name': username,
+            'followers': followers
         })
 
     elif post.privacy == 1:
@@ -98,7 +99,8 @@ def post(request, Post_id):
             print("private ")
             return render(request, 'posts/post.html', {
                 'post': post,
-                'user_name': username
+                'user_name': username,
+                'followers': followers
             })
 
     elif post.privacy == 2:
@@ -106,7 +108,8 @@ def post(request, Post_id):
             print("friend ")
             return render(request, 'posts/post.html', {
                 'post': post,
-                'user_name': username
+                'user_name': username,
+                'followers': followers
             })
         else:
             for f in followers:
@@ -114,17 +117,19 @@ def post(request, Post_id):
                     print("friend ")
                     return render(request, 'posts/post.html', {
                         'post': post,
-                        'user_name': username
+                        'user_name': username,
+                        'followers': followers
                     })
                 else:
                     if post.shared_user != None:
                         friend = User.objects.get(id=post.shared_user.id)
                         friends_profile = get_object_or_404(User_Profile, user=friend)
                         if f.actor.displayName == friends_profile.displayName:
-                            print("friend ")
+                            print("friend share")
                             return render(request, 'posts/post.html', {
                                 'post': post,
-                                'user_name': username
+                                'user_name': username,
+                                'followers': followers
                             })
 
 
@@ -208,6 +213,7 @@ def placeholder(request):
     context = {
         'latest_post_list': authorized_posts,
         'current_user': current_user,
+        'followers': followers
     }
 
     return HttpResponse(template.render(context, request))

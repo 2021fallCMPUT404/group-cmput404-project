@@ -2,23 +2,28 @@ from rest_framework import serializers
 
 from .models import FriendRequest, User, User_Profile, UserFollows
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['username', 'email', 'first_name', 'last_name']
+        #fields = '__all__'
+
 
 #User profile serializer
 #TODO: Maybe add a full user profile serialzier that includes all fields
 class userPSerializer(serializers.ModelSerializer):
     #This puts in the type attribute since __all__ is not grabbing User_Profile.type attribute for some reason
     #Reference: https://stackoverflow.com/a/60891077
+    #user = UserSerializer()
 
-    
     class Meta:
         model = User_Profile
-        fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'bio', 'profileImage', 'user'] #TODO: ADD URL AND HOST
-        read_only_fields = ['type', 'id', 'url', 'host','user']
-        
+        fields = [
+            'type', 'id', 'url', 'host', 'displayName', 'github', 'bio',
+            'profileImage', 'user'
+        ]  #TODO: ADD URL AND HOST
+        read_only_fields = ['type', 'id', 'url', 'host', 'user']
 
 
 class userFollowSerializer(serializers.ModelSerializer):
@@ -31,8 +36,14 @@ class friend_request_serializer(serializers.ModelSerializer):
     type = 'Follow'
     actor = userPSerializer(many=False, read_only=True)
     object = userPSerializer(many=False, read_only=True)
-    summary = "{} wants to follow {}".format(actor.data['displayName'], object.data['displayName'])
+    summary = "{} wants to follow {}".format(actor.data['displayName'],
+                                             object.data['displayName'])
 
     class Meta:
         model = FriendRequest
-        fields = ['type', 'summary', 'actor', 'object', ]
+        fields = [
+            'type',
+            'summary',
+            'actor',
+            'object',
+        ]

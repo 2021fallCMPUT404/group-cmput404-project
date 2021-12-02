@@ -1,16 +1,17 @@
 from django.db.models.fields import SlugField
 from rest_framework import serializers
 from .models import Post, Comment, Like
-from users.serializers import User_Profile, userPSerializer
+from users.serializers import User_Profile, userPSerializer, UserSerializer
 
 
 class PostSerializer(serializers.ModelSerializer):
     #author = serializers.StringRelatedField(source = 'author.username')
     #shared_user = serializers.StringRelatedField(source = 'shared_user.username', many=True)
+    author = userPSerializer(many=False, read_only=True)
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'text', 'image', 'pub_date', 'author',
+        fields = ('type', 'id', 'title', 'text', 'image', 'pub_date', 'author',
                   'shared_user', 'shared_on', 'privacy', 'contentType')
 
     def create(self, validated_data):

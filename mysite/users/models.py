@@ -44,6 +44,9 @@ class User_Profile(models.Model):
     host = SITE_URL
     url = SITE_URL
     displayName = models.CharField(max_length=60, blank=True)
+    email = models.CharField(max_length=60, blank=True)
+    first_name = models.CharField(max_length=69, blank=True)
+    last_name = models.CharField(max_length=69, blank=True)
     profileImage = models.ImageField(
         upload_to='profile_picture',
         blank=True,

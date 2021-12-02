@@ -55,6 +55,8 @@ urlpatterns = [
     path("requests/request-page/",
          views.send_request_page,
          name='request_page'),
+      path('unfollow/<int:User_id>/<int:foreign_id>',views.unfollower_user, name='unfollow'),
+     
     path("api/", views.apiOverview, name='api_overview'),
     #path("api/Users/", views.UserList, name='api_user'),
     path('edit_user_profile',

@@ -45,6 +45,7 @@
                         <p>{{followed.object.bio}}</p>
 
                 </div>
+                <a href="{% url 'users:unfollow' User_id=user.user.id foreign_id=followed.object.user.id %}" class="btn btn-primary">Unfollow</a>
                 <!--<input aria-current="true"type="button" onclick="unfollowUser({{followed.object.user.id}}, {{user.user.id}});" value="Unfollow">-->
             </div>
         </div>

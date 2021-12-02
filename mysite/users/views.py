@@ -74,7 +74,7 @@ def apiOverview(request):
 def UserList(request):
     user_profiles = User_Profile.objects.all()
     page_number = request.GET.get('page', 1)
-    page_size = request.GET.get('size', 2)
+    page_size = request.GET.get('size', 5)
     paginator = Paginator(user_profiles, page_size)
     page_obj = paginator.get_page(page_number)
     serializer = userPSerializer(page_obj, many=True)
@@ -519,6 +519,7 @@ def view_followers(request, User_id):
     user_profile = get_object_or_404(User_Profile, user=user)
     followers_list = UserFollows.objects.filter(object=user_profile)
     follows_list = UserFollows.objects.filter(actor=user_profile)
+    is_user = (request.user.id == User_id)
     #friends_list = UserFollows.objects.filter(object_id=user_profile)
     for x in followers_list:
         print(x.actor.displayName)
@@ -529,6 +530,20 @@ def view_followers(request, User_id):
             'request': request,
             'follows_list': follows_list
         })
+
+# This function will make it so that User_id user will stop following
+# foreign_id user
+def unfollower_user(request, User_id, foreign_id):
+    if request.user.id != User_id:
+        return HttpResponseForbidden("Action is not allowed.")
+    user_profile = fetch_user_profiles(User_id)
+    foreign_profile = fetch_user_profiles(foreign_id)
+    UserFollows.delete_user_follow(user_profile, foreign_profile)
+    return HttpResponseRedirect(reverse( 'users:view_followers',args=[User_id]))
+
+def fetch_user_profiles(user_id):
+    user = get_object_or_404(User, pk=user_id)
+    return get_object_or_404(User_Profile, user=user)
 
 
 def send_request_page(request):

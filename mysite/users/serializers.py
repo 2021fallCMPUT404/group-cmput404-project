@@ -18,7 +18,7 @@ class userPSerializer(serializers.ModelSerializer):
         model = User_Profile
         fields = ['type', 'id', 'url', 'host', 'displayName', 'email', 'first_name', 
         'last_name', 'github', 'bio', 'profileImage', 'user'] #TODO: ADD URL AND HOST
-        read_only_fields = ['type', 'id', 'url', 'host','user']
+        read_only_fields = ['type', 'id', 'url', 'host','user', 'profileImage']
         
 
 

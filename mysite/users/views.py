@@ -62,6 +62,33 @@ class CustomAuthentication(authentication.BaseAuthentication):
         return '{"username" : <username>, "password" : <password>}'
 
 
+
+class ManageUserView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    http_method_names = ["get", "post"]
+
+    def get(self, request, author_id, format=None):
+        try:
+            user = get_object_or_404(User, pk=author_id)
+            user_profile = get_object_or_404(User_Profile, user=user)
+            serializer = userPSerializer(user_profile, many=False)
+            return Response(serializer.data)
+        except Exception as e:
+            return JsonResponse({'msg':'There was an error: {}'.format(e)})
+
+    def post(self, request, author_id, format=None):
+        try:
+            user = get_object_or_404(User, pk=author_id)
+            user_profile = get_object_or_404(User_Profile, user=user)
+            #data = JSONParser().parse(request)
+            serializer = userPSerializer(instance=user_profile, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+            return JsonResponse(serializer.data)
+        except Exception as e:
+            return JsonResponse({'msg':'There was an error {}'.format(e)})
+
 @api_view(['GET'])
 def apiOverview(request):
     return Response("API BASE POINT", safe=False)

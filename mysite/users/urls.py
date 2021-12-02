@@ -10,6 +10,7 @@ app_name = 'users'
 
 urlpatterns = [
     path('', views.UserList, name='homepage'),
+     path('<int:author_id>/', views.ManageUserView.as_view(), name='user_crud'),
     path('userGet/<int:User_id>/', views.userGet, name='user_get'),
     path('userPost/<int:User_id>/', views.userPost, name='user_post'),
     path('users_test', views.index, name='index'),

@@ -103,3 +103,8 @@ class Share(models.Model):
     def __str__(self):
         return 'Shared by {}'.format(self.author)
 
+
+class Node(models.Model):
+    url = models.URLField()
+    username = models.TextField()
+    password = models.TextField()

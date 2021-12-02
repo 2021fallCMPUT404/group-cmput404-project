@@ -4,16 +4,18 @@
 
 <div class="container">
     
-    <h1><a href=''>UNHINDLED APP</a></h1>
+    <h1><a href='' id ='unhindled'>UNHINDLED APP</a></h1>
     <h2>List of Users from Team 15</h2>
     <br>
     {% if authors %}
     <div class="list-users">
         {% for user in authors %}
-        <h2> {{user.displayName}}</h2>
-        <p>{{user.email}}</p>
-        <img src='{{user.profileImage}}' style="width:100px;"> 
-        <br>
+        <ul class ='t15Users'>
+            <li><h2> {{user.displayName}}</h2></li>
+            <p>{{user.email}}</p>
+            <img src='{{user.profileImage}}' style="width:100px;"> 
+            <br>
+        </ul>
         {% endfor %}
     {% endif %}
     </div>

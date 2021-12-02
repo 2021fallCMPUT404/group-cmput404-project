@@ -659,9 +659,9 @@ def send_token(request, username, password):
     print(ast.literal_eval(response.text))
     return JsonResponse(dict_data, safe=False)
 
-def get_t15_posts(url):
+def get_t15_posts(url,node):
 
-    ext_request = requests.get(url, auth=('connectionsuperuser','404connection'), headers={'Referer': "http://127.0.0.1:8000/"})
+    ext_request = requests.get(url, auth=('{node.username}','{node.password}'), headers={'Referer': "{{location.host}}"})
 
     ext_request = ext_request.json()
     return ext_request
@@ -669,7 +669,7 @@ def get_t15_posts(url):
 
 def view_t15_posts(request):
     url = "https://unhindled.herokuapp.com/service/allposts/"
-    posts = get_t15_posts(url)
+    posts = get_t15_posts(url,1)
     return render(request, 'posts/team15posts.html', {'posts': posts})
     
 

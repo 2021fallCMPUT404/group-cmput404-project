@@ -13,6 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.db.models import Q
+from django.core.paginator import Paginator
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer, friend_request_serializer
 from rest_framework import routers
 
@@ -68,12 +69,16 @@ def apiOverview(request):
 
 #TODO: ADD PAGINATION WHERE NEEDED
 @api_view(['GET'])
-@authentication_classes([CustomAuthentication])
-@permission_classes([AccessPermission])
+@authentication_classes([])
+@permission_classes([])
 def UserList(request):
     user_profiles = User_Profile.objects.all()
-    serializer = userPSerializer(user_profiles, many=True)
-    return Response({'type': 'authors', 'items': serializer.data})
+    page_number = request.GET.get('page', 1)
+    page_size = request.GET.get('size', 2)
+    paginator = Paginator(user_profiles, page_size)
+    page_obj = paginator.get_page(page_number)
+    serializer = userPSerializer(page_obj, many=True)
+    return Response({'type': 'authors', 'page':page_number, 'size':page_size , 'items':serializer.data})
 
 
 @api_view(['GET'])

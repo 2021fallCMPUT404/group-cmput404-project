@@ -64,10 +64,13 @@ li.nav-item:hover{
 
 .wrapper-reg{
     margin: 20px;
-    background-color:rgb(198, 214, 219);
+    background-color:rgba(207, 224, 232, 0.76);
+    text-align: left;
 }
 
-
+#form-register{
+    color: rgb(233, 156, 156);
+}
 
 .wrapper{
     

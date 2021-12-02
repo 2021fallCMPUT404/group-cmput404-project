@@ -65,4 +65,4 @@ class create_new_user_profile(forms.ModelForm):
 
     class Meta():
         model = User_Profile
-        fields = ['displayName', 'github', 'profileImage', 'bio']
+        fields = ['displayName', 'github', 'bio','profileImage']

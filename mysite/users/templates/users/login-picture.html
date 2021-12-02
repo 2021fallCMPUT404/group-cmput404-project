@@ -44,9 +44,9 @@
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="{% url 'users:view_followers' User_id=request.user.id %}"><i class="fa fa-child"></i> View Followers</a>
             </li>
-
+            
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'users:request_page'%}"><i class="fa fa-paper-plane"></i> Send Request</a>
+              <a class="nav-link active" aria-current="page" href="{% url 'users:request_page'%}"> <i class="fa fa-paper-plane"></i> Send Request</a>
             </li>
             
 
@@ -54,7 +54,7 @@
               <a class="nav-link active" aria-current="page" href="{% url 'logout' %}"><i class="fa fa-power-off"></i> Logout</a>
             </li>
           
-
+          
           </ul>
           {% endif %}
           {% if not user.is_authenticated %}
@@ -69,8 +69,9 @@
               <a class="nav-link active" aria-current="page" href="{% url 'users:register' %}">Sign Up</a>
             </li>
 
-
+            
           </ul>
+          
           {% endif %}
 
         </div>

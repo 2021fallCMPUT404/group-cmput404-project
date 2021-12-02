@@ -1,26 +1,69 @@
-{% extends "users/home_page.html" %}
+{% extends "users/login-picture.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
+
 {% block content %}
 
 
-<h1>Create a new account!</h1>
-<div class = 'wrapper-reg'>
+<h1 style="color: rgb(218, 166, 206);">Create a new account!</h1>
+ <!--
+<div class = 'wrapper-reg' style="margin-left: 39%;margin-right: 35%;border-right-width: 7px;border-right-style: solid;">
+-->
     {% if user_registered %}
     <p1>Registered</p1>
     {% endif %}
-    <form method='post' enctype="multipart/form-data">
+    <form method='post' enctype="multipart/form-data" id="form-register" >
         {% csrf_token %}
+        
+        <div class="form-row">
+            <div class="form-control-sm col-md-6 mb-16" style="margin-left: 25%;";>
+              {{ user_form.first_name| as_crispy_field }}
+                
+              {{ user_form.last_name| as_crispy_field }}
+            </div>
+        </div >
 
+        <div class="form-control-sm col-md-6 mb-0" style="margin-left: 25%;">
+          {{ user_form.username| as_crispy_field }}
+          {{ user_form.email| as_crispy_field }}
+        </div>
 
-        <div class="row justify-content-center" id="post-wrapper">
-            <table border="1" class="table table-striped table-bordered table-hover">
-                {{user_form.as_table}}
-                {{profile_form.as_table}}
-            </table>
+        <div class="form-row" style="margin-left: 33%;">
+                <div class="form-control-sm col-md-6 mb-0">
+                    {{user_form.password| as_crispy_field }}
+                </div>
+                <div class="form-control-sm col-md-6 mb-0">
+                    {{user_form.confirm_password| as_crispy_field }}
+                </div>
+                <div class="form-control-sm col-md-6 mb-0">
+                    {{profile_form.displayName| as_crispy_field }}
+                </div>
+                
+                <div class="form-control-sm col-md-6 mb-0">
+                    {{profile_form.github| as_crispy_field }}
+                 </div>
+
+                <div class="form-control-sm col-md-6 mb-0">
+                    {{profile_form.bio| as_crispy_field }}
+                </div>
+
+                <div class="form-control-lg col-md-6 mb-0">
+                    {{profile_form.profileImage | as_crispy_field }}
+                </div>
+        </div>
+          <br>
+        <div class="row-group">
+            <a class = "btn btn-lg btn-primary btn-block"  href="{% url 'users:login'  %}" style="margin-right: 0%;"> Go Back</a>
+            <button class="btn btn-lg btn-primary btn-block" style="margin-left: 10%;">Create</button>
+        
         </div>
         
-        <button class="btn btn-lg btn-primary btn-block">Create</button>
-        <a  class = 'return' href="{% url 'users:login'  %}"><i class="fa fa-arrow-left"></i> Go Back</a>
+    
+
     </form>
+<!---
 </div>
+-->
+
 {% endblock content %}
+

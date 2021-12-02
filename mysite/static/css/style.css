@@ -1,5 +1,5 @@
 body{
-    background:radial-gradient(circle at center,rgba(190, 188, 188, 0.644),aliceblue);
+    background:radial-gradient(circle at center,rgba(190, 188, 188, 0.644),rgb(255, 250, 240));
     background-size: cover;
     margin:0;
     padding-top: 65px; 
@@ -7,6 +7,14 @@ body{
     min-width: 1500px;
 }
 
+.pic{
+    background-image: url("login_image.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    overflow: hidden;
+    width: 100%;
+}
 
 div  .navbar {
     padding-top: 0rem;
@@ -19,7 +27,7 @@ div  .navbar {
 }
 
 li.nav-item:hover{
-    background-color:darkgrey;
+    background-color:rgb(0, 0, 0);
 }
 
 li.nav-item-spec:hover{
@@ -27,14 +35,12 @@ li.nav-item-spec:hover{
 }
 
 .Welcome  {
-    color: black;
+    color: rgb(0, 0, 0);
     font-size: 3em;
     text-align: center;
 }
 
-.wrapper{
-    margin: 80px;
-}
+
 
 .login-form{
     margin-bottom: 10px;
@@ -62,16 +68,25 @@ li.nav-item-spec:hover{
 
 .wrapper-reg{
     margin: 20px;
-    background-color:rgb(198, 214, 219);
+    background-color:rgba(207, 224, 232, 0.76);
+    text-align: left;
 }
 
-div.wrapper{
+#form-register{
+    color: rgb(233, 156, 156);
+}
+
+.wrapper{
+    
     width: 50%;
     height: 50%;
-    background-color:rgb(198, 214, 219);
+    background-color:rgb(171, 169, 169,1);
     border-radius: 25px;
     padding: 10px;
     margin: 5em auto;
+    opacity: 0.95;
+    
+    
 }
 
 

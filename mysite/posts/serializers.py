@@ -7,7 +7,7 @@ from users.serializers import User_Profile, userPSerializer, UserSerializer
 class PostSerializer(serializers.ModelSerializer):
     #author = serializers.StringRelatedField(source = 'author.username')
     #shared_user = serializers.StringRelatedField(source = 'shared_user.username', many=True)
-    author = userPSerializer(many=False, read_only=True)
+    author = UserSerializer(many=False, read_only=True)
 
     class Meta:
         model = Post
@@ -39,15 +39,17 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
 
-    author = userPSerializer(many=False, read_only=True)
+    author = UserSerializer(many=False, read_only=True)
 
     class Meta:
         model = Comment
         fields = ('type', 'author', 'post', 'comment_body', 'comment_created',
-                  'id')
+                  'like', 'id')
 
 
 class LikeSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False, read_only=True)
+
     class Meta:
         model = Like
         fields = ('user', 'post', 'inbox', 'comment')

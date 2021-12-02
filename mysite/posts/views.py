@@ -399,7 +399,7 @@ class MangePostUnderUser(APIView):
             user = User.objects.get(id=AUTHOR_ID)
 
             data = JSONParser().parse(request)
-            data['author'] = AUTHOR_ID
+            #data['author'] = AUTHOR_ID
             post_serializer = PostSerializer(data=data)
             if post_serializer.is_valid():
                 post_serializer.save()
@@ -414,10 +414,11 @@ class MangePostUnderUser(APIView):
 
 
 class HandleAuthorPostComment(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+    #authentication_classes = [SessionAuthentication, BasicAuthentication]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, AUTHOR_ID, POST_ID, format=None):
+
         try:
             post = Post.objects.get(id=POST_ID)
             if AUTHOR_ID != post.author.id:
@@ -438,12 +439,8 @@ class HandleAuthorPostComment(APIView):
         try:
 
             post = Post.objects.get(id=POST_ID)
-            user = User.objects.get(id=AUTHOR_ID)
-
             data = JSONParser().parse(request)
-            data['author'] = request.user
-            data['post'] = POST_ID
-            comment_serializer = CommentSerializer(data=data)
+            comment_serializer = CommentSerializer(data=data, many=False)
 
             if comment_serializer.is_valid():
                 comment_serializer.save()
@@ -561,19 +558,17 @@ class HandleAuthorPostComment(APIView):
             if comment_serializer.is_valid():
                 comment_serializer.save()
                 print('comment is valid')
-                return JsonResponse(comment_serializer.data,
-                                    status=status.HTTP_201_CREATED)
+                return Response(comment_serializer.data,
+                                status=status.HTTP_201_CREATED)
             print('comment is not valid')
-            return JsonResponse(comment_serializer.errors,
-                                status=status.HTTP_400_BAD_REQUEST)
+            return Response(comment_serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
-            return JsonResponse(
-                {'message': 'The requested user does not exist'},
-                status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'The requested user does not exist'},
+                            status=status.HTTP_404_NOT_FOUND)
         except Post.DoesNotExist:
-            return JsonResponse(
-                {'message': 'The requested post does not exist'},
-                status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'The requested post does not exist'},
+                            status=status.HTTP_404_NOT_FOUND)
 
 
 class HandleInboxLike(APIView):
@@ -1106,6 +1101,7 @@ class addComment(CreateView):
     #fields = '__all__'
     def form_valid(self, form):
         form.instance.post_id = self.kwargs['pk']
+        form.instance.author = self.request.user
         return super().form_valid(form)
 
 

@@ -63,20 +63,25 @@ urlpatterns = [
     path('external-users/', views.view_t15_users, name='external_users'),
     path('external-users/t-03/users/', views.view_t3_users, name='t03_users'),
     path('external-users/t-03/posts/', views.view_t3_posts, name='t03_posts'),
-     path('<int:AUTHOR_ID>/posts/<int:POST_ID>',
+    path('<int:AUTHOR_ID>/posts/<int:POST_ID>',
          post_views.HandleAuthorPost.as_view(),
          name='HandleAuthorPost'),
     path('<int:AUTHOR_ID>',
          post_views.MangePostUnderUser.as_view(),
          name='MangePostUnderUser'),
-     path('<int:AUTHOR_ID>/posts/<int:POST_ID>/comments', post_views.HandleAuthorPostComment.as_view(), name = 'HandleAuthorPostComment'),
-     path('<int:AUTHOR_ID>/inbox/', post_views.HandleInboxLike.as_view(), name = 'HandleInboxLike'),
-     path('<int:AUTHOR_ID>/post/<int:POST_ID>/likes', post_views.HandlePostLikeList.as_view(), name = 'HandlePostLikeList'),
-<<<<<<< HEAD
-     path('<int:AUTHOR_ID>/post/<int:POST_ID>/comments/<int:COMMENT_ID>/likes', post_views.HandleCommentLike.as_view(), name = 'HandleCommentLike'),
-     path('<int:AUTHOR_ID>/liked', post_views.HandleAuthorLike.as_view(), name='HandleAuthorLike')
-=======
-     path('<int:AUTHOR_ID>/post/<int:POST_ID>/comments/<int:COMMENT_ID>/likes', post_views.HandleCommentLike.as_view(), name = 'HandleCommentLike')
-     
->>>>>>> 31d5f959fda313c4e8386e51af3f099b39a4f4fe
+    path('<int:AUTHOR_ID>/posts/<int:POST_ID>/comments',
+         post_views.HandleAuthorPostComment.as_view(),
+         name='HandleAuthorPostComment'),
+    path('<int:AUTHOR_ID>/inbox/',
+         post_views.HandleInboxLike.as_view(),
+         name='HandleInboxLike'),
+    path('<int:AUTHOR_ID>/post/<int:POST_ID>/likes',
+         post_views.HandlePostLikeList.as_view(),
+         name='HandlePostLikeList'),
+    path('<int:AUTHOR_ID>/post/<int:POST_ID>/comments/<int:COMMENT_ID>/likes',
+         post_views.HandleCommentLike.as_view(),
+         name='HandleCommentLike'),
+    path('<int:AUTHOR_ID>/liked',
+         post_views.HandleAuthorLike.as_view(),
+         name='HandleAuthorLike')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

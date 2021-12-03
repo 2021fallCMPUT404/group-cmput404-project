@@ -4,75 +4,98 @@
 
 {% block content %}
 {% load markdown_ext %}
-<a href = '{%  url "t15-posts" %}'>UNHINDLED (Group 15)</a>
+
+<div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+    <div class="nav-scroller bg-body shadow-sm " >
+        <nav class="nav nav-underline utt" aria-label="Secondary navigation">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a href="{% url 'users:t03_posts' %}">Group 3 Posts</a></li> 
+                <li class="nav-item"><a href = '{%  url "t15-posts" %}'>UNHINDLED (Group 15)</a></li>
+        
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+
+
 <br>
-<a href="{% url 'users:t03_posts' %}">Group 3 Posts</a>
+
+<br><br>
+<h1  style="font-family: Dancing Script; font-size: 5rem;" >Explore the post</h1>
 {% if latest_post_list %}
 
-<ul>
-    <br>
-    <!--<p>{{latest_post_list}}</p>-->
-    {% for posts in latest_post_list %}
 
-    <div class='pub-info'>
-        <p><img src="{{ posts.author.user_profile.profileImage.url }}" width='30px' height="30"> {{posts.author}}</p>
-        <p>{{posts.pub_date}} 
+    <br>
+    
+    {% for posts in latest_post_list %}
+    
+    <div class="container border border-4 border-secondary rounded-4" >
+        <div class=container " style="border: 1cm ;">
+        <br>
+        <h4 style="margin-right: 80%; ;"><img src="{{ posts.author.user_profile.profileImage.url }}" width="60px" height="60px" style="border: 0.3px solid;"> {{posts.author}} </h4>
+        {%if not posts.shared_user and current_user == posts.author %}
+        <a href="{% url 'editpost' posts.pk %}" class='btn btn-secondary ' style="margin-left:80%; border-radius: 1rem;"><i class="fa fa-pencil-square-o"></i> Edit</a>
+    
+        {% endif %}
+        <br>
+        
+        
+
+        </div>
+    
+        <div class="container-md">
+        <a href="/post/{{ posts.id }}/" class="addpost-header">
+            {%if not posts.shared_user%}
+                <h2 style="overflow: hidden; text-overflow: ellipsis;">{{ posts.title }}</h2>
+            {%else%}
+                <h2  style="overflow: hidden; text-overflow: ellipsis;">Repost: {{ posts.title }}</h2>
+            {% endif %}
+
+            </a>
+        <br>
+        </div>
+
+        {%if posts.contentType == 1 %}
+            <p style="overflow: hidden; text-overflow: ellipsis; text-decoration: underline;">{{ posts.text | markdown | safe }}</p>
+        {%else%}
+            <p style="overflow: hidden; text-overflow: ellipsis; text-decoration: underline;">{{ posts.text }}</p>
+        {% endif %}
+        <br>
+        {% if posts.image %}
+        <img src='{{posts.image.url}}' width="60%">
+        {% endif %}
+
+
+
+
+        <br>
+        <br>
+        <hr class="mt-2 mb-3"/>
+        <p > Published at:  {{posts.pub_date}} 
             {%if posts.privacy == 0%}
                 <i class="fa fa-globe"></i>
-            {%elif posts.privacy == 1%}
-                <i class="fa fa-user"></i>
             {%else%}
                 <i class="fa fa-users"></i>
             {%endif%}
+            {%if posts.shared_user%}
+            <p style="font-style: italic;">Shared by {{ posts.shared_user }}</p>
+            {% endif %}
+
         </p>
     </div>
+    <br>
+    {% endfor %}
+    
+    
+    {% else %}
+    <br><br><br>
+    
+    <h1 style="font-family: Fredoka One;">Oops! No posts are available.</h1>
+    {% endif %}
     
 
-    <li><a href="/post/{{ posts.id }}/" class="addpost-header">
-            {%if not posts.shared_user%}
-                <h2>{{ posts.title }}</h2>
-            {%else%}
-                <h2>Repost: {{ posts.title }}</h2>
-            {% endif %}
-        </a></li>
-    <div class='content'>
-        {%if current_user == posts.author or posts.privacy == 0%}
-            {% if posts.image %}
-                <img src='{{posts.image.url}}' width="30%">
-            {% endif %}
-        {%elif posts.privacy == 2%}
-            {%for f in followers%}
-                {%if f.actor.displayName == posts.author.user_profile.displayName%}
-                    {% if posts.image %}
-                        <img src='{{posts.image.url}}' width="30%">
-                    {% endif %}
-                {%endif%}
-            {%endfor%}
-        {%endif%}
-        
-        <!--separate markdown and plain text-->
-        {%if posts.contentType == 1 %}
-            <p>{{ posts.text | markdown | safe }}
-        {%else%}
-            <p>{{ posts.text }}
-        {% endif %}
-
-        {%if posts.image_link%}
-            <a href='{{posts.image_link}}'>preview</a>
-        {% endif %}
-        </p>
-    </div>
-    {%if not posts.shared_user and current_user == posts.author %}
-        <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'><i class="fa fa-pencil-square-o"></i> Edit</a>
-    {%elif posts.shared_user%}
-        <p>Shared by {{ posts.shared_user }}</p>
-    {% endif %}
-    <br><hr class="mt-2 mb-3"/><br>
-    {% endfor %}
-</ul>
-{% else %}
-<p>No posts are available.</p>
-{% endif %}
 <a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
 
 {% endblock content %}

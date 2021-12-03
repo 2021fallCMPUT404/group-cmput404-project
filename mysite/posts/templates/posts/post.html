@@ -19,13 +19,13 @@
 
     {%if user_name == post.author.username or post.privacy == 0%}
         {% if post.image %}
-            <img src='{{post.image.url}}' width="30%">
+            <img src='{{post.image.url}}' width="60%">
         {% endif %}
     {%elif post.privacy == 2%}
         {%for f in followers%}
             {%if f.actor.displayName == post.author.user_profile.displayName%}
                 {% if post.image %}
-                    <img src='{{post.image.url}}' width="30%">
+                    <img src='{{post.image.url}}' width="60%">
                 {% endif %}
             {%endif%}
         {%endfor%}
@@ -35,7 +35,7 @@
         {%if post.privacy == 0%}
             <i class="fa fa-globe"></i>
         {%elif post.privacy == 1%}
-            <i class="fa fa-user"></i>
+            <i class="fa fa-lock"></i>
         {%else%}
             <i class="fa fa-users"></i>
         {%endif%}
@@ -100,6 +100,7 @@
     {%else%}
         <p>Shared by: {{post.shared_user}}</p>
     {% endif %}
+    <br>
 </div>
 
 

@@ -7,7 +7,7 @@
 
 
     <script src="{% static 'javascript/requests.js' %}" type="text/javascript"></script>
-    <div class="container">    <h1> {{user.displayName}} Follows List </h1>
+    <div class="container">    <h1> {{user.displayName}} has {{followers_list.count}} followers </h1>
     {% if followers_list %}
         <h4>{{user.displayName}} is being followed by: </h4>
         <div class="list-group " id='followers'>
@@ -31,7 +31,7 @@
     {% endif %}
 
 
-    <h1> <br>{{user.displayName}} Following List </h1>
+    <h1> <br>{{user.displayName}} has {{follows_list.count}} followings </h1>
     {% if follows_list %}
         <h4>{{user.displayName}} is following: </h4>
         <div class="list-group" id="follows">
@@ -45,7 +45,9 @@
                         <p>{{followed.object.bio}}</p>
 
                 </div>
+                <div>
                 <a href="{% url 'users:unfollow' User_id=user.user.id foreign_id=followed.object.user.id %}" class="btn btn-primary">Unfollow</a>
+                </div>
                 <!--<input aria-current="true"type="button" onclick="unfollowUser({{followed.object.user.id}}, {{user.user.id}});" value="Unfollow">-->
             </div>
         </div>

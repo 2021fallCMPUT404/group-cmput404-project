@@ -222,3 +222,30 @@ a.nav-link{
 a.nav-link:hover{
     color: white;
 }
+
+#nav {
+    list-style: none inside;
+    margin: 0;
+    padding: 0;
+  }
+  
+  #nav li {
+    display: block;
+    position: relative;
+    float: left;
+    /* menu background color */
+  }
+
+#nav ul {
+    position: absolute;
+    padding: 0;
+    left: 0;
+    display: none;
+    /* hides sublists */
+  }
+  
+  #nav li:hover ul {
+    display: block;
+    background-color: darkgray;
+  }
+  

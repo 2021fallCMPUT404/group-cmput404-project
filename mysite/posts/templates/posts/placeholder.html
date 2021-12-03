@@ -5,6 +5,7 @@
 {% block content %}
 {% load markdown_ext %}
 
+<!--
 <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
     <div class="nav-scroller bg-body shadow-sm " >
         <nav class="nav nav-underline utt" aria-label="Secondary navigation">
@@ -16,7 +17,7 @@
         </nav>
     </div>
 </div>
-
+-->
 
 
 
@@ -24,6 +25,10 @@
 
 <br><br>
 <h1  style="font-family: Dancing Script; font-size: 5rem;" >Explore the post</h1>
+<br>
+<a href="{% url 'addpost' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-plus"></i> Add Post</a>
+<a href="{% url 'select_github_activity' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-github"></i> Add Github Activity</a>
+<br>
 {% if latest_post_list %}
 
 
@@ -92,6 +97,8 @@
         <p > Published at:  {{posts.pub_date}} 
             {%if posts.privacy == 0%}
                 <i class="fa fa-globe"></i>
+            {%elif posts.privacy == 1%}
+                <i class="fa fa-lock"></i>
             {%else%}
                 <i class="fa fa-users"></i>
             {%endif%}

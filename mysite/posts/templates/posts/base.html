@@ -27,7 +27,7 @@
   
         
         <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'feed' %}">Social Circle</a>
+          <a class="navbar-brand" href="{% url 'feed' %}" style="font-family: Dancing Script">Social Circle</a>
           
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -35,7 +35,7 @@
           <div class="collapse navbar-collapse" id="navbarsitem">
             
             {% if user.is_authenticated %}
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav me-auto" id="nav">
   
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{% url 'users:edit_user_profile' %}"><i class="fa fa-pencil-square-o"></i> Edit Profile</a>
@@ -55,6 +55,18 @@
               
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{% url 'users:user_home_page' %}"><i class="fa fa-user"></i> Profile</a>
+              </li>
+
+              <li class="nav-item subnavbtn">
+                <a class="nav-link active" aria-current="page"><i class="fa fa-link"></i> Connection</a>
+                <ul class="dropdown">
+                    <li class="nav-item">
+                      <a class="nav-link active" aria-current="page" href="{% url 'users:t03_posts' %}">Group 3 Posts</a>
+                    </li> 
+                    <li class="nav-item">
+                      <a class="nav-link active" aria-current="page" href = '{%  url "t15-posts" %}'>UNHINDLED (Group 15)</a>
+                    </li>
+                </ul>
               </li>
 
             </ul>

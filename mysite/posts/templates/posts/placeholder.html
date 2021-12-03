@@ -4,7 +4,7 @@
 
 {% block content %}
 {% load markdown_ext %}
-<a href = '{%  url "t15-posts" %}'>UNHINDLED (Group 15)</a>
+<a href='{%  url "t15-posts" %}'>UNHINDLED (Group 15)</a>
 <br>
 <a href="{% url 'users:t03_posts' %}">Group 3 Posts</a>
 {% if latest_post_list %}
@@ -15,24 +15,29 @@
     {% for posts in latest_post_list %}
 
     <div class='pub-info'>
+        {%if posts.author == None%}
+        <p><img src="{{ posts.author.user_profile.profileImage.url }}" width='30px' height="30">
+            {{posts.author.displayName}}</p>
+        {%else%}
         <p><img src="{{ posts.author.user_profile.profileImage.url }}" width='30px' height="30"> {{posts.author}}</p>
-        <p>{{posts.pub_date}} 
+        {%endif%}
+        <p>{{posts.pub_date}}
             {%if posts.privacy == 0%}
-                <i class="fa fa-globe"></i>
+            <i class="fa fa-globe"></i>
             {%elif posts.privacy == 1%}
-                <i class="fa fa-user"></i>
+            <i class="fa fa-user"></i>
             {%else%}
-                <i class="fa fa-users"></i>
+            <i class="fa fa-users"></i>
             {%endif%}
         </p>
     </div>
-    
+
 
     <li><a href="/post/{{ posts.id }}/" class="addpost-header">
             {%if not posts.shared_user%}
-                <h2>{{ posts.title }}</h2>
+            <h2>{{ posts.title }}</h2>
             {%else%}
-                <h2>Repost: {{ posts.title }}</h2>
+            <h2>Repost: {{ posts.title }}</h2>
             {% endif %}
         </a></li>
     <div class='content'>
@@ -42,20 +47,21 @@
         {% elif posts.image_link %}
         <img src='{{posts.image_link}}' width="30%">
         {% endif %}
-        
+
         <!--separate markdown and plain text-->
         {%if posts.contentType == 1 %}
-            <p>{{ posts.text | markdown | safe }}</p>
+        <p>{{ posts.text | markdown | safe }}</p>
         {%else%}
-            <p>{{ posts.text }}</p>
+        <p>{{ posts.text }}</p>
         {% endif %}
     </div>
     {%if not posts.shared_user and current_user == posts.author %}
-        <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'><i class="fa fa-pencil-square-o"></i> Edit</a>
+    <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'><i class="fa fa-pencil-square-o"></i> Edit</a>
     {%elif posts.shared_user%}
-        <p>Shared by {{ posts.shared_user }}</p>
+    <p>Shared by {{ posts.shared_user }}</p>
     {% endif %}
-    <br><hr class="mt-2 mb-3"/><br>
+    <br>
+    <hr class="mt-2 mb-3" /><br>
     {% endfor %}
 </ul>
 {% else %}

@@ -4,7 +4,7 @@ from . import views
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from .models import User, Create_user, User_Profile, FriendRequest, UserFollows
+from .models import User, Create_user, User_Profile, FriendRequest, UserFollows, Inbox
 from posts.views import *  #Will change this later on
 from posts.serializers import *  #Also will change this too
 from django.apps import apps
@@ -263,6 +263,8 @@ def register(request):
             profile = user_profile_form.save(commit=False)
             profile.user = user
 
+            inbox = Inbox(author=user)
+            inbox.save()
             if 'profileImage' in request.FILES:
                 profile.profileImage = request.FILES['profileImage']
 

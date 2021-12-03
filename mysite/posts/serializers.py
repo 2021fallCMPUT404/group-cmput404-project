@@ -1,23 +1,24 @@
 from django.db.models.fields import SlugField
 from rest_framework import serializers
-from .models import Post, Comment, Like
+from .models import Post, Comment, Like, CommentLike
 from users.serializers import User_Profile, userPSerializer, UserSerializer
 
 
 class PostSerializer(serializers.ModelSerializer):
     #author = serializers.StringRelatedField(source = 'author.username')
     #shared_user = serializers.StringRelatedField(source = 'shared_user.username', many=True)
-    author = UserSerializer(many=False, read_only=True)
+    #author = userPSerializer(many=False, read_only=True)
+    author = UserSerializer(read_only=True)
 
     class Meta:
         model = Post
         fields = ('type', 'id', 'title', 'text', 'image', 'pub_date', 'author',
                   'shared_user', 'shared_on', 'privacy', 'contentType')
-
+    '''
     def create(self, validated_data):
 
         return Post.objects.create(**validated_data)
-
+    
     def update(self, instance, validated_data):
 
         instance.id = validated_data.get('id', instance.id)
@@ -35,8 +36,13 @@ class PostSerializer(serializers.ModelSerializer):
                                                   instance.contentType)
         instance.save()
         return instance
-
-
+    '''
+    '''
+    def validate(self, data):
+        if data['author'] == None:
+            raise serializers.ValidationError("No such author")
+        return data
+    '''
 class CommentSerializer(serializers.ModelSerializer):
 
     author = UserSerializer(many=False, read_only=True)
@@ -46,10 +52,13 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('type', 'author', 'post', 'comment_body', 'comment_created',
                   'like', 'id')
 
-
+class LikeCommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False, read_only=True)
+    class Meta:
+        model = CommentLike
+        fields = ('user', 'comment')
 class LikeSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False, read_only=True)
-
     class Meta:
         model = Like
-        fields = ('user', 'post', 'inbox', 'comment')
+        fields = ('user', 'post')

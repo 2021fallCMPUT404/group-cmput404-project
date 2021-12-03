@@ -7,8 +7,8 @@ from django.db.models.fields import related
 from django.contrib.auth.models import User
 from django.apps import apps
 from django.db.models.fields.related import ForeignKey
-#from users.models import Inbox
-#from users.models import User
+
+#from users.models import User_Profile
 #Inbox = apps.get_model('users', 'Inbox')
 #import django
 #django.setup()
@@ -107,13 +107,20 @@ class Like(models.Model):
 
     #inbox = models.ForeignKey(Inbox, related_name='inbox', blank=True, null=True, on_delete=models.CASCADE)
 
-    comment = models.ForeignKey(Comment,
-                                related_name='comment',
-                                blank=True,
-                                null=True,
-                                on_delete=models.CASCADE)
+class InboxLike(models.Model):
 
+    user = models.ForeignKey(User,
+                             related_name='InboxLikeUser',
+                             on_delete=models.CASCADE)
+    inbox = models.ForeignKey("users.Inbox", related_name='inbox', blank=True, null=True, on_delete=models.CASCADE)
 
+    
+class CommentLike(models.Model):
+
+    user = models.ForeignKey(User,
+                             related_name='CommentLikeUser',
+                             on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, related_name='comment', blank=True, null=True, on_delete=models.CASCADE)
 class Share(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     post = models.ForeignKey(Post,

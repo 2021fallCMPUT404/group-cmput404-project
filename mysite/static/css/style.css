@@ -10,10 +10,7 @@ body{
 .pic{
     background-image: url("login_image.jpg");
     background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center center;
-    overflow: hidden;
-    width: 100%;
+    background-attachment: fixed;
 }
 
 div  .navbar {

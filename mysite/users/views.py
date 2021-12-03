@@ -301,6 +301,7 @@ def register(request):
             profile.save()
 
             registered = True
+            return render(request, 'users/login.html')
 
         else:
             print('register failed')

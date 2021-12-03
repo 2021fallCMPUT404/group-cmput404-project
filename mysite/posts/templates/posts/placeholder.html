@@ -46,9 +46,7 @@
             {%for f in followers%}
                 {%if f.actor.displayName == posts.author.user_profile.displayName%}
                     {% if posts.image %}
-                    <img src='{{posts.image.url}}' width="30%">
-                    {% elif posts.image_link %}
-                    <img src='{{posts.image_link}}' width="30%">
+                        <img src='{{posts.image.url}}' width="30%">
                     {% endif %}
                 {%endif%}
             {%endfor%}
@@ -56,10 +54,15 @@
         
         <!--separate markdown and plain text-->
         {%if posts.contentType == 1 %}
-            <p>{{ posts.text | markdown | safe }}</p>
+            <p>{{ posts.text | markdown | safe }}
         {%else%}
-            <p>{{ posts.text }}</p>
+            <p>{{ posts.text }}
         {% endif %}
+
+        {%if posts.image_link%}
+            <a href='{{posts.image_link}}'>preview</a>
+        {% endif %}
+        </p>
     </div>
     {%if not posts.shared_user and current_user == posts.author %}
         <a href="{% url 'editpost' posts.pk %}" class='btn btn-info'><i class="fa fa-pencil-square-o"></i> Edit</a>

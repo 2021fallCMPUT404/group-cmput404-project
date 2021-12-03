@@ -7,14 +7,14 @@
 
 <h1>Add new comment</h1>
 <p>How do you think about it?</p>
-<form method="POST" action = "">
-    
+<form method="POST" action="">
+
     {% csrf_token %}
     <div class="row justify-content-center" id="post-wrapper">
         <table border="1" class="table table-striped table-bordered table-hover">
             {{form.as_table}}
         </table>
-    
+
         <button type="submit">Add Comment</button>
     </div>
 </form>

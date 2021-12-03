@@ -1,4 +1,4 @@
-import django_on_heroku 
+import django_on_heroku
 import dj_database_url
 """
 Django settings for mysite project.
@@ -49,20 +49,23 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'posts.authentication.UsernamePasswordAuthentication',
-        'rest_framework.authentication.TokenAuthentication'
-    ],
+    #'DEFAULT_PERMISSION_CLASSES': [
+    #    'rest_framework.permissions.IsAuthenticated',
+    #],
+    #'DEFAULT_AUTHENTICATION_CLASSES': [
+    #    'rest_framework.authentication.BasicAuthentication',
+    #    'posts.authentication.UsernamePasswordAuthentication',
+    #    'rest_framework.authentication.TokenAuthentication'
+    #],
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+    ),
     'TEST_REQUEST_DEFAULT_FORMAT':
     'json'
 }
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -138,7 +141,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-TIME_ZONE='America/Edmonton'
+TIME_ZONE = 'America/Edmonton'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

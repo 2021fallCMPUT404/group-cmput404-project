@@ -2,12 +2,14 @@
 
 {% block content %}
 {% load markdown_ext %}
-<div class='post-wrapper'>
-    <h1><img src="{{ post.author.user_profile.profileImage.url }}" width=50px height="50"> {{post.author}}</h1>
+<div class='post-wrapper container border border-4 border-secondary rounded-4'>
+    <div class=container " style="border: 1cm ; padding: 1em;">
+    <h4 style="margin-right: 80%; ;"><img src="{{ post.author.user_profile.profileImage.url }}" width=50px height="50"> {{post.author}}</h4>
+    </div>
         {%if post.contentType == 1 %}
-            <p>{{ post.text | markdown | safe }}
+            <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ post.text | markdown | safe }}
         {%else%}
-            <p>{{ post.text }}
+            <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ post.text }}
         {% endif %}
 
         {%if post.image_link%}
@@ -41,7 +43,7 @@
     <p>ID: {{post.id}}</p>
 
     
-   
+    <hr class="mt-2 mb-3"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     {% if user_name == post.author.username and not post.shared_user %}
         <a href="{% url 'editpost' post.pk %} " class="btn btn-primary"><i class="fa fa-pencil-square-o"></i> Edit</a>
@@ -54,58 +56,56 @@
     <br>
     <form action = "{% url 'likepost' post.pk %}" method = "POST" class="likeButton">
         {% csrf_token %}
-        <button type = 'submit', name = 'post_id', value = "{{ post.id }}"><i class="far fa-thumbs-up"></i></button>
+        <br>
+        <button type = 'submit', name = 'post_id', value = "{{ post.id }}" class="btn btn-primary"><i class="far fa-thumbs-up"></i> Like</button>
     </form>
     <p id = 'total_likes'>Number of Likes - {{ post.like.count }}</p>
     
-    <a class='return' href="{% url 'feed'  %}">Go Back</a>
 </div>
-<br><hr class="mt-2 mb-3"/><br>
-<h2>Leave a comment</h2>
-<p>Total number of comments : {{post.comments.count}}</p>
-<h2>Comments</h2>
 
-{%if not post.comments.all %}
-No comment yet <br>
+<br>
+<div class='post-wrapper container border border-4 border-secondary rounded-4'>
+    <h2>Comments</h2>
+    <p>Total number of comments : {{post.comments.count}}</p>
 
-{%else%}
-<p>
-    {%for comment in post.comments.all%}
+    {%if not post.comments.all %}
+    No comment yet <br>
+    <hr class="mt-2 mb-3"/>
+    {%else%}
+        <br>
+        {%for comment in post.comments.all%}
+        <strong>
+            <div class='container left'  style="border: 1cm ;">
+                <img src="{{ user.user_profile.profileImage.url }}" width=30px height="30"> {{user.user_profile.displayName}} &nbsp; &nbsp;&nbsp; {{comment.comment_created}} 
+            </div>
+            <form action = "{% url 'likecomment' post.pk %}" method = "POST" class="likeButton">
+                {% csrf_token %}
+                <button type = 'submit', name = 'comment_id', value = "{{ comment.id }}" class="btn btn-primary"><i class="far fa-thumbs-up"></i></button>
+            </form>
+            <p>Number of Likes - {{ comment.like.count }}</p>
+        </strong>
+        {{comment.comment_body}}
+        <hr class="mt-2 mb-3"/>
 
-    <br>
-    <strong>
-        <img src="{{ user.user_profile.profileImage.url }}" width=30px' height="30"> {{user.user_profile.displayName}} &nbsp; &nbsp;&nbsp; {{comment.comment_created}}
-        <form action = "{% url 'likecomment' post.pk %}" method = "POST" class="likeButton">
-            {% csrf_token %}
-            <button type = 'submit', name = 'comment_id', value = "{{ comment.id }}"><i class="far fa-thumbs-up"></i></button>
-        </form>
-        <p>Number of Likes - {{ comment.like.count }}</p>
-    </strong>
-    {{comment.comment_body}}
+
+        <br>
+        {% endfor %}
 
 
 
-    <br>
-    <br>
-    {% endfor %}
-
-</p>
-
-{% endif %}
-<br><hr class="mt-2 mb-3"/><br>
-<h2>Shares</h2>
-{%if not post.shared_user.all %}
-    Not shared yet <br>
-{%else%}
-    {%for user in post.shared_user.all%}
-        <p>{{user}}</p>
-    {% endfor %}
-{% endif %}
-<br><br>
+    {% endif %}
+    <h2>Shares</h2>
+    {%if not post.shared_user %}
+        Not shared yet <br>
+    {%else%}
+        <p>Shared by: {{post.shared_user}}</p>
+    {% endif %}
+</div>
 
 
 <script>
    
 </script>
+<a class='return' href="{% url 'feed'  %}"><i class="fa fa-arrow-left"></i> Go Back</a>
 {% endblock content %}
 

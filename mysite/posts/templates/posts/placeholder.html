@@ -58,14 +58,30 @@
         </div>
 
         {%if posts.contentType == 1 %}
-            <p style="overflow: hidden; text-overflow: ellipsis; text-decoration: underline;">{{ posts.text | markdown | safe }}</p>
+            <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.text | markdown | safe }}
         {%else%}
-            <p style="overflow: hidden; text-overflow: ellipsis; text-decoration: underline;">{{ posts.text }}</p>
+            <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.text }}
         {% endif %}
+
+        {%if posts.image_link%}
+             <a href='{{posts.image_link}}'>preview</a>
+        {% endif %}
+        </p>
         <br>
+
+    {%if current_user == posts.author or posts.privacy == 0%}
         {% if posts.image %}
-        <img src='{{posts.image.url}}' width="60%">
+            <img src='{{posts.image.url}}' width="60%">
         {% endif %}
+    {%elif posts.privacy == 2%}
+        {%for f in followers%}
+            {%if f.actor.displayName == posts.author.user_profile.displayName%}
+                {% if posts.image %}
+                    <img src='{{posts.image.url}}' width="60%">
+                {% endif %}
+            {%endif%}
+        {%endfor%}
+    {%endif%}
 
 
 

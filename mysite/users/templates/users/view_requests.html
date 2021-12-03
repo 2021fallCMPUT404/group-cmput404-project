@@ -10,12 +10,15 @@
             <h6 class="display-6"> You have request(s) from others right now:</h6>
             <div class="list-group">
             {% for requests in recieved_requests %}
-                <li class="list-group-item list-group-item-action list-group-item-dark list-group-item-action d-flex gap-3 py-3" aria-current="true"> Request from {{requests.actor.displayName}}
+                <li class="list-group-item list-group-item-action list-group-item-dark list-group-item-action d-flex gap-3 py-3 justify-content-between" aria-current="true"> 
+                    <div><img src="{{ requests.actor.profileImage.url }}" width='30px' height="30">  {{requests.actor.displayName}}</div>
                  <!--<a href="">Accept</a>
                     <a href="">Reject</a>-->
 
-                <a href="{% url 'users:accept_request' User_id=requests.actor.user.id%}">Accept</a>
-                <a href="{% url 'users:reject_request' User_id=requests.actor.user.id%}">Reject</a>
+                <div>
+                <a href="{% url 'users:accept_request' User_id=requests.actor.user.id%}" class='btn btn-primary btn-sm'><i class="fa fa-check"></i> Accept</a>
+                <a href="{% url 'users:reject_request' User_id=requests.actor.user.id%}" class="btn btn-danger btn-sm"><i class="fa fa-times"></i> Reject</a>
+            </div>
             </li>
         {% endfor %}
         </div>
@@ -25,12 +28,14 @@
     {% endif %}
     <br><br>
     {% if sent_requests %}
-        <h6 class="display-6">You have pending requests to others right now:</h6>
+        <h6 class="display-6">You have pending request(s) to others right now:</h6>
         <div class="list-group">
         {% for pending in sent_requests%}
 
-            <a class="list-group-item list-group-item-action list-group-item-secondary list-group-item-action d-flex gap-3 py-3" aria-current="true" 
-            href="{% url 'users:user_get' User_id=pending.object.user.id%}"><img src="{{ pending.object.profileImage.url }}" width='30px' height="30">  {{pending.object.displayName}}</a>
+            <li class="list-group-item list-group-item-action list-group-item-secondary list-group-item-action d-flex gap-3 py-3 justify-content-between" aria-current="true">
+                <div><img src="{{ pending.object.profileImage.url }}" width='30px' height="30">  {{pending.object.displayName}}</div>
+            <a href="{% url 'users:user_get' User_id=pending.object.user.id%}" class='btn btn-secondary btn-sm'><i class="fa fa-circle-o-notch"></i> Requested</a>
+        </li>
 
         {% endfor %}
         </div>
@@ -38,7 +43,14 @@
         <h6 class="display-6"> You have no pending friend requests to others right now.</h6>
     {% endif %}
     <br><br>
-    <a class="btn btn-lg btn-primary btn-block" href="{% url 'users:user_home_page' %}"> Go Back</a>
+    <p>Requests expected? Please go and check for <a href="{% url 'users:request_page'%}">more friends</a>.</p>
+    <br>
+    {% if not sent_requests and not recieved_requests %}
+    <p>Hope you can get the response soon! ;)</p>
+    <br>
+    {% endif %}
+    <br>
+    <a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
     </div>
 {% endblock content %}
 

@@ -1,13 +1,43 @@
 {% extends 'posts/base.html' %}
 
 {% block content %}
+{% load markdown_ext %}
 <div class='post-wrapper'>
-    <h1><img src="{{ post.author.user_profile.profileImage.url }}" width=50px' height="50"> {{post.author}}</h1>
-    <p>Text: {{post.text}}</p>
-    {% if post.image %}
-    <img src='{{post.image.url}}' width="30%">
-    {% endif %}
-    <p>Date: {{post.pub_date}}</p>
+    <h1><img src="{{ post.author.user_profile.profileImage.url }}" width=50px height="50"> {{post.author}}</h1>
+        {%if post.contentType == 1 %}
+            <p>{{ post.text | markdown | safe }}
+        {%else%}
+            <p>{{ post.text }}
+        {% endif %}
+
+        {%if post.image_link%}
+            <a href='{{post.image_link}}'>preview</a>
+        {% endif %}
+    </p>
+
+    {%if user_name == post.author.username or post.privacy == 0%}
+        {% if post.image %}
+            <img src='{{post.image.url}}' width="30%">
+        {% endif %}
+    {%elif post.privacy == 2%}
+        {%for f in followers%}
+            {%if f.actor.displayName == post.author.user_profile.displayName%}
+                {% if post.image %}
+                    <img src='{{post.image.url}}' width="30%">
+                {% endif %}
+            {%endif%}
+        {%endfor%}
+    {%endif%}
+
+    <p>Date: {{post.pub_date}} 
+        {%if post.privacy == 0%}
+            <i class="fa fa-globe"></i>
+        {%elif post.privacy == 1%}
+            <i class="fa fa-user"></i>
+        {%else%}
+            <i class="fa fa-users"></i>
+        {%endif%}
+    </p>
     <p>ID: {{post.id}}</p>
 
     

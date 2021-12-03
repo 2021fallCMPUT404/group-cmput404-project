@@ -1,3 +1,4 @@
+from rest_framework import *
 from rest_framework import serializers
 
 from .models import FriendRequest, User, User_Profile, UserFollows
@@ -13,13 +14,18 @@ class userPSerializer(serializers.ModelSerializer):
     #This puts in the type attribute since __all__ is not grabbing User_Profile.type attribute for some reason
     #Reference: https://stackoverflow.com/a/60891077
 
+    url = serializers.SerializerMethodField('get_url')
+
     
     class Meta:
         model = User_Profile
-        fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'bio', 'profileImage', 'user'] #TODO: ADD URL AND HOST
-        read_only_fields = ['type', 'id', 'url', 'host','user']
+        fields = ['type', 'id', 'url', 'host', 'displayName', 'email', 'first_name', 
+        'last_name', 'github', 'bio', 'profileImage', 'user'] #TODO: ADD URL AND HOST
+        read_only_fields = ['type', 'id', 'url', 'host','user', 'profileImage']
         
 
+    def get_url(self, obj):
+        return obj.get_absolute_url()
 
 class userFollowSerializer(serializers.ModelSerializer):
     class Meta:

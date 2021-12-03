@@ -10,9 +10,13 @@ body{
 .pic{
     background-image: url("login_image.jpg");
     background-repeat: no-repeat;
+
     background-size: cover;
     background-position: center center;
     width: 100%;
+
+    background-attachment: fixed;
+
 }
 
 div  .navbar {
@@ -27,6 +31,10 @@ div  .navbar {
 
 li.nav-item:hover{
     background-color:rgb(0, 0, 0);
+}
+
+li.nav-item-spec:hover{
+    background-color:red;
 }
 
 .Welcome  {
@@ -205,4 +213,12 @@ div #post-options{
 
 a.navbar-brand{
     font-weight:bold;
+}
+
+a.nav-link{
+    color: white;
+}
+
+a.nav-link:hover{
+    color: white;
 }

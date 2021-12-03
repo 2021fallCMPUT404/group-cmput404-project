@@ -10,7 +10,7 @@ import datetime
 from posts.models import Post
 from django.urls import reverse
 
-SITE_URL = "https://cmput404-socialdist-project.herokuapp.com/"
+SITE_URL = "https://cmput404-socialdist-project.herokuapp.com"
 
 '''
 #TODO: MERGE USER_PROFILE INTO USER
@@ -41,9 +41,12 @@ class User_Profile(models.Model):
     user = models.OneToOneField(User,
                                 on_delete=models.CASCADE,
                                 related_name='user_profile')
-    host = SITE_URL
+    host = SITE_URL + '/'
     url = SITE_URL
     displayName = models.CharField(max_length=60, blank=True)
+    email = models.CharField(max_length=60, blank=True)
+    first_name = models.CharField(max_length=69, blank=True)
+    last_name = models.CharField(max_length=69, blank=True)
     profileImage = models.ImageField(
         upload_to='profile_picture',
         blank=True,
@@ -57,6 +60,9 @@ class User_Profile(models.Model):
 
     def __str__(self):
         return ', '.join((self.displayName, str(self.id), str(self.user.id)))
+
+    def get_absolute_url(self):
+        return SITE_URL + reverse('users:user_crud', args=[str(self.user.id)])
 
 
 class Inbox(models.Model):

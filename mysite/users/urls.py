@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from posts import views as post_views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import static
@@ -10,13 +10,16 @@ app_name = 'users'
 
 urlpatterns = [
     path('', views.UserList, name='homepage'),
+     path('<int:author_id>/', views.ManageUserView.as_view(), name='user_crud'),
     path('userGet/<int:User_id>/', views.userGet, name='user_get'),
     path('userPost/<int:User_id>/', views.userPost, name='user_post'),
     path('users_test', views.index, name='index'),
     path('create_user/', views.create_user_view, name='create_user'),
     path('<int:User_id>/posts/', views.user_post_view, name='view_user_posts'),
     path('<int:User_id>/page/', views.get_user_page, name='get_user_page'),
-    path('<int:User_id>/posts/<int:post_id>/comments', views.get_post_comments, name='get_post_comments'),
+    path('<int:User_id>/posts/<int:post_id>/comments',
+         views.get_post_comments,
+         name='get_post_comments'),
     path('user_login/', views.login_view, name='user_login'),
     path('register/', views.register, name='register'),
     path('login', views.login_view, name='login'),
@@ -35,7 +38,7 @@ urlpatterns = [
     path('<int:User_id>/get-followers/<int:Foreign_id>/',
          views.get_follow,
          name='get_followers'),
-     path('<int:User_id>/followers/<int:Foreign_id>/',
+    path('<int:User_id>/followers/<int:Foreign_id>/',
          views.follow_crud,
          name='crud_followers'),
     path('requests/send-request/<int:User_id>/',
@@ -53,12 +56,20 @@ urlpatterns = [
     path("requests/request-page/",
          views.send_request_page,
          name='request_page'),
+      path('unfollow/<int:User_id>/<int:foreign_id>',views.unfollower_user, name='unfollow'),
+     
     path("api/", views.apiOverview, name='api_overview'),
     #path("api/Users/", views.UserList, name='api_user'),
     path('edit_user_profile',
          views.edit_user_profile_view,
          name='edit_user_profile'),
-     path('external-users/', views.view_t15_users, name='external_users'),
-     path('external-users/t-03/users/', views.view_t3_users, name='t03_users'),
-     path('external-users/t-03/posts/', views.view_t3_posts, name='t03_posts'),
+    path('external-users/', views.view_t15_users, name='external_users'),
+    path('external-users/t-03/users/', views.view_t3_users, name='t03_users'),
+    path('external-users/t-03/posts/', views.view_t3_posts, name='t03_posts'),
+    path('<int:AUTHOR_ID>/posts/<int:POST_ID>',
+         post_views.HandleAuthorPost.as_view(),
+         name='HandleAuthorPost'),
+    path('<int:AUTHOR_ID>',
+         post_views.MangePostUnderUser.as_view(),
+         name='MangePostUnderUser')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

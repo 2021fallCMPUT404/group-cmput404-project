@@ -45,6 +45,8 @@ class Post(models.Model):
                                on_delete=models.CASCADE,
                                blank=True,
                                null=True)
+
+    #author = JSONField()
     shared_user = models.ForeignKey(User,
                                     on_delete=models.CASCADE,
                                     null=True,
@@ -85,7 +87,7 @@ class Comment(models.Model):
                                null=True)
     comment_body = models.TextField()
     comment_created = models.DateTimeField(auto_now_add=True)
-    like = models.ManyToManyField(User, related_name='comments_likes')
+    like = models.ManyToManyField(User, related_name='comments_likes', blank=True, null=True)
 
     class Meta:
         ordering = ['comment_created']

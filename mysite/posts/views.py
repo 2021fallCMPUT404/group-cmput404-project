@@ -460,11 +460,8 @@ class HandleAuthorPostComment(APIView):
                 status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, AUTHOR_ID, POST_ID, format=None):
-        return JsonResponse(
-                {'message': 'This response should return something.'})
+        print("Is this running/")
         try:
-            return JsonResponse(
-                {'message': 'This response should return something.'})
             post = Post.objects.get(id=POST_ID)
             data = JSONParser().parse(request)
             comment_serializer = CommentSerializer(data=data, many=False)

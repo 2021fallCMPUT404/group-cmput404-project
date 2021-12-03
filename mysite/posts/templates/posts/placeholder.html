@@ -39,8 +39,6 @@
         {%if current_user == posts.author or posts.privacy == 0%}
             {% if posts.image %}
                 <img src='{{posts.image.url}}' width="30%">
-            {% elif posts.image_link %}
-                <img src='{{posts.image_link}}' width="30%">
             {% endif %}
         {%elif posts.privacy == 2%}
             {%for f in followers%}

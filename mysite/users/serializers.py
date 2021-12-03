@@ -1,7 +1,7 @@
 from rest_framework import *
 from rest_framework import serializers
 
-from .models import FriendRequest, User, User_Profile, UserFollows
+from .models import FriendRequest, User, User_Profile, UserFollows, Inbox
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -64,3 +64,11 @@ class friend_request_serializer(serializers.ModelSerializer):
             'actor',
             'object',
         ]
+
+class InboxSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Inbox()
+        fields = ['type', 'author']
+        

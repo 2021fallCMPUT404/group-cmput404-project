@@ -110,10 +110,7 @@ class Like(models.Model):
     #inbox = models.ForeignKey(Inbox, related_name='inbox', blank=True, null=True, on_delete=models.CASCADE)
 
 class InboxLike(models.Model):
-
-    user = models.ForeignKey(User,
-                             related_name='InboxLikeUser',
-                             on_delete=models.CASCADE)
+    
     inbox = models.ForeignKey("users.Inbox", related_name='inbox', blank=True, null=True, on_delete=models.CASCADE)
 
     

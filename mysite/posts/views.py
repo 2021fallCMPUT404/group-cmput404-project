@@ -22,14 +22,14 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 import json
 import ast
-from .serializers import PostSerializer, CommentSerializer, LikeSerializer, LikeCommentSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer, LikeCommentSerializer, InboxLikeSerializer
 from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication, BaseAuthentication, SessionAuthentication, BasicAuthentication
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework import exceptions
 import requests
@@ -40,6 +40,17 @@ import base64
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from users.serializers import User_Profile, userPSerializer, UserSerializer
+
+class HandleAuthorPostPermission(permissions.BasePermission):        
+
+    def has_permission(self, request, view):
+        # allow all POST requests
+        if request.method != 'POST':
+            return True
+
+        # Otherwise, only allow authenticated requests
+        # Post Django 1.10, 'is_authenticated' is a read-only attribute
+        return request.user and request.user.is_authenticated
 
 
 class AccessPermission(permissions.BasePermission):
@@ -241,9 +252,9 @@ def likePost(request, pk):
 
 
 class HandleAuthorPost(APIView):
-    #authentication_classes = [SessionAuthentication, BasicAuthentication]
-    #permission_classes = [IsAuthenticated]
-
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [HandleAuthorPostPermission]
+    
     def get(self, request, AUTHOR_ID, POST_ID, format=None):
         try:
             print(request.user)
@@ -275,73 +286,38 @@ class HandleAuthorPost(APIView):
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
-
-    def put(self, request, AUTHOR_ID, POST_ID, format=None):
-        #try:
-        user = User.objects.get(id=AUTHOR_ID)
-        request_user = request.user
-        data = JSONParser().parse(request)
-        print(data.items())
-            
-        print('this is the author :' + str(data['author']))
-        
-                #post = Post.objects.get(id=POST_ID)
-        
-        created_post = Post( id = data['id'], title=data['title'], text=data['text'], image=data['image'], author=user,
-                shared_user = data['shared_user'],shared_on = data['shared_on'],
-                 privacy=data['privacy'], contentType=data['contentType'],)
-        print('created post: ' + str(created_post))
-        created_post.save()
-        post_serializer = PostSerializer(created_post)
     
-                #post_serializer.save()
-        return JsonResponse(post_serializer.data)
-
-
+    def put(self, request, AUTHOR_ID, POST_ID, format=None):
+        try:
+            if Post.objects.filter(id = POST_ID).exists():
+                return JsonResponse(
+                {'message': 'The requested post has already existed'},
+                status=status.HTTP_403_FORBIDDEN)
+            user = User.objects.get(id=AUTHOR_ID)
+            request_user = request.user
+            data = JSONParser().parse(request)
             
-            #except Post.DoesNotExist:
-                #post_serializer = PostSerializer(data=data)
-                #if post_serializer.is_valid():
-
-                    #post_serializer.save()
-                    #print(post_serializer.data)
-                    #return JsonResponse(post_serializer.data)
             
-            #except:
-                
-                #post_serializer = PostSerializer(post, data=data)
-                #if post_serializer.is_valid():
-
-                    #post_serializer.save()
-                    #print(post_serializer.data)
-                    #return JsonResponse(post_serializer.data)
-
-
-
-                #post_serializer = PostSerializer(data=data)
-                #if post_serializer.is_valid():
-
-                    #post_serializer.save()
-                    #print(post_serializer.data)
-                    #return JsonResponse(post_serializer.data)
-
-            #return JsonResponse(post_serializer.errors,
-                                #status=status.HTTP_400_BAD_REQUEST)
+            created_post = Post( id = POST_ID, title=data['title'], text=data['text'], image=data['image'], author=user,
+                    shared_user = data['shared_user'],shared_on = data['shared_on'],
+                    privacy=data['privacy'], contentType=data['contentType'],)
             
-        #except User.DoesNotExist:
-            #return JsonResponse(
-                #{'message': 'The requested user does not exist'},
-                #status=status.HTTP_404_NOT_FOUND)
-        
-    @action(
-        detail=False,
-        permission_classes=[IsAuthenticated],
-        authentication_classes=[SessionAuthentication, BasicAuthentication])
+            created_post.save()
+            post_serializer = PostSerializer(created_post)
+            
+            return JsonResponse(post_serializer.data)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
     def post(self, request, AUTHOR_ID, POST_ID, format=None):
         try:
             #This part of code will check if the token from request matches the token of author.
             user = User.objects.get(id=AUTHOR_ID)
             request_user = request.user
+            print(request_user.id)
+            '''
             if request_user.id != AUTHOR_ID:
                 return JsonResponse(
                     {
@@ -349,6 +325,7 @@ class HandleAuthorPost(APIView):
                         'The authorized user id does not match the provided user id in url.'
                     },
                     status=status.HTTP_403_FORBIDDEN)
+            '''
             post = Post.objects.get(id=POST_ID)
             if post.author.id != user.id:
                 return JsonResponse(
@@ -372,7 +349,7 @@ class HandleAuthorPost(APIView):
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
-
+    @action(methods=['delete'], detail=True)
     def delete(self, request, AUTHOR_ID, POST_ID, format=None):
         try:
 
@@ -425,23 +402,25 @@ class MangePostUnderUser(APIView):
                 status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, AUTHOR_ID, format=None):
+
         try:
             user = User.objects.get(id=AUTHOR_ID)
-
+            request_user = request.user
             data = JSONParser().parse(request)
-            #data['author'] = AUTHOR_ID
-            post_serializer = PostSerializer(data=data)
-            if post_serializer.is_valid():
-                post_serializer.save()
-                return JsonResponse(post_serializer.data,
-                                    status=status.HTTP_201_CREATED)
-            return JsonResponse(post_serializer.errors,
-                                status=status.HTTP_400_BAD_REQUEST)
+            
+            
+            created_post = Post(title=data['title'], text=data['text'], image=data['image'], author=user,
+                    shared_user = data['shared_user'],shared_on = data['shared_on'],
+                    privacy=data['privacy'], contentType=data['contentType'],)
+            
+            created_post.save()
+            post_serializer = PostSerializer(created_post)
+            
+            return JsonResponse(post_serializer.data)
         except User.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
-
 
 class HandleAuthorPostComment(APIView):
     #authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -488,40 +467,7 @@ class HandleAuthorPostComment(APIView):
             return JsonResponse(
                 {'message': 'The requested post does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
-'''
-@api_view(['GET', 'POST'])
-def HandleAuthorPostComment(request, AUTHOR_ID, POST_ID):
-    if request.method == 'GET':
-        try:
-            post = Post.objects.get(id=POST_ID)
-            if AUTHOR_ID != post.author.id:
-                return JsonResponse({
-                    'message':
-                    'The provided author in url does have the request post'
-                })
-            comments = Comment.objects.filter(post=post)
-            comments_serializer = CommentSerializer(comments, many=True)
-            return JsonResponse(comments_serializer.data, safe=False)
-        except Post.DoesNotExist:
-            return JsonResponse(
-                {'message': 'The requested post does not exist'},
-                status=status.HTTP_404_NOT_FOUND)
-    if request.method == 'POST':
-        try:
-            related_post = Post.objects.get(id=POST_ID)
-            data = JSONParser().parse(request)
-            comment_serializer = CommentSerializer(data=data)
-            if comment_serializer.is_valid():
-                comment_serializer.save()
-                return JsonResponse(comment_serializer.data,
-                                    status=status.HTTP_201_CREATED)
-            return JsonResponse(comment_serializer.errors,
-                                status=status.HTTP_400_BAD_REQUEST)
-        except Post.DoesNotExist:
-            return JsonResponse(
-                {'message': 'The requested post does not exist'},
-                status=status.HTTP_404_NOT_FOUND)
-'''
+
 class HandleInboxLike(APIView):
     #authentication_classes = [SessionAuthentication, BasicAuthentication]
     #permission_classes = [IsAuthenticated]
@@ -530,7 +476,8 @@ class HandleInboxLike(APIView):
         try:
             inbox = Inbox.objects.get(author=AUTHOR_ID)
             data = JSONParser().parse(request)
-            like_serializer = LikeSerializer(data=data)
+            JsonResponse(data)
+            like_serializer = InboxLikeSerializer(data=data)
             if like_serializer.is_valid():
                 like_serializer.save()
                 return JsonResponse(like_serializer.data,
@@ -538,6 +485,10 @@ class HandleInboxLike(APIView):
         except User.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+        except Inbox.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested inbox does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
 
@@ -561,6 +512,8 @@ class HandlePostLikeList(APIView):
 class HandleCommentLike(APIView):
     def get(self, request, AUTHOR_ID, POST_ID, COMMENT_ID, format=None):
         try:
+            user_comment = Comment.objects.get(author = AUTHOR_ID)
+            print(user_comment.id)
             comment = Comment.objects.get(id=COMMENT_ID)
             post = Post.objects.get(id=POST_ID)
             
@@ -583,9 +536,17 @@ class HandleCommentLike(APIView):
             commentlikes = CommentLike.objects.filter(comment=comment)
             like_serializer = LikeCommentSerializer(likes)
             return JsonResponse(like_serializer.data)
-        except Like.DoesNotExist:
+        except Comment.DoesNotExist:
             return JsonResponse(
-                {'message': 'The requested like does not exist'},
+                {'message': 'The requested comment does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
 
@@ -594,8 +555,19 @@ class HandleAuthorLike(APIView):
         try:
             author = User.objects.get(id=AUTHOR_ID)
             likes = Like.objects.filter(user=author)
+            comment_likes = CommentLike.objects.filter(user = author)
             likes_serializer = LikeSerializer(likes, many=True)
-            return JsonResponse(likes_serializer.data, safe=False)
+            comment_likes_serializer = LikeCommentSerializer(comment_likes, many = True)
+
+           
+
+            '''
+            new_data = dict(
+                list(likes_serializer.data.items()) +
+                list(comment_likes_serializer.data.items()))
+            '''
+            
+            return JsonResponse(likes_serializer.data + comment_likes_serializer.data, safe=False)
         except User.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested user does not exist'},

@@ -281,14 +281,15 @@ class HandleAuthorPost(APIView):
         
                 #post = Post.objects.get(id=POST_ID)
         
-        created_post = Post( id = data['id'], title=data['title'], text=data['text'], image=data['image'], author=data['author'],
-                shared_user = data['shared_user'], shared_on = data['shared_on'], privacy=data['privacy'], contentType=data['contentType'])
+        created_post = Post( id = data['id'], title=data['title'], text=data['text'], image=data['image'], author=user,
+                shared_user = data['shared_user'],shared_on = data['shared_on'],
+                 privacy=data['privacy'], contentType=data['contentType'],)
         print('created post: ' + str(created_post))
         created_post.save()
         post_serializer = PostSerializer(created_post)
     
                 #post_serializer.save()
-        return JsonResponse(created_post.data)
+        return JsonResponse(post_serializer.data)
 
 
             

@@ -40,7 +40,7 @@ class Post(models.Model):
     text = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='', blank=True, null=True)
     image_link = models.TextField(blank=True, null=True)
-    pub_date = models.DateTimeField(auto_now_add=True)
+    pub_date = models.DateTimeField(auto_now_add=True, null=True)
     author = models.ForeignKey(User,
                                on_delete=models.CASCADE,
                                blank=True,

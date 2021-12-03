@@ -246,6 +246,7 @@ a.nav-link:hover{
   
   #nav li:hover ul {
     display: block;
-    background-color: darkgray;
+    background-color: rgb(0, 0, 0);
+    text-align: center;
   }
   

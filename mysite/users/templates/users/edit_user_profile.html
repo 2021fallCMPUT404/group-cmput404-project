@@ -5,21 +5,34 @@
 
 
 {% block content %}
-<h1>Edit user profile</h1>
+<h1>Edit your profile</h1>
 <div>
     
-    <h2>Register form</h2>
+    <br>
     <form method='post' enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="row justify-content-center" id="post-wrapper">
-            <table border="1" class="table table-striped table-bordered table-hover">
-                {{profile_form.as_table}}
-            </table>
+        <div class="container" id="post-wrapper" " >
+            <div class="form-control-lg col-md-10 mb-0" style="display: contents;">
+                {{profile_form.displayName| as_crispy_field }}
+            </div>
+            <br>
+            <div class="form-control-lg col-md-10 mb-0" style="display: contents;">
+                {{profile_form.github| as_crispy_field }}
+             </div>
+            <br>
+            <div class="form-control-lg col-md-10 mb-0" style="display: contents;">
+                {{profile_form.bio| as_crispy_field }}
+            </div>
+            <br>
+            <div class="form-control-lg col-md-10 mb-0" style="display: contents;">
+                {{profile_form.profileImage | as_crispy_field }}
+            </div>
         </div>
         
         <input type="submit" class= "btn btn-secondary btn-lg" name="submit" value="finish edit">
        
     </form>
-<a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
+    <br><br>
+    <a class = "btn btn-lg btn-primary btn-block"  href="{% url 'users:login'  %}" style="float: left;"> Go Back</a>
 </div>
 {% endblock content %}

@@ -292,8 +292,9 @@ def login_view(request):
         if user:
             if user.is_active:
                 login(request, user)
-                #return HttpResponseRedirect(reverse('advance_home_page'))
-                return HttpResponseRedirect('user_home_page')
+                
+                #return HttpResponseRedirect('user_home_page')
+                return redirect('feed')
 
             else:
                 print('This user account is not activated yet')

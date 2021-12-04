@@ -140,7 +140,7 @@ def post(request, Post_id):
 
 
 def placeholder(request):
-    latest_post_list = Post.objects.order_by('-pub_date')[:5]
+    latest_post_list = Post.objects.order_by('-pub_date')
     backup_list = Post.objects.order_by('-pub_date')[5:]
     template = loader.get_template('posts/placeholder.html')
     current_user = User.objects.get(id=request.user.id)

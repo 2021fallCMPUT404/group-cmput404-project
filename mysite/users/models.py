@@ -9,7 +9,7 @@ from django.forms.widgets import Textarea
 import datetime
 from posts.models import Post
 from django.urls import reverse
-
+import uuid
 SITE_URL = "https://cmput404-socialdist-project.herokuapp.com"
 
 '''
@@ -37,6 +37,7 @@ class Create_user(forms.Form):
 
 class User_Profile(models.Model):
     type = "author"
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
 
     user = models.OneToOneField(User,
                                 on_delete=models.CASCADE,

@@ -70,8 +70,8 @@ class ManageUserView(APIView):
 
     def get(self, request, author_id, format=None):
         try:
-            user = get_object_or_404(User, pk=author_id)
-            user_profile = get_object_or_404(User_Profile, user=user)
+            #user = get_object_or_404(User, pk=author_id)
+            user_profile = get_object_or_404(User_Profile, id=author_id)
             serializer = userPSerializer(user_profile, many=False)
             return Response(serializer.data)
         except Exception as e:
@@ -376,6 +376,9 @@ def user_home_page_view(request):
     user = User.objects.get(id=request.user.id)
     user_profile_image = User_Profile.profileImage
 
+    print(request.user)
+    print(user.user_profile.url)
+    get_object_or_404(User_Profile, user=request.user)
     the_user_profile = User_Profile.objects.get(user=request.user)
     user_display_name = the_user_profile.displayName
     return render(request,

@@ -1,6 +1,7 @@
 {% extends 'posts/base.html' %}
 
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
 {% block content %}
 {% load markdown_ext %}
@@ -20,21 +21,46 @@
 
 
 
-<br>
+<br><br><br>
 
-<br><br>
+
 <h1  style="font-family: Dancing Script; font-size: 5rem;" >Explore the post</h1>
 {% if latest_post_list %}
+
+<br>
+<div class="container" >
+    <a href="{% url 'addpost' %}"  class=" btn btn-lg btn-primary btn-block" style="width: 60%;"><i class="fa fa-plus-circle"></i> Add a Post</a>
+</div>
 
 
     <br>
     
     {% for posts in latest_post_list %}
     
-    <div class="container border border-4 border-secondary rounded-4" >
+    <div class="container border border-4 border-secondary " style="border-radius: 1rem; ;" >
         <div class=container " style="border: 1cm ;">
+
+            <div class="nav-scroller bg-body shadow-sm">
+                <nav class="nav nav-underline" aria-label="Secondary navigation">
+                  
+                  <a class="nav-link disabled " href="#">
+                    Likes
+                    <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{posts.like.count}}</span>
+                  </a>
+                  <a class="nav-link disabled" href="#">
+                    Comments
+                    <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{posts.comments.count}}</span>
+                  </a>
+                  <a class="nav-link disabled" href="#">
+                    Shares
+                    <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{posts.shares.count}}</span>
+                  </a>
+
+                </nav>
+            </div>    
         <br>
-        <h4 style="margin-right: 80%; ;"><img src="{{ posts.author.user_profile.profileImage.url }}" width="60px" height="60px" style="border: 0.3px solid;"> {{posts.author}} </h4>
+        <h4 style="margin-right: 80%;" ><img src="{{ posts.author.user_profile.profileImage.url }}" width="60px" height="60px" style="border: 0.3px solid;"> {{posts.author}} </h4>
+        <hr class="mt-2 mb-3" style="width: 30%;"/>
         {%if not posts.shared_user and current_user == posts.author %}
         <a href="{% url 'editpost' posts.pk %}" class='btn btn-secondary ' style="margin-left:80%; border-radius: 1rem;"><i class="fa fa-pencil-square-o"></i> Edit</a>
     
@@ -64,7 +90,7 @@
         {% endif %}
         <br>
         {% if posts.image %}
-        <img src='{{posts.image.url}}' width="60%">
+        <img src='{{posts.image.url}}' width=40% height="20%" style="max-height: 400px; max-width: 400px;">
         {% endif %}
 
 
@@ -93,8 +119,51 @@
     <br><br><br>
     
     <h1 style="font-family: Fredoka One;">Oops! No posts are available.</h1>
-    {% endif %}
+    <br>
+    <div class="container" >
+        <a href="{% url 'addpost' %}"  class=" btn btn-lg btn-primary btn-block" style="width: 60%;"><i class="fa fa-plus-circle"></i> Add a Post</a>
+    </div>
     
+    {% endif %}
+
+    
+<button
+    type="button"
+    class="btn btn-danger btn-floating btn-lg"
+    id="btn-back-to-top"
+    >
+<i class="fas fa-arrow-up"></i>
+</button>
+
+
+<!--   code from  https://mdbootstrap.com/snippets/standard/mdbootstrap/2964350 -->
+<script>
+//Get the button
+let mybutton = document.getElementById("btn-back-to-top");
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function () {
+  scrollFunction();
+};
+
+function scrollFunction() {
+  if (
+    document.body.scrollTop > 20 ||
+    document.documentElement.scrollTop > 20
+  ) {
+    mybutton.style.display = "block";
+  } else {
+    mybutton.style.display = "none";
+  }
+}
+// When the user clicks on the button, scroll to the top of the document
+mybutton.addEventListener("click", backToTop);
+
+function backToTop() {
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+}
+</script>
 
 <a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
 

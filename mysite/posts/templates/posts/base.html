@@ -68,6 +68,9 @@
                     </li>
                 </ul>
               </li>
+              
+
+
 
             </ul>
             <ul class="navbar-nav navbar-right"></ul>
@@ -80,6 +83,7 @@
             {% endif %}
             {% if not user.is_authenticated %}
   
+            
             <ul class="navbar-nav me-auto">
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{% url 'users:login' %}">Login</a>

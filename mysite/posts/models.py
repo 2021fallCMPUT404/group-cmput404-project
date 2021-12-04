@@ -49,6 +49,7 @@ class Post(models.Model):
     contentType = models.IntegerField(choices=Content,default=PLAIN)
     
     like = models.ManyToManyField(User, related_name='posts_likes')
+    share = models.ManyToManyField(User, related_name='posts_shares')
 
     def get_absolute_url(self):
         return reverse('post_placeholder', args=[str(self.id)])

@@ -95,12 +95,16 @@
 
     {% endif %}
     <h2>Shares</h2>
-    {%if not post.shared_user %}
-        Not shared yet <br>
+    <p>Total Shares: {{post.share.count}}</p>
+    {%if not post.share %}
+        Not shared yet 
     {%else%}
-        <p>Shared by: {{post.shared_user}}</p>
+        Shared by 
+        {%for user in post.share.all%}
+            {{user.username}}; 
+        {%endfor%}
     {% endif %}
-    <br>
+    <br><br>
 </div>
 
 

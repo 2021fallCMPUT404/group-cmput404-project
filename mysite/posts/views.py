@@ -922,6 +922,7 @@ class SharedPostView(View):
             shared_user=current_user,
             privacy=post_object.privacy,
             contentType=post_object.contentType).save()
+        post_object.share.add(current_user)
         return HttpResponseRedirect(reverse('feed'))
 
 

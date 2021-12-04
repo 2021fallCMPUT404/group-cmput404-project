@@ -139,8 +139,8 @@ def userPost(request, User_id):
 
 
 @api_view(['GET'])
-@authentication_classes([CustomAuthentication])
-@permission_classes([AccessPermission])
+@authentication_classes([])
+@permission_classes([])
 def follow_list(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
@@ -166,20 +166,25 @@ def following_list(request, User_id):
     return Response({'type': 'following', 'items': serializer.data})
 
 
-@api_view(['GET'])
-@authentication_classes([CustomAuthentication])
-@permission_classes([AccessPermission])
+@api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([])
+@permission_classes([])
 def get_follow(request, User_id, Foreign_id):
-    user = get_object_or_404(User, pk=User_id)
-    foreign_user = get_object_or_404(User, pk=Foreign_id)
-    user_profile = get_object_or_404(User_Profile, user=user)
-    foreign_user_profile = get_object_or_404(User_Profile, user=foreign_user)
+
     if request.method == 'GET':
-        thing = UserFollows.objects.filter(actor=foreign_user_profile,
-                                           object=user_profile).first()
-        serializer = userFollowSerializer(thing, many=False)
-        print('PRINTING DATA:', serializer)
-        return Response(serializer.data)
+        user = get_object_or_404(User, pk=User_id)
+        foreign_user = get_object_or_404(User, pk=Foreign_id)
+        user_profile = get_object_or_404(User_Profile, user=user)
+        foreign_user_profile = get_object_or_404(User_Profile, user=foreign_user)
+        if request.method == 'GET':
+            thing = UserFollows.objects.filter(actor=foreign_user_profile,
+                                            object=user_profile).first()
+            serializer = userFollowSerializer(thing, many=False)
+            print('PRINTING DATA:', serializer)
+            return Response(serializer.data)
+    else:
+        print(request._request)
+        return follow_crud(request._request, User_id, Foreign_id)
 
 
 @api_view(['PUT', 'DELETE'])

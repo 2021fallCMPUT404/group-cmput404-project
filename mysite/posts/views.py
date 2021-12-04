@@ -261,6 +261,8 @@ class HandleAuthorPost(APIView):
             user = User.objects.get(id=AUTHOR_ID)
             post = Post.objects.get(id=POST_ID)
             user_profile = User_Profile.objects.get(user=user)
+            comments = Comment.objects.filter(post = post)
+            count = len(comments)
             if post.author.username != user.username:
                 return JsonResponse(
                     {
@@ -271,12 +273,18 @@ class HandleAuthorPost(APIView):
             if post.privacy != 0:
                 return JsonResponse({'message': 'This is not a public post.'},
                                     status=status.HTTP_403_FORBIDDEN)
-            print(post.author)
             post_serializer = PostSerializer(post, many=False)
-            
-            print(post_serializer)
             post_serializer_data = post_serializer.data
-            
+            post_serializer_data['origin'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post.id))
+            post_serializer_data['source'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post.id))
+            post_serializer_data['description'] = "This post discusses stuff -- brief"
+            post_serializer_data['categories'] = []
+            post_serializer_data['count'] = count
+            post_serializer_data['comments'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post.id))
+            if post_serializer_data['contentType'] == 1:
+                post_serializer_data['contentType'] = "text/markdown"
+            else:
+                post_serializer_data['contentType'] = "text/plain"
             return Response(post_serializer_data)
         except Post.DoesNotExist:
             return JsonResponse(
@@ -297,7 +305,11 @@ class HandleAuthorPost(APIView):
             request_user = request.user
             data = JSONParser().parse(request)
             
-            
+            if data['contentType'] == "text/markdown":
+                data['contentType'] = 1
+            else:
+                data['contentType'] = 0
+
             created_post = Post( id = POST_ID, title=data['title'], text=data['text'], image=data['image'], author=user,
                     shared_user = data['shared_user'],shared_on = data['shared_on'],
                     privacy=data['privacy'], contentType=data['contentType'],)
@@ -317,7 +329,7 @@ class HandleAuthorPost(APIView):
             user = User.objects.get(id=AUTHOR_ID)
             request_user = request.user
             print(request_user.id)
-            '''
+            
             if request_user.id != AUTHOR_ID:
                 return JsonResponse(
                     {
@@ -325,7 +337,7 @@ class HandleAuthorPost(APIView):
                         'The authorized user id does not match the provided user id in url.'
                     },
                     status=status.HTTP_403_FORBIDDEN)
-            '''
+            
             post = Post.objects.get(id=POST_ID)
             if post.author.id != user.id:
                 return JsonResponse(
@@ -335,6 +347,10 @@ class HandleAuthorPost(APIView):
                     },
                     status=status.HTTP_403_FORBIDDEN)
             data = JSONParser().parse(request)
+            if data['contentType'] == "text/markdown":
+                data['contentType'] = 1
+            else:
+                data['contentType'] = 0
             post_serializer = PostSerializer(post, data=data)
             if post_serializer.is_valid():
                 post_serializer.save()
@@ -349,7 +365,7 @@ class HandleAuthorPost(APIView):
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
-    @action(methods=['delete'], detail=True)
+    
     def delete(self, request, AUTHOR_ID, POST_ID, format=None):
         try:
 
@@ -385,16 +401,19 @@ class MangePostUnderUser(APIView):
             posts = Post.objects.filter(author=user)
             user_profile = User_Profile.objects.get(user=user)
             post_serializer = PostSerializer(posts, many=True)
-            #post_serializer = PostSerializer(post)
-            user_serializer = UserSerializer(user)
-            user_profile_serializer = userPSerializer(user_profile)
-            post_serializer_data = post_serializer.data
-            new_data = dict(
-                list(user_serializer.data.items()) +
-                list(user_profile_serializer.data.items()))
-            for user_post in post_serializer_data:
-                user_post['author'] = new_data
-            #return Response(post_serializer_data)
+            for post_serializer_data in post_serializer.data:
+                comments = Comment.objects.filter(post = post_serializer_data['id'])
+                count = len(comments)
+                post_serializer_data['origin'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                post_serializer_data['source'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                post_serializer_data['description'] = "This post discusses stuff -- brief"
+                post_serializer_data['categories'] = []
+                post_serializer_data['count'] = count
+                post_serializer_data['comments'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                if post_serializer_data['contentType'] == 1:
+                    post_serializer_data['contentType'] = "text/markdown"
+                else:
+                    post_serializer_data['contentType'] = "text/plain"
             return JsonResponse(post_serializer.data, safe=False)
         except User.DoesNotExist:
             return JsonResponse(
@@ -407,8 +426,10 @@ class MangePostUnderUser(APIView):
             user = User.objects.get(id=AUTHOR_ID)
             request_user = request.user
             data = JSONParser().parse(request)
-            
-            
+            if data['contentType'] == "text/markdown":
+                data['contentType'] = 1
+            else:
+                data['contentType'] = 0
             created_post = Post(title=data['title'], text=data['text'], image=data['image'], author=user,
                     shared_user = data['shared_user'],shared_on = data['shared_on'],
                     privacy=data['privacy'], contentType=data['contentType'],)
@@ -447,18 +468,19 @@ class HandleAuthorPostComment(APIView):
     def post(self, request, AUTHOR_ID, POST_ID, format=None):
         print("Is this running/")
         try:
+            user = User.objects.get(id=AUTHOR_ID)
             post = Post.objects.get(id=POST_ID)
             data = JSONParser().parse(request)
-            comment_serializer = CommentSerializer(data=data, many=False)
 
-            if comment_serializer.is_valid():
-                comment_serializer.save()
-                print('comment is valid')
-                return JsonResponse(comment_serializer.data,
-                                    status=status.HTTP_201_CREATED)
-            print('comment is not valid')
-            return JsonResponse(comment_serializer.errors,
-                                status=status.HTTP_400_BAD_REQUEST)
+            created_comment = Comment(post = post, author=user,
+                    comment_body = data['comment_body'], comment_created = data['comment_created'])
+            created_comment.like.set(data['like'])
+            created_comment.save()
+            comment_serializer = CommentSerializer(created_comment)
+
+            
+            return JsonResponse(comment_serializer.data,
+                                status=status.HTTP_201_CREATED)
         except User.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
@@ -499,9 +521,12 @@ class HandlePostLikeList(APIView):
             related_post = Post.objects.get(id=POST_ID)
             likes = Like.objects.filter(post=related_post)
             likes_serializer = LikeSerializer(likes, many=True)
-            print(likes_serializer.data)
+            
             for like_data in likes_serializer.data:
-                like_data['object'] = "http://127.0.0.1:8000/author/{}/post/{}".format(str(AUTHOR_ID), str(POST_ID))
+                like_data['object'] = "https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}".format(str(AUTHOR_ID), str(POST_ID))
+                like_data['@context'] = 'https://cmput404-socialdist-project.herokuapp.com/post/feed'
+                user_profile = User_Profile.objects.get(user=like_data['user']['id'])
+                like_data['summary'] = "{} Likes your post".format(user_profile.displayName)
             return JsonResponse(likes_serializer.data, safe=False)
         except Post.DoesNotExist:
             return JsonResponse(
@@ -516,8 +541,6 @@ class HandleCommentLike(APIView):
             print(user_comment.id)
             comment = Comment.objects.get(id=COMMENT_ID)
             post = Post.objects.get(id=POST_ID)
-            
-            
 
             if comment.post.id != post.id:
                 return JsonResponse(
@@ -534,8 +557,13 @@ class HandleCommentLike(APIView):
                     },
                     status=status.HTTP_404_NOT_FOUND)
             commentlikes = CommentLike.objects.filter(comment=comment)
-            like_serializer = LikeCommentSerializer(likes)
-            return JsonResponse(like_serializer.data)
+            like_serializer = LikeCommentSerializer(likes, many=True)
+            for like_data in like_serializer.data:
+                like_data['object'] = "https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}".format(str(AUTHOR_ID), str(POST_ID))
+                like_data['@context'] = 'https://cmput404-socialdist-project.herokuapp.com/post/feed'
+                user_profile = User_Profile.objects.get(user=like_data['user']['id'])
+                like_data['summary'] = "{} Likes your post".format(user_profile.displayName)
+            return JsonResponse(like_serializer.data, safe=False)
         except Comment.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested comment does not exist'},
@@ -558,7 +586,17 @@ class HandleAuthorLike(APIView):
             comment_likes = CommentLike.objects.filter(user = author)
             likes_serializer = LikeSerializer(likes, many=True)
             comment_likes_serializer = LikeCommentSerializer(comment_likes, many = True)
-
+            for like_data in likes_serializer.data:
+                like_data['object'] = "https://cmput404-socialdist-project.herokuapp.com/author/{}".format(str(AUTHOR_ID))
+                like_data['@context'] = 'https://cmput404-socialdist-project.herokuapp.com/post/feed'
+                user_profile = User_Profile.objects.get(user=like_data['user']['id'])
+                like_data['summary'] = "{} Likes your post".format(user_profile.displayName)
+            for like_data in comment_likes_serializer.data:
+                like_data['object'] = "https://cmput404-socialdist-project.herokuapp.com/author/{}".format(str(AUTHOR_ID))
+                like_data['@context'] = 'https://cmput404-socialdist-project.herokuapp.com/post/feed'
+                user_profile = User_Profile.objects.get(user=like_data['user']['id'])
+                like_data['summary'] = "{} Likes your post".format(user_profile.displayName)
+            
            
 
             '''

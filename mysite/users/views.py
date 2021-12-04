@@ -179,9 +179,13 @@ def get_follow(request, User_id, Foreign_id):
         if request.method == 'GET':
             thing = UserFollows.objects.filter(actor=foreign_user_profile,
                                             object=user_profile).first()
-            serializer = userFollowSerializer(thing, many=False)
-            print('PRINTING DATA:', serializer)
-            return Response(serializer.data)
+            if thing != None:
+                return HttpResponse('True\n')
+            else:
+                return HttpResponse('False\n')
+            #serializer = userFollowSerializer(thing, many=False)
+            #print('PRINTING DATA:', serializer)
+            #return Response(serializer.data)
     else:
         print(request._request)
         return follow_crud(request._request, User_id, Foreign_id)

@@ -63,7 +63,7 @@ class User_Profile(models.Model):
         return ', '.join((self.displayName, str(self.id), str(self.user.id)))
 
     def get_absolute_url(self):
-        return SITE_URL + reverse('users:user_crud', args=[str(self.user.id)])
+        return SITE_URL + reverse('users:user_crud', args=[str(self.id)])
 
 
 class Inbox(models.Model):

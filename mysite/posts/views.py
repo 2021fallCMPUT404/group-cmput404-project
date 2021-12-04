@@ -239,7 +239,8 @@ class HandleAuthorPost(APIView):
 
     def get(self, request, AUTHOR_ID, POST_ID, format=None):
         try:
-            user = User.objects.get(id=AUTHOR_ID)
+            user_profile = get_object_or_404(User_Profile, id=AUTHOR_ID)
+            user = User.objects.get(id=user_profile.user.id)
             post = Post.objects.get(id=POST_ID)
             if post.author.username != user.username:
                 return JsonResponse(

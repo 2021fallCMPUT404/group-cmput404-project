@@ -79,8 +79,8 @@ class ManageUserView(APIView):
 
     def post(self, request, author_id, format=None):
         try:
-            user = get_object_or_404(User, pk=author_id)
-            user_profile = get_object_or_404(User_Profile, user=user)
+            #user = get_object_or_404(User, pk=author_id)
+            user_profile = get_object_or_404(User_Profile, id=author_id)
             #data = JSONParser().parse(request)
             serializer = userPSerializer(instance=user_profile, data=request.data)
             if serializer.is_valid():
@@ -142,8 +142,8 @@ def userPost(request, User_id):
 @authentication_classes([])
 @permission_classes([])
 def follow_list(request, User_id):
-    user = get_object_or_404(User, pk=User_id)
-    user_profile = get_object_or_404(User_Profile, user=user)
+    #user = get_object_or_404(User, pk=User_id)
+    user_profile = get_object_or_404(User_Profile, id=User_id)
     followers_list = UserFollows.objects.filter(object=user_profile)
     actor_list = []
     for follow in followers_list:
@@ -153,11 +153,11 @@ def follow_list(request, User_id):
 
 
 @api_view(['GET'])
-@authentication_classes([CustomAuthentication])
-@permission_classes([AccessPermission])
+@authentication_classes([])
+@permission_classes([])
 def following_list(request, User_id):
-    user = get_object_or_404(User, pk=User_id)
-    user_profile = get_object_or_404(User_Profile, user=user)
+    #user = get_object_or_404(User, pk=User_id)
+    user_profile = get_object_or_404(User_Profile, id=User_id)
     followers_list = UserFollows.objects.filter(actor=user_profile)
     object_list = []
     for followed in followers_list:
@@ -172,10 +172,10 @@ def following_list(request, User_id):
 def get_follow(request, User_id, Foreign_id):
 
     if request.method == 'GET':
-        user = get_object_or_404(User, pk=User_id)
-        foreign_user = get_object_or_404(User, pk=Foreign_id)
-        user_profile = get_object_or_404(User_Profile, user=user)
-        foreign_user_profile = get_object_or_404(User_Profile, user=foreign_user)
+        #user = get_object_or_404(User, pk=User_id)
+        #foreign_user = get_object_or_404(User, pk=Foreign_id)
+        user_profile = get_object_or_404(User_Profile, id=User_id)
+        foreign_user_profile = get_object_or_404(User_Profile, id=Foreign_id)
         if request.method == 'GET':
             thing = UserFollows.objects.filter(actor=foreign_user_profile,
                                             object=user_profile).first()
@@ -195,10 +195,10 @@ def get_follow(request, User_id, Foreign_id):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def follow_crud(request, User_id, Foreign_id):
-    user = get_object_or_404(User, pk=User_id)
-    foreign_user = get_object_or_404(User, pk=Foreign_id)
-    user_profile = get_object_or_404(User_Profile, user=user)
-    foreign_user_profile = get_object_or_404(User_Profile, user=foreign_user)
+    #user = get_object_or_404(User, pk=User_id)
+    #foreign_user = get_object_or_404(User, pk=Foreign_id)
+    user_profile = get_object_or_404(User_Profile, id=User_id)
+    foreign_user_profile = get_object_or_404(User_Profile, id=Foreign_id)
 
     if request.method == 'PUT':
         #TODO: PUT METHOD NEEDS TO BE AUTHENTICATED
@@ -220,15 +220,17 @@ def follow_crud(request, User_id, Foreign_id):
 @authentication_classes([])
 @permission_classes([])
 def get_post_comments(request, User_id, post_id):
-    user = get_object_or_404(User, pk=User_id)
-    post = get_object_or_404(Post_model, pk=post_id, author=user)
+    user_profile = get_object_or_404(User_Profile, pk=User_id)
+    #user = get_object_or_404(User, pk=User_id)
+    post = get_object_or_404(Post_model, pk=post_id, author=user_profile.user)
 
     if request.method == "GET":
         comments = Comment.objects.filter(post=post_id)
         serializers = CommentSerializer(comments, many=True)
         return Response(serializers.data)
     elif request.method == "POST":
-        return
+        #TODO: IMPLEMENT THE POST PART OF THE COMMENT
+        return HttpResponse("TODO: IMPLEMENT COMMENTS")
     else:
         return HttpResponseBadRequest("Method {} is not allowed".format(
             request.method))
@@ -254,8 +256,9 @@ def placeholder(request, User_id):
 
 
 def user_post_view(request, User_id):
-    user = get_object_or_404(User, pk=User_id)
-    latest_post_list = Post_model.objects.all().filter(author__id=user.id)
+    #user = get_object_or_404(User, pk=User_id)
+    user_profile = get_object_or_404(User_Profile, id=User_id)
+    latest_post_list = Post_model.objects.all().filter(author__id=user_profile.user.id)
     print(latest_post_list)
     return render(request, 'posts/placeholder.html',
                   {'latest_post_list': latest_post_list})
@@ -594,8 +597,8 @@ def send_request_page(request):
 
 
 def get_user_page(request, User_id):
-    user = get_object_or_404(User, pk=User_id)
-    user_profile = get_object_or_404(User_Profile, user_id=User_id)
+    #user = get_object_or_404(User, pk=User_id)
+    user_profile = get_object_or_404(User_Profile, id=User_id)
     return render(request, 'users/author_page_json.html', {'user_id': User_id})
 
 

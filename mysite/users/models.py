@@ -71,10 +71,12 @@ class Inbox(models.Model):
 
 
 class UserFollows(models.Model):
+    #following
     actor = models.ForeignKey(User_Profile,
                               related_name="following",
                               on_delete=models.CASCADE,
                               default='')
+    #Got followed
     object = models.ForeignKey(User_Profile,
                                related_name="followers",
                                on_delete=models.CASCADE,

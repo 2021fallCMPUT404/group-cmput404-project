@@ -41,11 +41,11 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from users.serializers import User_Profile, userPSerializer, UserSerializer
 
-class HandleAuthorPostPermission(permissions.BasePermission):        
+class ExemptGetPermission(permissions.BasePermission):        
 
     def has_permission(self, request, view):
         # allow all POST requests
-        if request.method != 'POST':
+        if request.method == 'GET':
             return True
 
         # Otherwise, only allow authenticated requests
@@ -253,7 +253,7 @@ def likePost(request, pk):
 
 class HandleAuthorPost(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [HandleAuthorPostPermission]
+    permission_classes = [ExemptGetPermission]
     
     def get(self, request, AUTHOR_ID, POST_ID, format=None):
         try:
@@ -395,6 +395,8 @@ class HandleAuthorPost(APIView):
                 status=status.HTTP_404_NOT_FOUND)
 
 class MangePostUnderUser(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
     def get(self, request, AUTHOR_ID, format=None):
         try:
             user = User.objects.get(id=AUTHOR_ID)
@@ -444,8 +446,8 @@ class MangePostUnderUser(APIView):
                 status=status.HTTP_404_NOT_FOUND)
 
 class HandleAuthorPostComment(APIView):
-    #authentication_classes = [SessionAuthentication, BasicAuthentication]
-    #permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
 
     def get(self, request, AUTHOR_ID, POST_ID, format=None):
         
@@ -491,14 +493,14 @@ class HandleAuthorPostComment(APIView):
                 status=status.HTTP_404_NOT_FOUND)
 
 class HandleInboxLike(APIView):
-    #authentication_classes = [SessionAuthentication, BasicAuthentication]
-    #permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
 
     def post(self, request, AUTHOR_ID, format=None):
         try:
             inbox = Inbox.objects.get(author=AUTHOR_ID)
             data = JSONParser().parse(request)
-            JsonResponse(data)
+            #JsonResponse(data)
             like_serializer = InboxLikeSerializer(data=data)
             if like_serializer.is_valid():
                 like_serializer.save()
@@ -515,6 +517,8 @@ class HandleInboxLike(APIView):
 
 
 class HandlePostLikeList(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
     def get(self, request, AUTHOR_ID, POST_ID, format=None):
 
         try:
@@ -535,6 +539,8 @@ class HandlePostLikeList(APIView):
 
 
 class HandleCommentLike(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
     def get(self, request, AUTHOR_ID, POST_ID, COMMENT_ID, format=None):
         try:
             user_comment = Comment.objects.get(author = AUTHOR_ID)
@@ -579,6 +585,8 @@ class HandleCommentLike(APIView):
 
 
 class HandleAuthorLike(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
     def get(self, request, AUTHOR_ID, format=None):
         try:
             author = User.objects.get(id=AUTHOR_ID)
@@ -597,21 +605,64 @@ class HandleAuthorLike(APIView):
                 user_profile = User_Profile.objects.get(user=like_data['user']['id'])
                 like_data['summary'] = "{} Likes your post".format(user_profile.displayName)
             
-           
-
-            '''
-            new_data = dict(
-                list(likes_serializer.data.items()) +
-                list(comment_likes_serializer.data.items()))
-            '''
-            
             return JsonResponse(likes_serializer.data + comment_likes_serializer.data, safe=False)
         except User.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
+class HandleInboxPost(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
+    def get(self, request, AUTHOR_ID, format=None):
+        try:
+            author = User.objects.get(id=AUTHOR_ID)
+            user_profile = User_Profile.objects.get(user = author)
+            user_follows = UserFollows.objects.filter(actor= user_profile)
 
+            new_data = [] 
+            for user_follow in user_follows:
+                posts = Post.objects.filter(author=user_follow.object.user)
+                post_serializer = PostSerializer(posts, many=True)
+                for post_serializer_data in post_serializer.data:
+                    comments = Comment.objects.filter(post = post_serializer_data['id'])
+                    count = len(comments)
+                    post_serializer_data['origin'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                    post_serializer_data['source'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                    post_serializer_data['description'] = "This post discusses stuff -- brief"
+                    post_serializer_data['categories'] = []
+                    post_serializer_data['count'] = count
+                    post_serializer_data['comments'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                    if post_serializer_data['contentType'] == 1:
+                        post_serializer_data['contentType'] = "text/markdown"
+                    else:
+                        post_serializer_data['contentType'] = "text/plain"
+                print(type(post_serializer.data))
+                new_data.extend(post_serializer.data)
+            
+            return JsonResponse(new_data, safe=False)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+    def post(self, request, AUTHOR_ID, format=None):
+        try:
+            author = User.objects.get(id=AUTHOR_ID)
+            user_profile = User_Profile.objects.get(user = author)
+            user_follows = UserFollows.objects.filter(actor= user_profile)
+            data = JSONParser().parse(request)
+            if data['type'] == 'post':
+                pass
+            if data['type'] == 'follow':
+                pass
+            if data['type'] == 'like':
+                pass
+
+
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
 @api_view(['GET'])
 @authentication_classes([CustomAuthentication])
 @permission_classes([AccessPermission])

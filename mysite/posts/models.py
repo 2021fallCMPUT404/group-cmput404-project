@@ -97,7 +97,7 @@ class Comment(models.Model):
 
 
 class Like(models.Model):
-
+    type = 'like'
     user = models.ForeignKey(User,
                              related_name='likes',
                              on_delete=models.CASCADE)
@@ -110,12 +110,12 @@ class Like(models.Model):
     #inbox = models.ForeignKey(Inbox, related_name='inbox', blank=True, null=True, on_delete=models.CASCADE)
 
 class InboxLike(models.Model):
-    
+    type = 'like'
     inbox = models.ForeignKey("users.Inbox", related_name='inbox', blank=True, null=True, on_delete=models.CASCADE)
 
     
 class CommentLike(models.Model):
-
+    type = 'like'
     user = models.ForeignKey(User,
                              related_name='CommentLikeUser',
                              on_delete=models.CASCADE)

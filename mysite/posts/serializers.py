@@ -1,6 +1,6 @@
 from django.db.models.fields import SlugField
 from rest_framework import serializers
-from .models import Post, Comment, Like
+from .models import Post, Comment, Like, Node
 from users.serializers import User_Profile, userPSerializer
 
 
@@ -47,3 +47,9 @@ class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ('user', 'post')
+
+
+class NodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Node
+        fields = ['url', 'username','password']

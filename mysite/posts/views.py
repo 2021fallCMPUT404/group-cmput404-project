@@ -9,9 +9,8 @@ from django.urls.base import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from django.utils import timezone
-from .models import Post, Comment, Like, Share
+from .models import Post, Comment, Like, Share, Node
 from .forms import ShareForm, CommentForm, addPostForm
-from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView, FormView, View, ListView
 from django.urls import reverse_lazy, reverse
 from django.core.exceptions import PermissionDenied
@@ -23,7 +22,7 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 import json
 import ast
-from .serializers import PostSerializer, CommentSerializer, LikeSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer, NodeSerializer
 from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
@@ -659,18 +658,45 @@ def send_token(request, username, password):
     print(ast.literal_eval(response.text))
     return JsonResponse(dict_data, safe=False)
 
-def get_t15_posts(url,node):
+def get_nodes():
+    nodes = Node.objects.all()
+    serializer = NodeSerializer(nodes, many=True)
+    connected = []
+    for node in serializer.data:
+        connected.append(node)
+    return connected
+   
+def node_working(request):
+    url = request.build_absolute_uri()
+    host  = ['http://127.0.0.1:8000/', 'http://localhost:8000/', 'https://social-dis.herokuapp.com/',]
+    
+    for node in get_nodes():
+        print('node ' + str(node['url']))
+        print('url ' + url)
+        if url in node['url']:
+            return True
+        else:
+            return False      
+            
+    
 
-    ext_request = requests.get(url, auth=('{node.username}','{node.password}'), headers={'Referer': "{{location.host}}"})
-
-    ext_request = ext_request.json()
-    return ext_request
 
 
-def view_t15_posts(request):
-    url = "https://unhindled.herokuapp.com/service/allposts/"
-    posts = get_t15_posts(url,1)
-    return render(request, 'posts/team15posts.html', {'posts': posts})
+def view_foriegn_posts(request):
+    if node_working(request):
+        node = get_nodes()
+        url = request.get_full_path()
+        if url in node:
+            n = list(filter(lambda node: node['url'] == url, node))
+            print('list :'+ str(n))
+            ext_request = requests.get(url, auth=(n.username,n.password), headers={'Referer': "http://localhost:8000/"})
+            ext_request = ext_request.json()
+            return render(request, 'posts/team15posts.html', {'posts': ext_request})
+        else:
+            return HttpResponse(node)
+    else:
+        return HttpResponse()
+
     
 
 

@@ -882,7 +882,7 @@ class addComment(CreateView):
     model = Comment
     form_class = CommentForm
     template_name = 'posts/addComment.html'
-    success_url = reverse_lazy('post_placeholder')
+    success_url = reverse_lazy('feed')
 
     #fields = '__all__'
     def form_valid(self, form):

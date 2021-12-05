@@ -310,6 +310,7 @@ def register(request):
             profile.save()
 
             registered = True
+            return render(request, 'users/login.html')
 
         else:
             print('register failed')
@@ -346,8 +347,9 @@ def login_view(request):
         if user:
             if user.is_active:
                 login(request, user)
-                #return HttpResponseRedirect(reverse('advance_home_page'))
-                return HttpResponseRedirect('user_home_page')
+                
+                #return HttpResponseRedirect('user_home_page')
+                return redirect('feed')
 
             else:
                 print('This user account is not activated yet')

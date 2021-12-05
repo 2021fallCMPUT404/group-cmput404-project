@@ -10,10 +10,13 @@ body{
 .pic{
     background-image: url("login_image.jpg");
     background-repeat: no-repeat;
+
     background-size: cover;
     background-position: center center;
-    overflow: hidden;
     width: 100%;
+
+    background-attachment: fixed;
+
 }
 
 div  .navbar {
@@ -112,14 +115,106 @@ div #post-options{
 }
 
 .addpost-header{
-    color: rgb(255, 0, 76);
+    color: rgb(0, 0, 0);
     font-size: 40pt;
     text-decoration: none;
-    
+    font-family: PT Serif;
+    font-style: italic;
+
 }
 .addpost-header:hover{
-    color: red;
+    color: rgba(36, 33, 39, 0.808);
 }
+
+@media (max-width: 991.98px) {
+    .offcanvas-collapse {
+      position: fixed;
+      top: 56px; /* Height of navbar */
+      bottom: 0;
+      left: 100%;
+      width: 100%;
+      padding-right: 1rem;
+      padding-left: 1rem;
+      overflow-y: auto;
+      visibility: hidden;
+      background-color: #343a40;
+      transition: transform .3s ease-in-out, visibility .3s ease-in-out;
+    }
+    .offcanvas-collapse.open {
+      visibility: visible;
+      transform: translateX(-100%);
+    }
+  }
+.nav-scroller {
+    position: relative;
+    z-index: 2;
+    height: 2.75rem;
+    overflow-y: hidden;
+  }
+  
+.nav-scroller .nav {
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+    margin-top: -1px;
+    overflow-x: auto;
+    color: rgba(255, 255, 255, .75);
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+.nav-underline .nav-link {
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    font-size: .875rem;
+    color: #6c757d;
+  }
+  
+.nav-underline .nav-link:hover {
+    color: #007bff;
+  }
+  
+.nav-underline .active {
+    font-weight: 500;
+    color: #343a40;
+  }
+
+ .nav-link{
+    margin: 0 auto;
+    text-align: center;
+ } 
+
+  #btn-back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+  }
+
+
+
+.modal-sheet .modal-dialog {
+    width: 380px;
+    transition: bottom .75s ease-in-out;
+}
+.modal-sheet .modal-footer {
+    padding-bottom: 2rem;
+}
+  
+.modal-alert .modal-dialog {
+    width: 380px;
+}
+  
+.border-right { border-right: 1px solid #eee; }
+  
+.modal-tour .modal-dialog {
+    width: 380px;
+}
+  
+
+
+
 
 #table{
     margin-left: auto;
@@ -164,3 +259,31 @@ a.nav-link{
 a.nav-link:hover{
     color: white;
 }
+
+#nav {
+    list-style: none inside;
+    margin: 0;
+    padding: 0;
+  }
+  
+  #nav li {
+    display: block;
+    position: relative;
+    float: left;
+    /* menu background color */
+  }
+
+#nav ul {
+    position: absolute;
+    padding: 0;
+    left: 0;
+    display: none;
+    /* hides sublists */
+  }
+  
+  #nav li:hover ul {
+    display: block;
+    background-color: rgb(0, 0, 0);
+    text-align: center;
+  }
+  

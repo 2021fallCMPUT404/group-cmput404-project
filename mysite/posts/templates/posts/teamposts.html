@@ -16,8 +16,8 @@
                     <p>{{p.content}}</p>
                     <p>Created by {{p.author.displayName}}</p>
                     <p>{{p.created_on}}</p>
-                    <a href="{% url 'addcomment' post.pk %}" class="btn btn-danger"><i class="fa fa-comment"></i> Comment</a>
-                    <a href="{% url 'sharepost' post.pk %}" class="btn btn-danger"><i class="fa fa-share-square-o"></i> Share</a>
+                    <a href="{% url 'addcomment' post.id %}" class="btn btn-danger"><i class="fa fa-comment"></i> Comment</a>
+                    <a href="{% url 'sharepost' post.id %}" class="btn btn-danger"><i class="fa fa-share-square-o"></i> Share</a>
                     <br>
                     <form action = "{% url 'likepost' post.pk %}" method = "POST" class="likeButton">
                         {% csrf_token %}

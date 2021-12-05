@@ -8,7 +8,7 @@ from django.urls.base import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from django.utils import timezone
-from .models import Post, Comment, Like, Share, CommentLike, InboxLike
+from .models import Post, Comment, Like, Share, CommentLike
 from .forms import ShareForm, CommentForm, addPostForm
 from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView, FormView, View, ListView
@@ -22,7 +22,7 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 import json
 import ast
-from .serializers import PostSerializer, CommentSerializer, LikeSerializer, LikeCommentSerializer, InboxLikeSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer, LikeCommentSerializer
 from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
@@ -245,9 +245,10 @@ def delete_post(request, Post_id):
 
 def likePost(request, pk):
     post = get_object_or_404(Post, id=request.POST.get('post_id'))
-    post.like.add(request.user)
-    like = Like(user=request.user, post=post)
+    like = Like(user=request.user, liked_object='https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}'.format(post.author.id, post.id))
     like.save()
+    post.like.add(like)
+    
     return HttpResponseRedirect(reverse('post_placeholder', args=[str(pk)]))
 
 
@@ -500,12 +501,16 @@ class HandleInboxLike(APIView):
         try:
             inbox = Inbox.objects.get(author=AUTHOR_ID)
             data = JSONParser().parse(request)
-            #JsonResponse(data)
-            like_serializer = InboxLikeSerializer(data=data)
-            if like_serializer.is_valid():
-                like_serializer.save()
-                return JsonResponse(like_serializer.data,
-                                    status=status.HTTP_201_CREATED)
+            try:
+                user = User.objects.get(id=data['user']['id'])
+            except:
+                user = User.objects.get(id=AUTHOR_ID)
+            
+            created_like = Like(user=user, liked_object = data['liked_object'])
+            like_serializer = LikeSerializer(created_like)
+            inbox.like.add(created_like.id)
+            return JsonResponse(like_serializer.data,
+                                status=status.HTTP_201_CREATED)
         except User.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
@@ -523,7 +528,7 @@ class HandlePostLikeList(APIView):
 
         try:
             related_post = Post.objects.get(id=POST_ID)
-            likes = Like.objects.filter(post=related_post)
+            likes = Like.objects.filter(user=related_post.author)
             likes_serializer = LikeSerializer(likes, many=True)
             
             for like_data in likes_serializer.data:
@@ -651,14 +656,114 @@ class HandleInboxPost(APIView):
             user_profile = User_Profile.objects.get(user = author)
             user_follows = UserFollows.objects.filter(actor= user_profile)
             data = JSONParser().parse(request)
+            print('check1')
             if data['type'] == 'post':
-                pass
+                try:
+                    try: 
+                        
+                        user = User.objects.get(id=data['user'])
+                    
+                    except KeyError:
+                        
+                        user = User.objects.get(id=data['author']['id'])
+
+                    except TypeError:
+                        
+                        user = User.objects.get(id=data['user']['id'])
+                                 
+                    except:
+                        
+                        user = User.objects.get(id=data['author'])
+                        
+                    
+                    
+                    
+                    if data['contentType'] == "text/markdown":
+                        data['contentType'] = 1
+                    else:
+                        data['contentType'] = 0
+                    created_post = Post(title=data['title'], text=data['text'], image=data['image'], author=user,
+                            shared_user = data['shared_user'],shared_on = data['shared_on'],
+                            privacy=data['privacy'], contentType=data['contentType'],)
+                    
+                    created_post.save()
+                    post_serializer = PostSerializer(created_post)
+                    inbox = Inbox.objects.get(author=AUTHOR_ID)
+                    inbox.post.add(created_post.id)
+                    
+                    return JsonResponse(post_serializer.data)
+                except User.DoesNotExist:
+                    return JsonResponse(
+                        {'message': 'The requested user does not exist'},
+                        status=status.HTTP_404_NOT_FOUND)
+            print('check2')
             if data['type'] == 'follow':
-                pass
+                try:
+                    try: 
+                        
+                        user = User.objects.get(id=data['user'])
+                    
+                    except KeyError:
+                        
+                        user = User.objects.get(id=data['author']['id'])
+
+                    except TypeError:
+                        
+                        user = User.objects.get(id=data['user']['id'])
+                                 
+                    except:
+                        
+                        user = User.objects.get(id=data['author'])
+                    
+                    request_user = User.objects.get(id=AUTHOR_ID)
+                    
+                    actor = data['actor']
+                    actor_user = User.objects.get(actor['id'])
+                    actor_profile = User_Profile.objects.get(user=actor_user)
+                    friend_request = FriendRequest.create_friend_request(foreign_user_profile, user_profile)
+                    friend_request.save()
+                    inbox = Inbox.objects.get(author=AUTHOR_ID)
+                    inbox.follow.add(friend_request.id)
+                    
+                except User.DoesNotExist:
+                    return JsonResponse(
+                        {'message': 'The requested user does not exist'},
+                        status=status.HTTP_404_NOT_FOUND)
+            print('check3')
             if data['type'] == 'like':
-                pass
+                try:
+                    inbox = Inbox.objects.get(author=AUTHOR_ID)
+                    
+                    
+                    try: 
+                        
+                        user = User.objects.get(id=data['user'])
+                    
+                    except KeyError:
+                        
+                        user = User.objects.get(id=data['author']['id'])
 
-
+                    except TypeError:
+                        
+                        user = User.objects.get(id=data['user']['id'])
+                                 
+                    except:
+                        
+                        user = User.objects.get(id=data['author'])
+                    
+                    created_like = Like(user=user, liked_object = data['liked_object'])
+                    like_serializer = LikeSerializer(created_like)
+                    inbox.like.add(created_like.id)
+                    return JsonResponse(like_serializer.data,
+                                        status=status.HTTP_201_CREATED)
+                except User.DoesNotExist:
+                    return JsonResponse(
+                        {'message': 'The requested user does not exist'},
+                        status=status.HTTP_404_NOT_FOUND)
+                except Inbox.DoesNotExist:
+                    return JsonResponse(
+                        {'message': 'The requested inbox does not exist'},
+                        status=status.HTTP_404_NOT_FOUND)
         except User.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
@@ -1091,9 +1196,10 @@ def select_github_activity(request):
 
 def likeComment(request, pk):
     comment = get_object_or_404(Comment, id=request.POST.get('comment_id'))
-    comment.like.add(request.user)
-    comment_like = CommentLike(user=request.user, comment=comment)
-    comment_like.save()
+    like = Like(user=request.user, liked_object = 'https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}/comments/{}'.format(comment.post.author.id, comment.post.id, comment.id))
+    like.save()
+    comment.like.add(like)
+    
     return HttpResponseRedirect(reverse('post_placeholder', args=[str(pk)]))
 
 

@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.apps import apps
 from django.db.models.fields.related import ForeignKey
 
+
 #from users.models import User_Profile
 #Inbox = apps.get_model('users', 'Inbox')
 #import django
@@ -18,6 +19,21 @@ import uuid
 from django.urls import reverse
 #Inbox = apps.get_model('users', 'Inbox')
 
+class Like(models.Model):
+    type = 'like'
+    user = models.ForeignKey(User,
+                             related_name='likes',
+                             on_delete=models.CASCADE)
+    
+    liked_object = models.CharField(max_length=100)
+    
+    #post = models.ForeignKey(Post,
+                             #related_name='post_like',
+                             #blank=True,
+                             #null=True,
+                             #on_delete=models.CASCADE)
+    #comment = models.ForeignKey(Comment, related_name='comment_like', blank=True, null=True, on_delete=models.CASCADE)
+    #inbox = models.ManyToManyField("users.Inbox", related_name='inbox', blank=True, null=True)
 
 class Post(models.Model):
 
@@ -60,7 +76,9 @@ class Post(models.Model):
 
     contentType = models.IntegerField(choices=Content, default=PLAIN)
 
-    like = models.ManyToManyField(User, related_name='posts_likes')
+    like = models.ManyToManyField(Like, related_name='posts_likes', blank=True, null=True)
+
+    #inbox = models.ManyToManyField("users.Inbox", null=True, blank=True, related_name='PostAndInbox')
 
     def get_absolute_url(self):
         return reverse('post_placeholder', args=[str(self.id)])
@@ -87,7 +105,7 @@ class Comment(models.Model):
                                null=True)
     comment_body = models.TextField()
     comment_created = models.DateTimeField(auto_now_add=True)
-    like = models.ManyToManyField(User, related_name='comments_likes', blank=True, null=True)
+    like = models.ManyToManyField(Like, related_name='comments_likes', blank=True, null=True)
 
     class Meta:
         ordering = ['comment_created']
@@ -96,26 +114,15 @@ class Comment(models.Model):
         return 'Comment {} by {}'.format(self.comment_body, self.author)
 
 
-class Like(models.Model):
-    type = 'like'
-    user = models.ForeignKey(User,
-                             related_name='likes',
-                             on_delete=models.CASCADE)
-    post = models.ForeignKey(Post,
-                             related_name='likes',
-                             blank=True,
-                             null=True,
-                             on_delete=models.CASCADE)
 
-    #inbox = models.ForeignKey(Inbox, related_name='inbox', blank=True, null=True, on_delete=models.CASCADE)
-
+'''
 class InboxLike(models.Model):
     type = 'like'
     inbox = models.ForeignKey("users.Inbox", related_name='inbox', blank=True, null=True, on_delete=models.CASCADE)
-
+'''
     
 class CommentLike(models.Model):
-    type = 'like'
+    type = 'comment_like'
     user = models.ForeignKey(User,
                              related_name='CommentLikeUser',
                              on_delete=models.CASCADE)

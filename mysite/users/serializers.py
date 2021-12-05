@@ -21,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
         ret['url'] = "https://cmput404-socialdist-project.herokuapp.com/author/{}".format(str(instance.id))
         ret['host'] = 'https://cmput404-socialdist-project.herokuapp.com/'
         return ret
+    
     '''
     def validate(self, data):
         if not User.objects.get(data['author']).exists:

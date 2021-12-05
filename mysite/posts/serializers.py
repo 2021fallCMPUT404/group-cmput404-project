@@ -1,6 +1,6 @@
 from django.db.models.fields import SlugField
 from rest_framework import serializers
-from .models import Post, Comment, Like, CommentLike, InboxLike
+from .models import Post, Comment, Like, CommentLike#, InboxLike
 from users.serializers import User_Profile, userPSerializer, UserSerializer, InboxSerializer
 
 
@@ -53,7 +53,7 @@ class CommentSerializer(serializers.ModelSerializer):
                   'like', 'id')
 
 class LikeCommentSerializer(serializers.ModelSerializer):
-    user = UserSerializer(many=False, read_only=True)
+    user = UserSerializer()
     class Meta:
         model = CommentLike
         fields = ('user', 'comment')
@@ -61,10 +61,12 @@ class LikeSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False, read_only=True)
     class Meta:
         model = Like
-        fields = ('user', 'post')
-
+        fields = ('type', 'user', 'liked_object')
+    
+'''
 class InboxLikeSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = InboxLike
         fields = "__all__"
+'''

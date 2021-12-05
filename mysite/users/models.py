@@ -7,7 +7,7 @@ import uuid
 from django import forms
 from django.forms.widgets import Textarea
 import datetime
-from posts.models import Post
+from posts.models import Post, Like, CommentLike#, InboxLike
 from django.urls import reverse
 
 SITE_URL = "https://cmput404-socialdist-project.herokuapp.com"
@@ -68,6 +68,12 @@ class User_Profile(models.Model):
 class Inbox(models.Model):
     type = 'inbox'
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    post = models.ManyToManyField(Post, null=True, blank=True)
+    follow = models.ManyToManyField("users.FriendRequest", null=True, blank=True)
+    like = models.ManyToManyField(Like, null=True, blank=True)
+    #comment_like = models.ManyToManyField(CommentLike, null=True, blank=True, on_delete=models.CASCADE)
+    #inbox_like = models.ManyToManyField(InboxLike, null=True, blank=True, on_delete=models.CASCADE)
 
 
 class UserFollows(models.Model):

@@ -90,5 +90,5 @@ urlpatterns = [
     path('<int:AUTHOR_ID>/liked',
          post_views.HandleAuthorLike.as_view(),
          name='HandleAuthorLike'),
-     path('<int:AUTHOR_ID>/inbox', post_views.HandleInboxPost.as_view(), name='HandleInboxPost')
+     path('<int:AUTHOR_ID>/inbox/', post_views.HandleInboxPost.as_view(), name='HandleInboxPost')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

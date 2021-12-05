@@ -57,7 +57,7 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page"><i class="fa fa-inbox"></i> Inbox</a>
+              <a class="nav-link active" aria-current="page" href="{% url 'users:get_inbox' User_id=request.user.id %}"><i class="fa fa-inbox"></i> Inbox</a>
             </li>
 
             <li class="nav-item subnavbtn">

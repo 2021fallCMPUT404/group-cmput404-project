@@ -125,3 +125,16 @@ class FriendRequest(models.Model):
     def summary(self):
         return '{} wants to follow {}'.format(self.actor.displayName,
                                               self.object.displayName)
+
+class Messages(models.Model):
+    type='messages'
+    sender = models.ForeignKey(User_Profile,
+                              on_delete=models.CASCADE,
+                              related_name="sender",
+                              default='')
+    receiver = models.ForeignKey(User_Profile,
+                               on_delete=models.CASCADE,
+                               related_name="receiver",
+                               default='')
+
+        

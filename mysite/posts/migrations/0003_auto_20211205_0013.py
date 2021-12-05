@@ -10,9 +10,19 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='comment',
+            name='author',
+            
+        ),
+
+        migrations.AddField(
             model_name='comment',
             name='author',
             field=models.JSONField(blank=True, null=True),
+            
         ),
+
+
+        
     ]

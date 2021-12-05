@@ -120,14 +120,14 @@ def post(request, Post_id):
     user = request.user
     username = user.username
 
-    if post.visibilty == "PUBLIC":
+    if post.visibility == "0":
         print("Public")
         return render(request, 'posts/post.html', {
             'post': post,
             'user_name': username
         })
 
-    elif post.visibility == "PRIVATE":
+    elif post.visibility == "1":
         if post.author == current_user:
             print("private ")
             return render(request, 'posts/post.html', {

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.core import serializers
 from django.contrib.auth.models import AbstractUser
 from django.http import HttpResponse
 import uuid
@@ -9,6 +9,8 @@ from django.forms.widgets import Textarea
 import datetime
 from posts.models import Post, Like, CommentLike#, InboxLike
 from django.urls import reverse
+import json
+
 
 SITE_URL = "https://cmput404-socialdist-project.herokuapp.com"
 
@@ -103,6 +105,7 @@ class UserFollows(models.Model):
 
 class FriendRequest(models.Model):
     type = "Follow"
+    '''
     actor = models.ForeignKey(User_Profile,
                               on_delete=models.CASCADE,
                               related_name="actor",
@@ -111,25 +114,36 @@ class FriendRequest(models.Model):
                                on_delete=models.CASCADE,
                                related_name="object",
                                default='')
+    '''
+
+    actor = models.JSONField(null=True, blank=True)
+    object = models.JSONField(null=True, blank=True)
 
     def create_friend_request(actor, object):
         '''Creates a friend request instance with the actor being the person who follows
         and the object is the person whom is being followed. The actor and object paramaters
         are user_profile objects.'''
+        actor_json = serializers.serialize('json', [actor]).replace("[","").replace("]","")
+        object_json = serializers.serialize('json', [object]).replace("[","").replace("]","")
         print(actor, object)
+        print(actor_json, object_json)
+        print(type(actor_json))
         if UserFollows.objects.filter(actor=object, object=actor).exists(
         ):  #Checks if the object is already following the actor
             # Returns so it doesn't create constant friend requests
             print("{} is already following {}".format(object.displayName,
                                                       actor.displayName))
             return
-        f_request, created = FriendRequest.objects.get_or_create(actor=actor,
-                                                                 object=object)
+        f_request, created = FriendRequest.objects.get_or_create(actor=actor_json,
+                                                                 object=object_json)
         print("Friend request created")
         print(f_request.summary())
 
         return f_request
 
     def summary(self):
-        return '{} wants to follow {}'.format(self.actor.displayName,
-                                              self.object.displayName)
+        actor_json = json.loads(self.actor)['fields']
+        object_json = json.loads(self.object)['fields']
+        print("In summary: ", actor_json, object_json)
+        return '{} wants to follow {}'.format(actor_json['displayName'],
+                                              object_json['displayName'])

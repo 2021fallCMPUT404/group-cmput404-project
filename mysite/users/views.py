@@ -26,6 +26,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication, get_authorization_header
 from rest_framework import authentication, permissions
+from django.core import serializers
 import base64
 import requests
 import json
@@ -490,8 +491,13 @@ def view_friend_requests(request, User_id):
     if request.user.id != User_id:
         return HttpResponseForbidden("You are forbidden")
     user_profile = get_object_or_404(User_Profile, user_id=User_id)
-    recieved_requests = FriendRequest.objects.filter(object=user_profile)
-    sent_requests = FriendRequest.objects.filter(actor=user_profile)
+    serialized_profile = serializers.serialize('json', [user_profile]).replace("[","").replace("]","")
+    recieved_requests = FriendRequest.objects.filter(object=serialized_profile)
+    sent_requests = FriendRequest.objects.filter(actor=serialized_profile)
+    serialized = friend_request_serializer(data=recieved_requests)
+    serialized2 = friend_request_serializer(data=recieved_requests)
+    if serialized.is_valid() and serialized2.is_valid():
+        print(serialized, serialized2)
     print(recieved_requests, sent_requests)
     return render(request, 'users/view_requests.html', {
         'recieved_requests': recieved_requests,

@@ -716,6 +716,7 @@ def node_working(request):
 def connect(request):
     nodes = get_nodes()
     posts = []
+    found_post=''
     team_ids = []
     for node in nodes:
         print('NODES: ' + str(node['team_id']))
@@ -725,44 +726,15 @@ def connect(request):
         posts.append(req_json)
         team_ids.append(node['team_id'])
     print(posts)
+    split = ''
+    for post in posts:
+            split = post
+    
+    print(split)
+            
     return render(request, 'posts/teamposts.html', {'posts': posts, 'team_id': team_ids} )
     
-    
-    
-    
-'''
-def t_15(request):
-    nodes = get_nodes()
-    for node in nodes:
-        if node['team_id'] == 15:
-            auth = (node['username'], node['password'])
-            req = make_external_request(node['url'], auth)
-            req_json = req.json()
-            
-    print(req_json)
-            
-    return render(request, 'posts/team15posts.html', {'posts': req_json} )
-''' 
 
-
-
-
-'''
-def view_foriegn_posts(request):
-    if node_working(request):
-        node = get_nodes()
-        url = request.get_full_path()
-        if url in node:
-            n = list(filter(lambda node: node['url'] == url, node))
-            print('list :'+ str(n))
-            ext_request = requests.get(url, auth=(n.username,n.password), headers={'Referer': "http://localhost:8000/"})
-            ext_request = ext_request.json()
-            return render(request, 'posts/team15posts.html', {'posts': ext_request})
-        else:
-            return HttpResponse(node)
-    else:
-        return HttpResponse()
-'''
 def testing(request, user_id):
     is_foreign_id(user_id)
     return HttpResponse("test")

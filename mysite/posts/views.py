@@ -713,10 +713,41 @@ def node_working(request):
         else:
             return False      
             
+def connect(request):
+    nodes = get_nodes()
+    posts = []
+    team_ids = []
+    for node in nodes:
+        print('NODES: ' + str(node['team_id']))
+        auth = (node['username'], node['password'])
+        req = make_external_request(node['url'], auth)
+        req_json = req.json()
+        posts.append(req_json)
+        team_ids.append(node['team_id'])
+    print(posts)
+    return render(request, 'posts/teamposts.html', {'posts': posts, 'team_id': team_ids} )
     
+    
+    
+    
+'''
+def t_15(request):
+    nodes = get_nodes()
+    for node in nodes:
+        if node['team_id'] == 15:
+            auth = (node['username'], node['password'])
+            req = make_external_request(node['url'], auth)
+            req_json = req.json()
+            
+    print(req_json)
+            
+    return render(request, 'posts/team15posts.html', {'posts': req_json} )
+''' 
 
 
 
+
+'''
 def view_foriegn_posts(request):
     if node_working(request):
         node = get_nodes()
@@ -731,7 +762,7 @@ def view_foriegn_posts(request):
             return HttpResponse(node)
     else:
         return HttpResponse()
-
+'''
 def testing(request, user_id):
     is_foreign_id(user_id)
     return HttpResponse("test")

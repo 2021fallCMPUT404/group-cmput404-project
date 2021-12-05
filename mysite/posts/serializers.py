@@ -52,4 +52,4 @@ class LikeSerializer(serializers.ModelSerializer):
 class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Node
-        fields = ['url', 'username','password']
+        fields = ['team_id','url', 'username','password']

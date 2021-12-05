@@ -17,7 +17,7 @@
     <div class='pub-info'>
         <p><img src="{{ posts.author.user_profile.profileImage.url }}" width='30px' height="30"> {{posts.author}}</p>
         <p>{{posts.published}} 
-            {%if posts.visibility == 0%}
+            {%if posts.visibility == '0'%}
                 <i class="fa fa-globe"></i>
             {%else%}
                 <i class="fa fa-users"></i>

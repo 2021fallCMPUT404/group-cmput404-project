@@ -70,8 +70,8 @@ def apiOverview(request):
 
 #TODO: ADD PAGINATION WHERE NEEDED
 @api_view(['GET'])
-@authentication_classes([CustomAuthentication])
-@permission_classes([AccessPermission])
+@authentication_classes([])
+@permission_classes([])
 def UserList(request):
     user_profiles = User_Profile.objects.all()
     serializer = userPSerializer(user_profiles, many=True)

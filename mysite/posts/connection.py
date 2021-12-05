@@ -46,10 +46,11 @@ def is_foreign_id(user_id):
             # Reference: http://127.0.0.1:8000/post/test/e0f090d4-7af3-49de-8f2b-fee29a8d98e8/
             test = list(filter(lambda author: user_id in author['id'], authors))
             print("Filter object: ", test)
-            return (True, test[0])
+            if test != None:
+                return (True, test[0])
         except Exception as e:
             print("Error: {}".format(e))
-        return (False, None)
+    return (False, None)
 
 
     return ()

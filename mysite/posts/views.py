@@ -94,11 +94,15 @@ class post_comments_api(APIView):
 
     def post(self, request, author_id, post_id, format=None):
         try:
-            json = JSONParser.parse(request.data)
-            author = userPSerializer(data=json['author'])
+            test = json.loads(request.body)
+            post = get_object_or_404(Post, pk=post_id)
+            author = userPSerializer(data=test['author'])
+            print(author.is_valid())
             if not author.is_valid():
                 return HttpResponseBadRequest("Author object cannot be serialized.")
-            new_comment = Comment(author=author.data, comment_body=json['comment'])
+            new_comment = Comment(author=author.data, comment_body=test['comment'], post=post)
+            new_comment.save()
+            return HttpResponse(new_comment)
         except Exception as e:
             return JsonResponse({'message':'Error: {}'.format(e)})
 
@@ -200,8 +204,8 @@ def likePost(request, pk):
 
 
 @api_view(['GET'])
-@authentication_classes([CustomAuthentication])
-@permission_classes([AccessPermission])
+@authentication_classes([])
+@permission_classes([])
 def request_post_list(request):
     posts = Post.objects.all()
     posts_serializer = PostSerializer(posts, many=True)

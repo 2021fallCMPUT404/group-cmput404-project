@@ -24,7 +24,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
-from rest_framework.authentication import TokenAuthentication, get_authorization_header
+from rest_framework.authentication import TokenAuthentication, get_authorization_header, SessionAuthentication, BaseAuthentication, BasicAuthentication
 from rest_framework import authentication, permissions
 import base64
 import requests

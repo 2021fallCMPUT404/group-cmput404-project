@@ -66,6 +66,10 @@ urlpatterns = [
     path('external-users/', views.view_t15_users, name='external_users'),
     path('external-users/t-03/users/', views.view_t3_users, name='t03_users'),
     path('external-users/t-03/posts/', views.view_t3_posts, name='t03_posts'),
+    
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+'''
     path('<int:AUTHOR_ID>/posts/<int:POST_ID>',
          post_views.HandleAuthorPost.as_view(),
          name='HandleAuthorPost'),
@@ -91,4 +95,4 @@ urlpatterns = [
          post_views.HandleAuthorLike.as_view(),
          name='HandleAuthorLike'),
      path('<int:AUTHOR_ID>/inbox', post_views.HandleInboxPost.as_view(), name='HandleInboxPost')
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+     '''

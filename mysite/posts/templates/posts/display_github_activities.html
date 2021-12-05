@@ -7,6 +7,9 @@
     <div class="activity_list">
         <form id='event_form' method='post'>
             {% csrf_token %}
+            <div id='event_div'
+                style='align-items: initial; display: flex; flex-direction: column; border-radius: 25px;padding: 20px; border: 15px outset blue;'>
+            </div>
             <input type="submit" class="btn btn-lg btn-primary btn-block" value='Add selected Activity'>
             <br>
         </form>
@@ -28,6 +31,7 @@
                     var parsed_data = JSON.parse(this.responseText);
 
                     var event_form = document.getElementById('event_form')
+                    var event_div = document.getElementById('event_div')
 
                     for (let i = 0; i < parsed_data.length; i++) {
                         //console.log(parsed_data[i]);
@@ -106,6 +110,14 @@
 
                             //dd.innerText = inner_text;
                             //event_list.appendChild(dd);
+                            var individual_div = document.createElement('div');
+                            individual_div.style.display = 'inline';
+                            individual_div.style.color = 'black';
+                            individual_div.style.textAlign = 'center';
+                            individual_div.style.textustify = 'auto';
+                            individual_div.style.fontStyle = 'italic';
+                            //individual_div.style.borderStyle = 'solid';
+                            individual_div.style.borderLeft = '5px solid blue';
 
                             var button_label = document.createElement('label');
                             button_label.innerText = event_date + ', ' + inner_text;
@@ -115,15 +127,25 @@
                             select_button.id = i
                             let event_json_string = JSON.stringify(event_json)
                             let test_string = 'check this out'
-                            console.log(event_json)
+
                             select_button.value = event_json_string;
                             button_label.appendChild(select_button)
-                            event_form.appendChild(button_label)
-
+                            //event_form.appendChild(button_label)
+                            button_label.position = 'realtive'
+                            individual_div.appendChild(button_label)
+                            event_div.appendChild(individual_div)
 
 
 
                         })()
+                    }
+                    console.log(event_div)
+                    var divs = document.getElementById("event_div").childNodes;
+                    for (let theDiv of divs) {
+                        //radio_button.style.position = 'static';
+                        console.log(theDiv)
+                        //theDiv.style.textAlign = 'center';
+                        //theDiv.style.color = 'blue';
                     }
 
 
@@ -139,7 +161,8 @@
 
         </script>
 
-    <a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-arrow-left"></i> Go back</a> 
+        <a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block"><i
+                class="fa fa-arrow-left"></i> Go back</a>
     </div>
 </div>
 

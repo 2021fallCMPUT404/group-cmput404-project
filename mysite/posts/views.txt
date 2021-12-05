@@ -1,3 +1,4 @@
+
 from users.serializers import userPSerializer
 from django.http.response import HttpResponseBadRequest, HttpResponseRedirect, HttpResponseForbidden
 from posts.connection import *
@@ -40,16 +41,6 @@ import datetime
 from rest_framework import authentication, permissions
 import base64
 
-class ExemptGetPermission(permissions.BasePermission):        
-
-    def has_permission(self, request, view):
-        # allow all POST requests
-        if request.method == 'GET':
-            return True
-
-        # Otherwise, only allow authenticated requests
-        # Post Django 1.10, 'is_authenticated' is a read-only attribute
-        return request.user and request.user.is_authenticated
 
 class AccessPermission(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -756,7 +747,7 @@ def t_15(request):
 
 
 
-
+'''
 def view_foriegn_posts(request):
     if node_working(request):
         node = get_nodes()
@@ -771,7 +762,7 @@ def view_foriegn_posts(request):
             return HttpResponse(node)
     else:
         return HttpResponse()
-
+'''
 def testing(request, user_id):
     is_foreign_id(user_id)
     return HttpResponse("test")

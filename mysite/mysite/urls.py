@@ -24,7 +24,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('post/', include('posts.urls')),
-    path('authors/', include('users.urls')),
+    path('author/', include('users.urls')),
     path('admin/', admin.site.urls),
     path('users', include('users.urls')),
     url(r'^users_test$', views.index, name='index'),

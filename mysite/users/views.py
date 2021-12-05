@@ -16,7 +16,7 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer, friend_request_serializer
 from rest_framework import routers
-
+from posts.connection import *
 #rest framework imports
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -447,21 +447,21 @@ def view_friend_requests(request, User_id):
     })
 
 
-def get_t15_authors(url):
+def connect(request):
+    nodes = get_nodes()
+    users = []
+    team_ids = []
+    for node in nodes:
+        print('NODES: ' + str(node['team_id']))
+        auth = (node['username'], node['password'])
+        req = make_external_request(node['users'], auth)
+        req_json = req
+        users.append(req_json)
+        team_ids.append(node['team_id'])
+    print(users[0])
+    return render(request, 'users/external_users.html', {'users': users, 'team_id': team_ids} )
 
-    ext_request = requests.get(url, auth=('connectionsuperuser','404connection'), headers={'Referer': "http://127.0.0.1:8000/"})
 
-    ext_request = ext_request.json()
-    return ext_request
-
-
-def view_t15_users(request):
-    url = "https://unhindled.herokuapp.com/service/authors"
-    authors = get_t15_authors(url)
-    list_of_authors = []
-    for i in authors['items']:
-        list_of_authors.append(i)
-    return render(request, 'users/team15users.html', {'authors': list_of_authors})
 
 def make_external_request(url, auth):
     ext_request = requests.get(url, auth=auth, headers={'Referer': "http://127.0.0.1:8000/"})

@@ -29,12 +29,12 @@ class addPostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['title'].required = True
-        self.fields['text'].required = True
+        self.fields['content'].required = True
 
     class Meta:
         model = Post
 
-        exclude=['author','pub-date','like','shared_on']
+        exclude=['author','published','like','shared_on']
         widgets={
             'title': Textarea(attrs={'rows':1, 'placeholder':'Title'}),
             'text': Textarea(attrs={'rows':8, 'placeholder':'Write your post here!'}),

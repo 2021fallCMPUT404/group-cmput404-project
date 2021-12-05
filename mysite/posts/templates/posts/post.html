@@ -3,11 +3,11 @@
 {% block content %}
 <div class='post-wrapper'>
     <h1><img src="{{ post.author.user_profile.profileImage.url }}" width=50px' height="50"> {{post.author}}</h1>
-    <p>Text: {{post.text}}</p>
+    <p>Text: {{post.content}}</p>
     {% if post.image %}
     <img src='{{post.image.url}}' width="30%">
     {% endif %}
-    <p>Date: {{post.pub_date}}</p>
+    <p>Date: {{post.published}}</p>
     <p>ID: {{post.id}}</p>
 
     

@@ -31,9 +31,9 @@ class Post(models.Model):
 
     type = 'post'
     title = models.TextField( max_length=100, blank=True )
-    text = models.TextField(blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='', blank=True, null=True)
-    pub_date = models.DateTimeField(auto_now_add=True)
+    published = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     shared_user = models.ForeignKey(User,
                                     on_delete=models.CASCADE,
@@ -43,10 +43,10 @@ class Post(models.Model):
 
     shared_on = models.DateTimeField(blank=True, null=True)
     unlisted = models.BooleanField(default=False)
-    privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
+    visibility=models.CharField(max_length = 200, choices=Privacy,default=PUBLIC)
     visible=None
 
-    contentType = models.IntegerField(choices=Content,default=PLAIN)
+    contentType = models.CharField(max_length = 200,choices=Content,default=PLAIN)
     
     like = models.ManyToManyField(User, related_name='posts_likes')
 
@@ -108,6 +108,7 @@ class Share(models.Model):
 
 class Node(models.Model):
     team_id = models.IntegerField(null=True) #Added in case we need to do specific parsing for a team
-    url = models.URLField()
+    users = models.URLField()
+    posts = models.URLField()
     username = models.TextField()
     password = models.TextField()

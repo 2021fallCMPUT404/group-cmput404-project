@@ -16,8 +16,8 @@
 
     <div class='pub-info'>
         <p><img src="{{ posts.author.user_profile.profileImage.url }}" width='30px' height="30"> {{posts.author}}</p>
-        <p>{{posts.pub_date}} 
-            {%if posts.privacy == 0%}
+        <p>{{posts.published}} 
+            {%if posts.visibility == 0%}
                 <i class="fa fa-globe"></i>
             {%else%}
                 <i class="fa fa-users"></i>
@@ -28,9 +28,9 @@
 
     <li><a href="/post/{{ posts.id }}/" class="addpost-header">
             {%if not posts.shared_user%}
-                <h2>{{ posts.title }}</h2>
+                <h2>{{ posts.content }}</h2>
             {%else%}
-                <h2>Repost: {{ posts.title }}</h2>
+                <h2>Repost: {{ posts.content }}</h2>
             {% endif %}
         </a></li>
     <div class='content'>
@@ -39,10 +39,10 @@
         <img src='{{posts.image.url}}' width="30%">
         {% endif %}
         <!--separate markdown and plain text-->
-        {%if posts.contentType == 1 %}
-            <p>{{ posts.text | markdown | safe }}</p>
+        {%if posts.contentType == "text/markdown" %}
+            <p>{{ posts.content | markdown | safe }}</p>
         {%else%}
-            <p>{{ posts.text }}</p>
+            <p>{{ posts.content }}</p>
         {% endif %}
     </div>
     {%if not posts.shared_user and current_user == posts.author %}

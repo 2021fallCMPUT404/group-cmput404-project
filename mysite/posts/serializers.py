@@ -10,8 +10,8 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('title', 'text', 'image', 'pub_date', 'author',
-                  'shared_user', 'shared_on', 'privacy', 'contentType')
+        fields = ('title', 'content', 'image', 'published', 'author',
+                  'shared_user', 'shared_on', 'visibility', 'contentType', 'unlisted')
 
     def create(self, validated_data):
 
@@ -20,15 +20,15 @@ class PostSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
 
         instance.title = validated_data.get('title', instance.title)
-        instance.text = validated_data.get('text', instance.text)
+        instance.text = validated_data.get('content', instance.text)
         instance.image = validated_data.get('image', instance.image)
-        instance.pub_date = validated_data.get('pub_date', instance.pub_date)
+        instance.pub_date = validated_data.get('published', instance.pub_date)
         instance.author = validated_data.get('author', instance.author)
         instance.shared_user = validated_data.get('shared_user',
                                                   instance.shared_user)
         instance.shared_on = validated_data.get('shared_on',
                                                 instance.shared_on)
-        instance.privacy = validated_data.get('privacy', instance.privacy)
+        instance.privacy = validated_data.get('visibility', instance.privacy)
         instance.contentType = validated_data.get('contentType',
                                                   instance.contentType)
         instance.save()
@@ -52,4 +52,4 @@ class LikeSerializer(serializers.ModelSerializer):
 class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Node
-        fields = ['team_id','url', 'username','password']
+        fields = ['team_id','users', 'posts', 'username','password']

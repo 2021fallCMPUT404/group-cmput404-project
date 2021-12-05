@@ -120,14 +120,14 @@ def post(request, Post_id):
     user = request.user
     username = user.username
 
-    if post.privacy == 0:
+    if post.visibilty == "PUBLIC":
         print("Public")
         return render(request, 'posts/post.html', {
             'post': post,
             'user_name': username
         })
 
-    elif post.privacy == 1:
+    elif post.visibility == "PRIVATE":
         if post.author == current_user:
             print("private ")
             return render(request, 'posts/post.html', {
@@ -142,8 +142,8 @@ def post(request, Post_id):
 
 
 def placeholder(request):
-    latest_post_list = Post.objects.order_by('-pub_date')[:5]
-    backup_list = Post.objects.order_by('-pub_date')[5:]
+    latest_post_list = Post.objects.order_by('-published')[:5]
+    backup_list = Post.objects.order_by('-published')[5:]
     template = loader.get_template('posts/placeholder.html')
     current_user = User.objects.get(id=request.user.id)
     authorized_posts = []
@@ -153,10 +153,10 @@ def placeholder(request):
             if p.author == current_user:
                 authorized_posts.append(p)
         else:  #listed posts
-            if p.privacy == 0:  #public: visible to all
+            if p.visibility == "PUBLIC":  #public: visible to all
                 authorized_posts.append(p)
 
-            elif p.privacy == 1:  #private: visible to creator
+            elif p.visibility == "PRIVATE":  #private: visible to creator
                 if p.author == current_user:
                     authorized_posts.append(p)
     
@@ -167,10 +167,10 @@ def placeholder(request):
                     if p.author == current_user:
                         authorized_posts.append(p)
                 else:  #listed posts
-                    if p.privacy == 0:  #public: visible to all
+                    if p.visibility == "PUBLIC":  #public: visible to all
                         authorized_posts.append(p)
 
-                    elif p.privacy == 1:  #private: visible to creator
+                    elif p.visibility == "PRIVATE":  #private: visible to creator
                         if p.author == current_user:
                             authorized_posts.append(p)
                 if len(authorized_posts)==5:
@@ -635,7 +635,7 @@ class addPost(CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.pub_date=datetime.datetime.now()
+        form.instance.published=datetime.datetime.now()
         return super().form_valid(form)
 
 class addComment(CreateView):
@@ -677,7 +677,7 @@ class SharedPostView(View):
             title=post_object.title,
             text=post_object.text,
             image=post_object.image,
-            pub_date=post_object.pub_date,
+            pub_date=post_object.published,
             author=post_object.author,
             shared_user=current_user,
             contentType=post_object.contentType).save()
@@ -693,26 +693,6 @@ def send_token(request, username, password):
     print(ast.literal_eval(response.text))
     return JsonResponse(dict_data, safe=False)
 
-def get_nodes():
-    nodes = Node.objects.all()
-    serializer = NodeSerializer(nodes, many=True)
-    connected = []
-    for node in serializer.data:
-        connected.append(node)
-    return connected
-   
-def node_working(request):
-    url = request.build_absolute_uri()
-    host  = ['http://127.0.0.1:8000/', 'http://localhost:8000/', 'https://social-dis.herokuapp.com/',]
-    
-    for node in get_nodes():
-        print('node ' + str(node['url']))
-        print('url ' + url)
-        if url in node['url']:
-            return True
-        else:
-            return False      
-            
 def connect(request):
     nodes = get_nodes()
     posts = []
@@ -720,7 +700,7 @@ def connect(request):
     for node in nodes:
         print('NODES: ' + str(node['team_id']))
         auth = (node['username'], node['password'])
-        req = make_external_request(node['url'], auth)
+        req = make_external_request(node['posts'], auth)
         req_json = req.json()
         posts.append(req_json)
         team_ids.append(node['team_id'])

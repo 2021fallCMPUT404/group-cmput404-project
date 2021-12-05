@@ -1,5 +1,6 @@
 
-from django.http.response import HttpResponseRedirect, HttpResponseForbidden
+from users.serializers import userPSerializer
+from django.http.response import HttpResponseBadRequest, HttpResponseRedirect, HttpResponseForbidden
 from posts.connection import *
 from django import template
 import traceback
@@ -33,6 +34,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework import exceptions
+from rest_framework.views import APIView
 import requests
 import re
 import datetime
@@ -72,6 +74,34 @@ class CustomAuthentication(authentication.BaseAuthentication):
 
 
 # Create your views here.
+
+class post_comments_api(APIView):
+    #authentication_classes = [SessionAuthentication, BasicAuthentication]
+    #permission_classes = [IsAuthenticated]
+
+    def get(self, request, author_id, post_id, format=None):
+        try:
+            author = get_object_or_404(User, pk=author_id)
+            related_post = Post.objects.get(id=post_id)
+            comments = Comment.objects.filter(post=related_post)
+            comments_serializer = CommentSerializer(comments, many=True)
+            return Response(comments_serializer.data)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+
+    def post(self, request, author_id, post_id, format=None):
+        try:
+            json = JSONParser.parse(request.data)
+            author = userPSerializer(data=json['author'])
+            if not author.is_valid():
+                return HttpResponseBadRequest("Author object cannot be serialized.")
+            new_comment = Comment(author=author.data, comment_body=json['comment'])
+        except Exception as e:
+            return JsonResponse({'message':'Error: {}'.format(e)})
+
 def handle_not_found(request, exception):
     return render(request, 'not_found.html')
 

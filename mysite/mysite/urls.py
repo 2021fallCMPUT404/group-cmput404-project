@@ -35,4 +35,5 @@ urlpatterns = [
     path('', views.login_view, name='login'),
     path('logout', views.logout_view, name='logout'),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('service/author/<int:author_id>/posts/<int:post_id>/comments/', views.post_comments_api.as_view(), name='comment_api'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -108,5 +108,6 @@ class Share(models.Model):
 
 class Node(models.Model):
     url = models.URLField()
+    team_id = models.IntegerField(null=True) #Added in case we need to do specific parsing for a team
     username = models.TextField()
     password = models.TextField()

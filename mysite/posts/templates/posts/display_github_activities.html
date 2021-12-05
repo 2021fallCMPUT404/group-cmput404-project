@@ -7,11 +7,12 @@
     <div class="activity_list">
         <form id='event_form' method='post'>
             {% csrf_token %}
+            <br>
             <input type="submit" class="btn btn-lg btn-primary btn-block" value='Add selected Activity'>
             <br>
         </form>
-
-        <script type="text/javascript">
+        <br>
+        <script type="text/javascript" style="display: block; border: 00.5px solid;">
 
             function check_key(json_data, key) {
                 if (json_data.hasOwnProperty(key)) {

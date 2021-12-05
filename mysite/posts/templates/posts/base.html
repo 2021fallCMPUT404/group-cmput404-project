@@ -33,32 +33,32 @@
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarsitem">
+          <div class="collapse navbar-collapse" id="navbarsitem" ">
             
             {% if user.is_authenticated %}
             <ul class="navbar-nav me-auto" id="nav">
   
-              <li class="nav-item">
+              <li class="nav-item" style="margin-left: 20px;">
                 <a class="nav-link active" aria-current="page" href="{% url 'users:edit_user_profile' %}"><i class="fa fa-pencil-square-o"></i> Edit Profile</a>
               </li>
   
-              <li class="nav-item">
+              <li class="nav-item" style="margin-left: 20px;">
                 <a class="nav-link active" aria-current="page" href="{% url 'users:view_requests' User_id=request.user.id %}"><i class="fa fa-search"></i> View Requests</a>
               </li>
   
-              <li class="nav-item">
+              <li class="nav-item" style="margin-left: 20px;">
                 <a class="nav-link active" aria-current="page" href="{% url 'users:view_followers' User_id=request.user.id %}"><i class="fa fa-child"></i> View Followers</a>
               </li>
   
-              <li class="nav-item">
+              <li class="nav-item" style="margin-left: 20px;">
                 <a class="nav-link active" aria-current="page" href="{% url 'users:request_page'%}"><i class="fa fa-paper-plane"></i> Send Request</a>
               </li>
               
-              <li class="nav-item">
+              <li class="nav-item" style="margin-left: 20px;">
                 <a class="nav-link active" aria-current="page" href="{% url 'users:user_home_page' %}"><i class="fa fa-user"></i> Profile</a>
               </li>
 
-              <li class="nav-item subnavbtn">
+              <li class="nav-item subnavbtn" style="margin-left: 20px;">
                 <a class="nav-link active" aria-current="page"><i class="fa fa-link"></i> Connection <i class="fa fa-angle-down"></i></a>
                 <ul class="dropdown">
                     <li class="nav-item">
@@ -71,6 +71,8 @@
               </li>
               
 
+
+            
 
 
 

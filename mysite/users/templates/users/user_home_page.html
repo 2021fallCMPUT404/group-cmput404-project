@@ -15,13 +15,16 @@
     <div class="row">
         
         <img src="{{ user.user_profile.profileImage.url }}"  style="float: left; width: 120px; height: 120px; margin-left: 25%;" >
-        <div  style="float: right; width: 40%; margin-top: 3%; overflow: hidden;"  >
-            <h2 class='Display_name'>{{ insert_display_name }}</h2>
-            <h3 style= "font-family: Josefin Sans;">{{user.user_profile.bio}}</h3>
+        
+        <div  style="float: right; width: 40%; margin-top: 3%; "  >
+            <h2 class='Display_name' style="overflow: hidden;">{{ insert_display_name }}</h2>
+            <h3 style= "font-family: Josefin Sans;;" >{{user.user_profile.bio}}</h3>
         </div>
+        <a href="{% url 'users:edit_user_profile' %}"><i class="btn  fa fa-gear fa-spin" style="font-size:24px;margin-left: 75%;" data-toggle="tooltip" data-placement="bottom" title="Edit Profile"></i></a>
         
 
-    
+        
+
         
     </div>
     {% endif %}

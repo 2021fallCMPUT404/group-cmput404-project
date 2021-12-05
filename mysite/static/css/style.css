@@ -180,6 +180,11 @@ div #post-options{
     color: #343a40;
   }
 
+ .nav-link{
+    margin: 0 auto;
+    text-align: center;
+ } 
+
   #btn-back-to-top {
     position: fixed;
     bottom: 20px;

@@ -1,24 +1,45 @@
 {% extends 'users/base.html' %} 
 {% block content %}
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dancing Script">
 <div class="container">
     <a href="{% url 'users:t03_users' %}">List of Team 03s Users</a>
+    <h1 style="font-family: Dancing Script; font-size: 5rem;">List of posts from Team 03</h1>
     {% if post_list %}
-    <h1>List of posts from Team 03</h1>
-    <div class="album py-5 bg-light">
-        
-        {% for post in post_list %}
-        <h3> {{post.title}}</h3>
-        <p>{{post.content}}</p>
-        <p>Created by: {{post.author.displayName}}</p>
-        <p>Date published: {{post.published}}</p>
-        
-    </br>
-        
-        </object>
+        <div class="list-posts">
+            {% for post in post_list %}
+            <div class="container border border-2 border-secondary " style="border-radius: 1rem; width: 60%;" >
+                <div class=container " style="border: 1cm ;">
+                    <br>
+                    <p><img src="{{ post.author.profileImage }}" width="30px" height="30px" style="border: 0.3px solid;"> {{post.author.displayName}}</p>
+                    <p style="color: darkgrey;"> Published at: {{post.published}}</p>
+                <h2 class = 'post-title'>{{post.title}}</h2>
+                {% if post.contentType == 'text/plain' %}
+                    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{post.content}}</p>
+                {%elif post.contentType == 'image' %}
+                    <img src="{{ post.content }}" width="60%" style="border: 0.3px solid;">
+                {%endif%}
 
-        {% endfor %}
-    </div>
+                </div>
+                <br>
+                <div class="nav-scroller bg-body shadow-sm">
+                    <nav class="nav nav-underline" aria-label="Secondary navigation">
+                    
+                    <a class="nav-link disabled " href="#">
+                        <i class="fa fa-thumbs-up"></i> Likes
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{post.likes|length}}</span>
+                    </a>
+
+                    <a class="nav-link disabled" href="#">
+                        <i class="fa fa-comment"></i> Comments
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{post.count}}</span>
+                    </a>
+                    </nav>
+                </div>  
+                <br>
+            </div>
+            <br>
+            {% endfor %}
+        </div>
     </div>
         
 

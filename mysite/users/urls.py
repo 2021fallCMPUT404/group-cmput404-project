@@ -20,6 +20,7 @@ urlpatterns = [
     path('<int:User_id>/posts/<int:post_id>/comments',
          views.get_post_comments,
          name='get_post_comments'),
+     path('<int:User_id>/inbox/', views.user_inbox_view, name='get_inbox'),
     path('user_login/', views.login_view, name='user_login'),
     path('register/', views.register, name='register'),
     path('login', views.login_view, name='login'),

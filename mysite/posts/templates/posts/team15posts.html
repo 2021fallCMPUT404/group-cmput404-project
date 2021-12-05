@@ -1,24 +1,42 @@
 {% extends 'users/base.html' %} 
 {% block content %}
 {% load static %}
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dancing Script">
 <div class="container">
     
-    <h1><a href=''>UNHINDLED APP</a></h1>
+    <h1 style="font-family: Dancing Script;"><a href=''>UNHINDLED APP</a></h1>
     <a href = "{% url 'users:external_users'%}">List of users (Group 15)</a>
-    <h2>List of Posts from Team 15</h2>
+    <h2 style="font-family: Dancing Script;  font-size: 5rem">List of Posts from Team 15</h2>
     <br>
     {% if posts %}
         <div class="list-posts">
             {% for post in posts %}
+            <div class="container border border-2 border-secondary " style="border-radius: 1rem; width: 60%;" >
+                <div class=container " style="border: 1cm ;">
+                    <br>
+                    <p><img src="{{ post.author.profileImage }}" width="30px" height="30px" style="border: 0.3px solid;"> {{post.author.displayName}}</p>
+                    <p style="color: darkgrey;"> Published at: {{post.published}}</p>
                 <h2 class = 'post-title'>{{post.title}}</h2>
-                <p>{{post.content}}</p>
-                <p>Created by {{post.author.displayName}}</p>
-                <p>{{post.created_on}}</p>
-                
+                <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{post.content}}</p>
+            </div>
+            <br>
+                <div class="nav-scroller bg-body shadow-sm">
+                    <nav class="nav nav-underline" aria-label="Secondary navigation">
+                    
+                    <a class="nav-link disabled " href="#">
+                        <i class="fa fa-thumbs-up"></i> Likes
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{post.likes|length}}</span>
+                    </a>
 
+                    </nav>
+                </div>  
                 <br>
+
+                </div>
+            </div>
+            <br>
             {% endfor %}
+        </div>
     {% endif %}
 </div>
 {% endblock content %}

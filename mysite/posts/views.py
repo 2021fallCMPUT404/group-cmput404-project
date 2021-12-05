@@ -1,14 +1,15 @@
 from django.http.response import HttpResponseRedirect, HttpResponseForbidden
 from django import template
+from posts.connection import *
 import traceback
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User, AnonymousUser
 from . import views
 from django.urls.base import reverse
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseBadRequest
 from django.template import loader
 from django.utils import timezone
-from .models import Post, Comment, Like, Share, CommentLike
+from .models import Post, Comment, Like, Share, CommentLike, Node
 from .forms import ShareForm, CommentForm, addPostForm
 from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView, FormView, View, ListView
@@ -150,6 +151,41 @@ def post(request, Post_id):
 
     #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
     #return HttpResponse(output)
+
+
+class post_comments_api(APIView):
+    #authentication_classes = [SessionAuthentication, BasicAuthentication]
+    #permission_classes = [IsAuthenticated]
+
+    def get(self, request, author_id, post_id, format=None):
+        try:
+            author = get_object_or_404(User, pk=author_id)
+            related_post = Post.objects.get(id=post_id)
+            comments = Comment.objects.filter(post=related_post)
+            comments_serializer = CommentSerializer(comments, many=True)
+            return Response(comments_serializer.data)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+
+    def post(self, request, author_id, post_id, format=None):
+        try:
+            test = json.loads(request.body)
+            post = get_object_or_404(Post, pk=post_id)
+            author = userPSerializer(data=test['author'])
+            print(author.is_valid())
+            if not author.is_valid():
+                return HttpResponseBadRequest("Author object cannot be serialized.")
+            new_comment = Comment(author=author.data, comment_body=test['comment'], post=post)
+            new_comment.save()
+            return HttpResponse(new_comment)
+        except Exception as e:
+            return JsonResponse({'message':'Error: {}'.format(e)})
+
+def handle_not_found(request, exception):
+    return render(request, 'not_found.html')
 
 
 def placeholder(request):
@@ -1311,6 +1347,45 @@ def view_t15_posts(request):
     url = "https://unhindled.herokuapp.com/service/allposts/"
     posts = get_t15_posts(url)
     return render(request, 'posts/team15posts.html', {'posts': posts})
+
+def testing(request, user_id):
+    is_foreign_id(user_id)
+    return HttpResponse("test")
+
+def view_foriegn_posts(request):
+    if node_working(request):
+        node = get_nodes()
+        url = request.get_full_path()
+        if url in node:
+            n = list(filter(lambda node: node['url'] == url, node))
+            print('list :'+ str(n))
+            ext_request = requests.get(url, auth=(n.username,n.password), headers={'Referer': "http://localhost:8000/"})
+            ext_request = ext_request.json()
+            return render(request, 'posts/team15posts.html', {'posts': ext_request})
+        else:
+            return HttpResponse(node)
+    else:
+        return HttpResponse()
+
+def node_working(request):
+    url = request.build_absolute_uri()
+    host  = ['http://127.0.0.1:8000/', 'http://localhost:8000/', 'https://social-dis.herokuapp.com/',]
+    
+    for node in get_nodes():
+        print('node ' + str(node['url']))
+        print('url ' + url)
+        if url in node['url']:
+            return True
+        else:
+            return False
+
+def get_nodes():
+    nodes = Node.objects.all()
+    serializer = NodeSerializer(nodes, many=True)
+    connected = []
+    for node in serializer.data:
+        connected.append(node)
+    return connected     
 
 
 #curl -X POST -d "username=1&password=12345" http://127.0.0.1:8000/api-token-auth/

@@ -42,7 +42,7 @@ class userPSerializer(serializers.ModelSerializer):
             'type', 'id', 'url', 'host', 'displayName', 'github', 'bio',
             'profileImage', 'user'
         ]  #TODO: ADD URL AND HOST
-        read_only_fields = ['type', 'id', 'url', 'host', 'user']
+        read_only_fields = ['type','user']
 
 class userFollowSerializer(serializers.ModelSerializer):
     class Meta:

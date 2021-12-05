@@ -6,7 +6,7 @@ from users.models import *
 from django.db.models.fields import related
 from django.contrib.auth.models import User
 from django.apps import apps
-from django.db.models.fields.related import ForeignKey
+from django.db.models.fields.json import JSONField
 
 
 #from users.models import User_Profile
@@ -102,10 +102,11 @@ class Comment(models.Model):
                              blank=True,
                              null=True,
                              related_name="comments")
-    author = models.ForeignKey(User,
-                               on_delete=models.CASCADE,
-                               blank=True,
-                               null=True)
+    #author = models.ForeignKey(User,
+                               #on_delete=models.CASCADE,
+                               #blank=True,
+                               #null=True)
+    author = JSONField(null=True, blank=True)
     comment_body = models.TextField()
     comment_created = models.DateTimeField(auto_now_add=True)
     like = models.ManyToManyField(Like, related_name='comments_likes', blank=True, null=True)
@@ -148,3 +149,9 @@ class Share(models.Model):
 
     def __str__(self):
         return 'Shared by {}'.format(self.author)
+
+class Node(models.Model):
+    url = models.URLField()
+    team_id = models.IntegerField(null=True) #Added in case we need to do specific parsing for a team
+    username = models.TextField()
+    password = models.TextField()

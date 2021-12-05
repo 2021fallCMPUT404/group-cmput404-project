@@ -47,7 +47,7 @@
     
     {% for posts in latest_post_list %}
     
-    <div class="container border border-4 border-secondary " style="border-radius: 1rem; ;" >
+    <div class="container border border-2 border-secondary " style="border-radius: 1rem; width: 60%;" >
         <div class=container " style="border: 1cm ;">
 
             <div class="nav-scroller bg-body shadow-sm">
@@ -74,7 +74,7 @@
         <a href="{% url 'editpost' posts.pk %}" class='btn btn-secondary ' style="margin-left:80%; border-radius: 1rem;"><i class="fa fa-pencil-square-o"></i> Edit</a>
     
         {% endif %}
-        <br>
+        
         
         
 

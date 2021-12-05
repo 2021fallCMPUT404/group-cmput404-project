@@ -1,5 +1,5 @@
 body{
-    background:radial-gradient(circle at center,rgba(190, 188, 188, 0.644),rgb(255, 250, 240));
+    background:#e2c9e62e;
     background-size: cover;
     margin:0;
     padding-top: 65px; 
@@ -208,8 +208,13 @@ div #post-options{
 }
   
 
+#userprofile_hd{
+    background-color: #f9f5fa;
+}
 
-
+#userprofile_con{
+    background-color: #f9f5fa;
+}
 
 #table{
     margin-left: auto;

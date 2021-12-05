@@ -59,6 +59,8 @@ class Post(models.Model):
     def is_shared_post(self):
         return self.shared_user != None
 
+    
+
 
 class Comment(models.Model):
     #name of the user (primary key problem)

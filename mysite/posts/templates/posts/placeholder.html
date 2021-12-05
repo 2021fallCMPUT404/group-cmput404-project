@@ -27,21 +27,25 @@
 <br><br><br>
 
 
-<h1  style="font-family: Dancing Script; font-size: 5rem;" >Explore the post</h1>
+
+<h1  style="font-family: Dancing Script; font-size: 5rem; " >Explore the post</h1>
+<br>
+
+
 
 <br>
 <br>
 
+
+<br>
 {% if latest_post_list %}
 
 <br>
 <div class="container" >
-
     <a href="{% url 'select_github_activity' %}" class="btn btn-lg btn-primary btn-block" style="width: 60%;"><i class="fa fa-github"></i> Add Github Activity</a>
     <p style="margin:10px;"></p>
 
     <a href="{% url 'addpost' %}"  class=" btn btn-lg btn-primary btn-block" style="width: 60%;"><i class="fa fa-plus-circle"></i> Add a Post</a>
-
 </div>
 
 
@@ -51,7 +55,6 @@
     
     <div class="container border border-2 border-secondary " style="border-radius: 1rem; width: 60%;" >
         <div class=container " style="border: 1cm ;">
-
 
             <div class="nav-scroller bg-body shadow-sm">
                 <nav class="nav nav-underline" aria-label="Secondary navigation">
@@ -70,7 +73,6 @@
                   </a>
                 </nav>
             </div>    
-
         <br>
         <h4 style="margin-right: 80%;" ><img src="{{ posts.author.user_profile.profileImage.url }}" width="60px" height="60px" style="border: 0.3px solid;"> {{posts.author}} </h4>
         <hr class="mt-2 mb-3" style="width: 30%;"/>
@@ -93,15 +95,6 @@
             {% endif %}
 
             </a>
-            <p style="color: darkgrey;"> Published at:  {{posts.pub_date}} 
-                {%if posts.privacy == 0%}
-                    <i class="fa fa-globe"></i>
-                {%elif posts.privacy == 1%}
-                    <i class="fa fa-lock"></i>
-                {%else%}
-                    <i class="fa fa-users"></i>
-                {%endif%}
-            </p>
         <br>
         </div>
 
@@ -135,34 +128,24 @@
 
 
 
-        <br><br>
 
+        <br>
+        <br>
+        <hr class="mt-2 mb-3"/>
+        <p > Published at:  {{posts.pub_date}} 
+            {%if posts.privacy == 0%}
+                <i class="fa fa-globe"></i>
+            {%elif posts.privacy == 1%}
+                <i class="fa fa-lock"></i>
+            {%else%}
+                <i class="fa fa-users"></i>
+            {%endif%}
             {%if posts.shared_user%}
-            <p style="font-style: italic; color: darkgrey;">Shared by {{ posts.shared_user }}</p>
+            <p style="font-style: italic;">Shared by {{ posts.shared_user }}</p>
             {% endif %}
 
-        <br>
-        <div class="nav-scroller bg-body shadow-sm">
-            <nav class="nav nav-underline" aria-label="Secondary navigation">
-            
-            <a class="nav-link disabled " href="#">
-                <i class="fa fa-thumbs-up"></i> Likes
-                <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{posts.like.count}}</span>
-            </a>
-            <a class="nav-link disabled" href="#">
-                <i class="fa fa-comment"></i> Comments
-                <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{posts.comments.count}}</span>
-            </a>
-            <a class="nav-link disabled" href="#">
-                <i class="fa fa-share-square-o"></i> Shares
-                <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{posts.share.count}}</span>
-            </a>
-
-            </nav>
-        </div>  
-        <br>
+        </p>
     </div>
-    
     <br>
     {% endfor %}
     
@@ -173,8 +156,7 @@
     <h1 style="font-family: Fredoka One;">Oops! No posts are available.</h1>
     <br>
     <div class="container" >
-        <a href="{% url 'addpost' %}"  class=" btn btn-lg btn-primary btn-block"><i class="fa fa-plus"></i> Add Post</a>
-        <a href="{% url 'select_github_activity' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-github"></i> Add Github Activity</a>
+        <a href="{% url 'addpost' %}"  class=" btn btn-lg btn-primary btn-block" style="width: 60%;"><i class="fa fa-plus-circle"></i> Add a Post</a>
     </div>
     
     {% endif %}

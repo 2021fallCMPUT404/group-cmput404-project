@@ -422,6 +422,7 @@ def edit_user_profile_view(request):
                   {'profile_form': user_profile_form})
 
 
+
 def advance_home_page_view(request):
     return render(request, 'users/advance_home_page.html')
 

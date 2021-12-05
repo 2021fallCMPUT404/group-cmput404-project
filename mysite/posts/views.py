@@ -826,8 +826,8 @@ class HandleInboxPost(APIView):
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 @api_view(['GET'])
-@authentication_classes([CustomAuthentication])
-@permission_classes([AccessPermission])
+@authentication_classes([])
+@permission_classes([])
 def request_post_list(request):
     posts = Post.objects.all()
     posts_serializer = PostSerializer(posts, many=True)

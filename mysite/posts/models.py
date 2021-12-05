@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.db.models.fields.json import JSONField
 #from django.contrib.auth.models import User
 from django.db.models.fields.related import ForeignKey
 from users.models import User
@@ -67,10 +68,11 @@ class Comment(models.Model):
                              blank=True,
                              null=True,
                              related_name="comments")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL,
-                               on_delete=models.CASCADE,
-                               blank=True,
-                               null=True)
+    #author = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               #on_delete=models.CASCADE,
+                               #blank=True,
+                               #null=True)
+    author = JSONField(null=True, blank=True)
     comment_body = models.TextField()
     comment_created = models.DateTimeField(auto_now_add=True)
     like = models.ManyToManyField(User, related_name='comments_likes')

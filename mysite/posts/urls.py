@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('feed', views.placeholder, name='feed'),
+    path('test/<str:user_id>/', views.testing, name='test'),
     path('select_github_activity/',
          views.select_github_activity,
          name='select_github_activity'),

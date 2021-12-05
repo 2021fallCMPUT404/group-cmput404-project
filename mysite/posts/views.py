@@ -1,5 +1,6 @@
 
 from django.http.response import HttpResponseRedirect, HttpResponseForbidden
+from posts.connection import *
 from django import template
 import traceback
 from django.shortcuts import get_object_or_404, render, redirect
@@ -696,6 +697,11 @@ def view_foriegn_posts(request):
             return HttpResponse(node)
     else:
         return HttpResponse()
+
+def testing(request, user_id):
+    is_foreign_id(user_id)
+    return HttpResponse("test")
+
 
     
 

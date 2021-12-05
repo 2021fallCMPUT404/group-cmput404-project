@@ -25,7 +25,7 @@ class Like(models.Model):
                              related_name='likes',
                              on_delete=models.CASCADE)
     
-    liked_object = models.CharField(max_length=100)
+    object = models.CharField(max_length=100)
     
     #post = models.ForeignKey(Post,
                              #related_name='post_like',

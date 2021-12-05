@@ -245,7 +245,8 @@ def delete_post(request, Post_id):
 
 def likePost(request, pk):
     post = get_object_or_404(Post, id=request.POST.get('post_id'))
-    like = Like(user=request.user, liked_object='https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}'.format(post.author.id, post.id))
+    like = Like(user=request.user, object='https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}'.format(post.author.id, post.id))
+    
     like.save()
     post.like.add(like)
     
@@ -471,14 +472,17 @@ class HandleAuthorPostComment(APIView):
     def post(self, request, AUTHOR_ID, POST_ID, format=None):
         print("Is this running/")
         try:
-            user = User.objects.get(id=AUTHOR_ID)
-            post = Post.objects.get(id=POST_ID)
             data = JSONParser().parse(request)
+            user = User.objects.get(id=data['author']['id'])
+            post = Post.objects.get(id=POST_ID)
 
             created_comment = Comment(post = post, author=user,
                     comment_body = data['comment_body'], comment_created = data['comment_created'])
-            created_comment.like.set(data['like'])
+            
             created_comment.save()
+
+            
+
             comment_serializer = CommentSerializer(created_comment)
 
             
@@ -506,7 +510,7 @@ class HandleInboxLike(APIView):
             except:
                 user = User.objects.get(id=AUTHOR_ID)
             
-            created_like = Like(user=user, liked_object = data['liked_object'])
+            created_like = Like(user=user, object = data['object'])
             like_serializer = LikeSerializer(created_like)
             inbox.like.add(created_like.id)
             return JsonResponse(like_serializer.data,
@@ -751,9 +755,26 @@ class HandleInboxPost(APIView):
                         
                         user = User.objects.get(id=data['author'])
                     
-                    created_like = Like(user=user, liked_object = data['liked_object'])
+                    created_like = Like(user=user, object = data['object'])
+                    created_like.save()
                     like_serializer = LikeSerializer(created_like)
                     inbox.like.add(created_like.id)
+
+                    search_comment = re.findall("(?:(comments\/))(.+)", data['object'])
+                    if search_comment:
+                        if len(search_comment) != 0:
+                            comment_id = search_comment[0]
+                            comment = Comment.objects.get(id = comment_id[1])
+                            comment.like.add(created_like)
+                    else:
+                        search_post = re.findall("(?:(post\/))(.+)", data['object'])
+                        if len(search_post) != 0:
+                            post_id = search_post[0]
+                            print(post_id)
+                            post = Post.objects.get(id = int(post_id[1]))
+                            post.like.add(created_like)
+
+
                     return JsonResponse(like_serializer.data,
                                         status=status.HTTP_201_CREATED)
                 except User.DoesNotExist:
@@ -1196,7 +1217,7 @@ def select_github_activity(request):
 
 def likeComment(request, pk):
     comment = get_object_or_404(Comment, id=request.POST.get('comment_id'))
-    like = Like(user=request.user, liked_object = 'https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}/comments/{}'.format(comment.post.author.id, comment.post.id, comment.id))
+    like = Like(user=request.user, object = 'https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}/comments/{}'.format(comment.post.author.id, comment.post.id, comment.id))
     like.save()
     comment.like.add(like)
     

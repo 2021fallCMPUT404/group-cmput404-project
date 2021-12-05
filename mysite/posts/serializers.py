@@ -43,10 +43,15 @@ class PostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("No such author")
         return data
     '''
+class LikeSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False, read_only=True)
+    class Meta:
+        model = Like
+        fields = ('type', 'user', 'object')
 class CommentSerializer(serializers.ModelSerializer):
 
     author = UserSerializer(many=False, read_only=True)
-
+    like = LikeSerializer(many=True, read_only=True)
     class Meta:
         model = Comment
         fields = ('type', 'author', 'post', 'comment_body', 'comment_created',
@@ -57,11 +62,7 @@ class LikeCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentLike
         fields = ('user', 'comment')
-class LikeSerializer(serializers.ModelSerializer):
-    user = UserSerializer(many=False, read_only=True)
-    class Meta:
-        model = Like
-        fields = ('type', 'user', 'liked_object')
+
     
 '''
 class InboxLikeSerializer(serializers.ModelSerializer):

@@ -153,10 +153,10 @@ def placeholder(request):
             if p.author == current_user:
                 authorized_posts.append(p)
         else:  #listed posts
-            if p.visibility == "PUBLIC":  #public: visible to all
+            if p.visibility == '0':  #public: visible to all
                 authorized_posts.append(p)
 
-            elif p.visibility == "PRIVATE":  #private: visible to creator
+            elif p.visibility == '1':  #private: visible to creator
                 if p.author == current_user:
                     authorized_posts.append(p)
     
@@ -167,10 +167,10 @@ def placeholder(request):
                     if p.author == current_user:
                         authorized_posts.append(p)
                 else:  #listed posts
-                    if p.visibility == "PUBLIC":  #public: visible to all
+                    if p.visibility == "0":  #public: visible to all
                         authorized_posts.append(p)
 
-                    elif p.visibility == "PRIVATE":  #private: visible to creator
+                    elif p.visibility == "1":  #private: visible to creator
                         if p.author == current_user:
                             authorized_posts.append(p)
                 if len(authorized_posts)==5:
@@ -632,6 +632,7 @@ class addPost(CreateView):
     form_class = addPostForm
     template_name = 'posts/addPost.html'
     success_url = reverse_lazy('feed')
+    
 
     def form_valid(self, form):
         form.instance.author = self.request.user

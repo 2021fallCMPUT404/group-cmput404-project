@@ -10,9 +10,9 @@ from django.urls import reverse
 
 class Post(models.Model):
 
-    PUBLIC = 0
-    PRIVATE = 1
-    FREINDS=2    #Need friend system?
+    PUBLIC = '0'
+    PRIVATE = '1'
+    FREINDS='2'    #Need friend system?
 
     Privacy = (
         (PUBLIC, "PUBLIC"),
@@ -22,8 +22,8 @@ class Post(models.Model):
     )
     
 
-    PLAIN = 0
-    MARKDOWN = 1
+    PLAIN = '0'
+    MARKDOWN = '1'
     Content = (
         (PLAIN,"text/plain"),
         (MARKDOWN,"text/markdown")
@@ -43,10 +43,10 @@ class Post(models.Model):
 
     shared_on = models.DateTimeField(blank=True, null=True)
     unlisted = models.BooleanField(default=False)
-    visibility=models.CharField(max_length = 200, choices=Privacy,default=PUBLIC)
+    visibility=models.CharField(max_length = 200, choices=Privacy,default='0')
     visible=None
 
-    contentType = models.CharField(max_length = 200,choices=Content,default=PLAIN)
+    contentType = models.CharField(max_length = 200,choices=Content,default='0')
     
     like = models.ManyToManyField(User, related_name='posts_likes')
 

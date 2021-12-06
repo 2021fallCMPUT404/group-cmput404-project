@@ -9,24 +9,16 @@ from django.urls import reverse
 
 
 class Post(models.Model):
-
-    PUBLIC = 0
-    PRIVATE = 1
-    FREINDS=2    #Need friend system?
-
-    Privacy = (
-        (PUBLIC, "PUBLIC"),
-        (PRIVATE, "PRIVATE"),  #only shows to me
-        (FREINDS,"FRIENDS"),
-        
-    )
     
+    CONTENT = (
+		('text/markdown', 'Markdown'),
+		('text/plain','Plaintext'),
+	)
 
-    PLAIN = 0
-    MARKDOWN = 1
-    Content = (
-        (PLAIN,"text/plain"),
-        (MARKDOWN,"text/markdown")
+    VISIBILITY = (
+		('PUBLIC', 'Public'),
+		('FRIENDS', 'Friends'),
+		('PRIVATE', 'My Eyes Only')
     )
 
     type = 'post'
@@ -41,13 +33,13 @@ class Post(models.Model):
                                     blank=True,
                                     related_name='+')
 
-    shared_on = models.DateTimeField(blank=True, null=True)
+    published = models.DateTimeField(auto_now_add=True)
     unlisted = models.BooleanField(default=False)
-    visibility=models.CharField(max_length = 200, choices=Privacy,default=PUBLIC)
+    visibility=models.CharField(max_length=20, choices=VISIBILITY, default=VISIBILITY[0][0], null=False)
     visible=None
-
-    contentType = models.CharField(max_length = 200,choices=Content,default=PLAIN)
-    
+    description = models.CharField(max_length=500, null =True)
+    contentType = models.CharField(max_length=20, choices=CONTENT, default=CONTENT[1][0],null=False)
+    originalPost = models.ForeignKey('Post', on_delete=models.CASCADE, null=True, blank=True, editable =False)
     like = models.ManyToManyField(User, related_name='posts_likes')
 
     def get_absolute_url(self):

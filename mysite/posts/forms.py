@@ -25,6 +25,17 @@ class CommentForm(forms.ModelForm):
         }
 
 
+class ForiegnCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        #How to set author into fields?
+        fields = ('comment_body', )
+        widgets = {
+            'comment_body': forms.Textarea(attrs={'rows':4, 'placeholder':'Leave your comment here!'}),
+        }
+
+
+
 class addPostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -37,7 +48,7 @@ class addPostForm(forms.ModelForm):
         exclude=['author','published','like','shared_on']
         widgets={
             'title': Textarea(attrs={'rows':1, 'placeholder':'Title'}),
-            'text': Textarea(attrs={'rows':8, 'placeholder':'Write your post here!'}),
+            'content': Textarea(attrs={'rows':8, 'placeholder':'Write your post here!'}),
             
         }
     

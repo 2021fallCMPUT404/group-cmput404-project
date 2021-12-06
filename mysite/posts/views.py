@@ -120,7 +120,7 @@ def post(request, Post_id):
     user = request.user
     username = user.username
 
-    if post.visibilty == "PUBLIC":
+    if post.visibility == "PUBLIC":
         print("Public")
         return render(request, 'posts/post.html', {
             'post': post,
@@ -653,7 +653,7 @@ class addComment(CreateView):
 class updatePost(UpdateView):
     model = Post
     template_name = 'posts/editPost.html'
-    fields = ['title', 'text', 'image']
+    fields = ['title', 'content', 'image',  'visibility', 'contentType']
     success_url = reverse_lazy('feed')
 
 
@@ -675,9 +675,9 @@ class SharedPostView(View):
 
         sharedPost = Post.objects.create(
             title=post_object.title,
-            text=post_object.text,
+            content=post_object.content,
             image=post_object.image,
-            pub_date=post_object.published,
+            published=post_object.published,
             author=post_object.author,
             shared_user=current_user,
             contentType=post_object.contentType).save()

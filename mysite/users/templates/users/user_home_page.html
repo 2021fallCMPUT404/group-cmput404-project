@@ -14,7 +14,7 @@
     {% if user.is_authenticated %}
     <div style="margin-top: 3%;">
         
-        <img src="{{ user.user_profile.profileImage.url }}"  style=" float: left; width: 100px; height: 100px; object-fit: cover; margin-left: 30%; " >
+        <img src="{{ user.user_profile.profileImage.url }}"  style=" float: left; width: 100px; height: 100px; object-fit: cover; margin-left: 30%; border-radius: 50%;" >
         
         <div  style="float: right; width: 40%; margin-top: 3%; margin-right: 20%; "  >
             <h2 class='Display_name' style="overflow: hidden;">{{ insert_display_name }}</h2>

@@ -67,10 +67,10 @@
             {% endif %}
 
         </a>
-        <p style="color: darkgrey;"> Published at: {{posts.pub_date}}
-            {%if posts.privacy == 0%}
+        <p style="color: darkgrey;"> Published at: {{posts.published}}
+            {%if posts.visibility == "PUBLIC"%}
             <i class="fa fa-globe"></i>
-            {%elif posts.privacy == 1%}
+            {%elif posts.visibility == "FRIENDS"%}
             <i class="fa fa-lock"></i>
             {%else%}
             <i class="fa fa-users"></i>
@@ -80,9 +80,9 @@
     </div>
 
     {%if posts.contentType == 1 %}
-    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.text | markdown | safe }}
+    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.content | markdown | safe }}
         {%else%}
-    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.text }}
+    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.content }}
         {% endif %}
 
         {%if posts.image_link%}
@@ -91,13 +91,13 @@
     </p>
     <br>
 
-    {%if current_user == posts.author or posts.privacy == 0%}
+    {%if current_user == posts.author or posts.visibility == "PUBLIC"%}
     {% if posts.image %}
 
     <img src='{{posts.image.url}}' width=40% height="20%" style="max-height: 400px; max-width: 400px;">
 
     {% endif %}
-    {%elif posts.privacy == 2%}
+    {%elif posts.visibility == "PRIVATE" %}
     {%for f in followers%}
     {%if f.actor.displayName == posts.author.user_profile.displayName%}
     {% if posts.image %}

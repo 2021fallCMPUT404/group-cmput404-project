@@ -1,0 +1,24 @@
+{% extends 'users/base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+
+    <h1><a href=''>UNHINDLED APP</a></h1>
+    <a href="{% url 'users:external_users'%}">List of users (Group 15)</a>
+    <h2>List of Posts from Other Teams</h2>
+    <br>
+    {% if posts %}
+    <div class="list-posts">
+        {% for post in posts %}
+        {% for p in post%}
+        <h2 class='post-title'>{{p.title}}</h2>
+        <p>{{p.content}}</p>
+        <p>Created by {{p.author.displayName}}</p>
+        <p>{{p.published}}</p>
+
+        {% endfor %}
+        {% endfor %}
+        {% endif %}
+    </div>
+    {% endblock content %}

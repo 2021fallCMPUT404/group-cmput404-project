@@ -1,0 +1,27 @@
+{% extends 'users/base.html' %} 
+{% block content %}
+{% load static %}
+
+<div class="container">
+    
+    <h1><a href='' id ='unhindled'>UNHINDLED APP</a></h1>
+    <h2>List of Foriegn users</h2>
+    <br>
+    {% if users %}
+    <div class="list-users">
+        {% for user in users %}
+            {% for item in user %}
+                <ul class ='t15Users'>
+                    {% if item.displayName%}
+                        <li><h2> {{item.displayName}}</h2></li>
+                    {% endif %}
+                    {% if item.profileImage %}
+                        <img src='{{item.profileImage}}' style="width:100px;"> 
+                    {% endif %}
+                    <br>
+                </ul>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+    </div>
+    {% endblock content %}

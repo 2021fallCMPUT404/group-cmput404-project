@@ -2,35 +2,49 @@
 
 {% block content %}
 {% load markdown_ext %}
-<div class='post-wrapper container border border-4 border-secondary rounded-4'>
+<br><br>    
+<h1 style="font-family: Fuzzy Bubbles;">{{post.title}}</h2>
+<br><br>
+<div class='post-wrapper container border border-2 border-secondary rounded-4'>
     <div class=container " style="border: 1cm ; padding: 1em;">
-    <h4 style="margin-right: 80%; ;"><img src="{{ post.author.user_profile.profileImage.url }}" width=50px height="50"> {{post.author}}</h4>
+    <h4 style="margin-right: 80%; ;"><img src="{{ post.author.user_profile.profileImage.url }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;"> {{post.author}}</h4>
+
     </div>
         {%if post.contentType == 1 %}
-            <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ post.text | markdown | safe }}
+            <p style="overflow: hidden; text-overflow: ellipsis; font-size:200%;">{{ post.text | markdown | safe }}</p>
+        {%elif post.contentType == 2 %}
+            {%if user_name == post.author.username or post.privacy == 0%}
+                <img src="{{ post.text }}" width="60%" style="border: 0.3px solid;">
+            {%elif post.privacy == 2%}
+                {%for f in followers%}
+                    {%if f.actor.displayName == post.author.user_profile.displayName%}
+                        <img src="{{ post.text }}" width="60%" style="border: 0.3px solid;">
+                    {%endif%}
+                {%endfor%}
+            {%else%}
+                <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">Sorry, this is currently not available</p>
+            {%endif%}
         {%else%}
-            <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ post.text }}
+            <p style="overflow: hidden; text-overflow: ellipsis; font-size:200%;">{{ post.text }}</p>
         {% endif %}
 
-        {%if post.image_link%}
-            <a href='{{post.image_link}}'>preview</a>
-        {% endif %}
-    </p>
+    
 
     {%if user_name == post.author.username or post.privacy == 0%}
         {% if post.image %}
-            <img src='{{post.image.url}}' width="60%">
+            <img src='{{post.image.url}}' width="60%" height="auto">
         {% endif %}
     {%elif post.privacy == 2%}
         {%for f in followers%}
             {%if f.actor.displayName == post.author.user_profile.displayName%}
                 {% if post.image %}
-                    <img src='{{post.image.url}}' width="60%">
+                    <img src='{{post.image.url}}' width="60%" height="auto">
+                    
                 {% endif %}
             {%endif%}
         {%endfor%}
     {%endif%}
-
+    
     <p>Date: {{post.pub_date}} 
         {%if post.privacy == 0%}
             <i class="fa fa-globe"></i>
@@ -40,7 +54,7 @@
             <i class="fa fa-users"></i>
         {%endif%}
     </p>
-    <p>ID: {{post.id}}</p>
+
 
     
     <hr class="mt-2 mb-3"/>
@@ -59,12 +73,13 @@
         <br>
         <button type = 'submit', name = 'post_id', value = "{{ post.id }}" class="btn btn-primary"><i class="far fa-thumbs-up"></i> Like</button>
     </form>
-    <p id = 'total_likes'>Number of Likes - {{ post.like.count }}</p>
+    <p id = 'total_likes'> <i class="fa fa-heart fa-x" style="color: red;" aria-hidden="true"></i>
+         {{ post.like.count }}</p>
     
 </div>
 
 <br>
-<div class='post-wrapper container border border-4 border-secondary rounded-4'>
+<div class='post-wrapper container border border-2 border-secondary rounded-4'>
     <h2>Comments</h2>
     <p>Total number of comments : {{post.comments.count}}</p>
 
@@ -76,15 +91,21 @@
         {%for comment in post.comments.all%}
         <strong>
             <div class='container left'  style="border: 1cm ;">
-                <img src="{{ user.user_profile.profileImage.url }}" width=30px height="30"> {{user.user_profile.displayName}} &nbsp; &nbsp;&nbsp; {{comment.comment_created}} 
+                <img src="{{ user.user_profile.profileImage.url }}" width=50px height="50" style="object-fit: cover; border-radius: 50%;"> {{user.user_profile.displayName}} &nbsp; &nbsp;&nbsp; {{comment.comment_created}} 
             </div>
+
+            <br><br>
+        <h3>{{comment.comment_body}}</h1>
+
+        
+        <div class="row">
             <form action = "{% url 'likecomment' post.pk %}" method = "POST" class="likeButton">
                 {% csrf_token %}
                 <button type = 'submit', name = 'comment_id', value = "{{ comment.id }}" class="btn btn-primary"><i class="far fa-thumbs-up"></i></button>
             </form>
-            <p>Number of Likes - {{ comment.like.count }}</p>
-        </strong>
-        {{comment.comment_body}}
+        </div>
+        
+        <p><i class="fa fa-heart fa-x" style="color: red;" aria-hidden="true"></i>  {{ comment.like.count }}</p>
         <hr class="mt-2 mb-3"/>
 
 
@@ -96,7 +117,7 @@
     {% endif %}
     <h2>Shares</h2>
     <p>Total Shares: {{post.share.count}}</p>
-    {%if not post.share %}
+    {%if not post.share or post.share.count == 0%}
         Not shared yet 
     {%else%}
         Shared by 
@@ -111,6 +132,6 @@
 <script>
    
 </script>
-<a class='return' href="{% url 'feed'  %}"><i class="fa fa-arrow-left"></i> Go Back</a>
+<a class="btn btn-lg btn-primary btn-block"  href="{% url 'feed'  %}"><i class="fa fa-arrow-left"></i> Go Back</a>
 {% endblock content %}
 

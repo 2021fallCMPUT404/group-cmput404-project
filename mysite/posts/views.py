@@ -1276,8 +1276,7 @@ class addComment(CreateView):
     model = Comment
     form_class = CommentForm
     template_name = 'posts/addComment.html'
-    success_url = reverse_lazy('post_placeholder/comment.post')
-    
+    success_url = reverse_lazy('feed')
     #fields = '__all__'
     def form_valid(self, form):
         form.instance.post_id = self.kwargs['pk']
@@ -1288,7 +1287,7 @@ class addComment(CreateView):
 class updatePost(UpdateView):
     model = Post
     template_name = 'posts/editPost.html'
-    fields = ['title', 'text', 'image', 'image_link']
+    fields = ['title', 'text', 'image', 'contentType']
     success_url = reverse_lazy('feed')
 
 
@@ -1339,8 +1338,8 @@ def get_t15_posts(url):
                                auth=('connectionsuperuser', '404connection'),
                                headers={'Referer': "http://127.0.0.1:8000/"})
 
-    ext_request = ext_request.json()
-    return ext_request
+    req = ext_request.json()
+    return req
 
 
 def view_t15_posts(request):

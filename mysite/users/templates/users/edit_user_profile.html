@@ -5,13 +5,14 @@
 
 
 {% block content %}
-<h1>Edit your profile</h1>
+<br><br>
+<h1 style="font-family: Dancing Script; font-size: 5rem; " >Edit your profile</h1>
 <div>
     
     <br>
     <form method='post' enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="container" id="post-wrapper" " >
+        <div class="container" id="post-wrapper" style="background-color: #fcf7fda3 ; margin-top: -5px;"  >
             <div class="form-control-lg col-md-10 mb-0" style="display: contents;">
                 {{profile_form.displayName| as_crispy_field }}
             </div>
@@ -33,6 +34,6 @@
        
     </form>
     <br><br>
-    <a class = "btn btn-lg btn-primary btn-block"  href="{% url 'users:login'  %}" style="float: left;"> Go Back</a>
+    <a class = "btn btn-lg btn-primary btn-block"  href="{% url 'feed' %}" style="float: left;"> Go Back</a>
 </div>
 {% endblock content %}

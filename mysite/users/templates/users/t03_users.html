@@ -1,9 +1,9 @@
-{% extends 'users/base.html' %} 
+{% extends 'users/home_page.html' %} 
 {% block content %}
 
 <div class="container">
     {% if authors %}
-    <h1>List of users from Team 03</h1>
+    <h1 style="font-family: Dancing Script; font-size: 5rem;">List of users from Team 03</h1>
     <div class="album py-5 bg-light">
         
         {% for user in authors %}

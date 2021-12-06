@@ -11,7 +11,7 @@
     {{ insert_username }}
     {{ request.user.User_Profile.profileImage.url }}
     {% if user.is_authenticated %}
-    <img src="{{ user.user_profile.profileImage.url }}" width='400px' height="300">
+    <img src="{{ user.user_profile.profileImage.url }}" style="width:150px ; height: 150px; object-fit: cover;">
     {% endif %}
     {% if user.is_authenticated %}
     <li><a href="{% url 'addpost' %}">Add a Post</a></li>

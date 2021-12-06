@@ -23,7 +23,7 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 import json
 import ast
-from .serializers import PostSerializer, CommentSerializer, LikeSerializer, LikeCommentSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
@@ -41,6 +41,7 @@ import base64
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from users.serializers import User_Profile, userPSerializer, UserSerializer
+from users.serialize_helper import serialize_object
 
 class ExemptGetPermission(permissions.BasePermission):        
 
@@ -194,9 +195,9 @@ def placeholder(request):
     template = loader.get_template('posts/placeholder.html')
     current_user = User.objects.get(id=request.user.id)
     user_profile = get_object_or_404(User_Profile, user=current_user)
-    followers = UserFollows.objects.filter(object=user_profile)
+    followers = UserFollows.objects.filter(object=serialize_object(user_profile))
     authorized_posts = []
-    print(current_user)
+    #print(current_user)
     for p in latest_post_list:
         if p.unlisted:  #unlisted posts: always visible to creator
             if p.author == current_user:
@@ -261,11 +262,15 @@ def placeholder(request):
 
     #output = '\n'.join([q.text for q in latest_post_list])
     #print(latest_post_list)
-
+    pos15 = get_t15_posts("https://unhindled.herokuapp.com/service/allposts/")
+    pos23 = get_t23_posts("https://project-api-404.herokuapp.com/api/author/20d63709-f5ce-43c7-87c1-c3c39ebd3910/posts/")
+   
     context = {
         'latest_post_list': authorized_posts,
         'current_user': current_user,
-        'followers': followers
+        'followers': followers,
+        'pos15': pos15,
+        'pos23': pos23,
     }
 
     return HttpResponse(template.render(context, request))

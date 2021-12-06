@@ -1,6 +1,8 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import *
 from rest_framework import serializers
 from rest_framework.serializers import *
+import json
 
 from .models import FriendRequest, User, User_Profile, UserFollows, Inbox
 
@@ -49,17 +51,30 @@ class userPSerializer(serializers.ModelSerializer):
         return '{}author/{}'.format(obj.host, obj.id)
 
 class userFollowSerializer(serializers.ModelSerializer):
+
+    actor = SerializerMethodField('to_actor')
+    object = SerializerMethodField('to_object')
+
     class Meta:
         model = UserFollows
         fields = '__all__'
 
+    def to_actor(self, obj):
+        data = json.loads(obj.actor)['fields']
+        return get_object_or_404(User_Profile, pk=data['user'])
+
+    def to_object(self, obj):
+        data = json.loads(obj.object)['fields']
+        return get_object_or_404(User_Profile, pk=data['user'])
+
 
 class friend_request_serializer(serializers.ModelSerializer):
     type = 'Follow'
-    actor = userPSerializer(many=False, read_only=True)
-    object = userPSerializer(many=False, read_only=True)
-    summary = "{} wants to follow {}".format(actor.data['displayName'],
-                                             object.data['displayName'])
+    #actor = userPSerializer(many=False, read_only=True)
+    #object = userPSerializer(many=False, read_only=True)
+    actor = SerializerMethodField('to_actor')
+    object = SerializerMethodField('to_object')
+    summary = SerializerMethodField('get_summary')
 
     class Meta:
         model = FriendRequest
@@ -69,6 +84,17 @@ class friend_request_serializer(serializers.ModelSerializer):
             'actor',
             'object',
         ]
+
+    def get_summary(self, obj):
+        return obj.summary()
+
+    def to_actor(self, obj):
+        data = json.loads(obj.actor)['fields']
+        return get_object_or_404(User_Profile, pk=data['user'])
+
+    def to_object(self, obj):
+        data = json.loads(obj.object)['fields']
+        return get_object_or_404(User_Profile, pk=data['user'])
 
 class InboxSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False, read_only=True)

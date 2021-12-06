@@ -16,7 +16,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer, friend_request_serializer
 from rest_framework import routers
-
+from users.serialize_helper import followers_to_json, serialize_object, queryset_to_json
 #rest framework imports
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -26,6 +26,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication, get_authorization_header
 from rest_framework import authentication, permissions
+from django.core import serializers
 import base64
 import requests
 import json
@@ -448,8 +449,8 @@ def accept_friend_request(request, User_id):
     #Error checking
     if request.user.is_anonymous:
         return HttpResponseForbidden("Please sign in")
-    actor_user_profile = get_object_or_404(User_Profile, user_id=User_id)
-    object_user_profile = get_object_or_404(User_Profile, user=request.user)
+    actor_user_profile = serialize_object(get_object_or_404(User_Profile, user_id=User_id))
+    object_user_profile = serialize_object(get_object_or_404(User_Profile, user=request.user))
     f_request = FriendRequest.objects.filter(actor=actor_user_profile,
                                              object=object_user_profile)
     if not f_request.exists():
@@ -463,26 +464,26 @@ def accept_friend_request(request, User_id):
                                       object=actor_user_profile)
     #TODO: DO SOME ERROR CHECKING AND CHECK IF THE F_REQUEST INSTANCE EXISTS
     f_request.delete()
-    print("{} accepted {}s' friend request".format(
-        object_user_profile.displayName, actor_user_profile.displayName))
-    return HttpResponseRedirect('/authors/requests/view-request/{}/'.format(
-        request.user.id))
+    #print("{} accepted {}s' friend request".format(
+        #object_user_profile.displayName, actor_user_profile.displayName))
+    return HttpResponseRedirect(reverse('users:view_requests', args=[str(request.user.id)]))
 
 
 def reject_friend_request(request, User_id):
     if request.user.is_anonymous:
         return HttpResponseForbidden("Please sign in")
-    actor_user_profile = get_object_or_404(User_Profile, user_id=User_id)
-    object_user_profile = get_object_or_404(User_Profile, user=request.user)
+    actor_user_profile = serialize_object(get_object_or_404(User_Profile, user_id=User_id))
+    object_user_profile = serialize_object(get_object_or_404(User_Profile, user=request.user))
     f_request = FriendRequest.objects.filter(actor=actor_user_profile,
                                              object=object_user_profile)
     if not f_request.exists():  #Checks if the friend request exists
         return HttpResponseBadRequest("Friend request does not exist")
     f_request.delete()
-    print("{} deleted {}s' friend request".format(
-        object_user_profile.displayName, actor_user_profile.displayName))
-    return HttpResponseRedirect('/authors/requests/view-request/{}/'.format(
-        request.user.id))
+    #print("{} deleted {}s' friend request".format(
+        #object_user_profile.displayName, actor_user_profile.displayName))
+    #return HttpResponseRedirect('/authors/requests/view-request/{}/'.format(
+        #request.user.id))
+    return HttpResponseRedirect(reverse('users:view_requests', args=[str(request.user.id)]))
 
 
 def view_friend_requests(request, User_id):
@@ -490,14 +491,18 @@ def view_friend_requests(request, User_id):
     if request.user.id != User_id:
         return HttpResponseForbidden("You are forbidden")
     user_profile = get_object_or_404(User_Profile, user_id=User_id)
-    recieved_requests = FriendRequest.objects.filter(object=user_profile)
-    sent_requests = FriendRequest.objects.filter(actor=user_profile)
-    print(recieved_requests, sent_requests)
+    serialized_profile = serializers.serialize('json', [user_profile]).replace("[","").replace("]","")
+    recieved_requests = FriendRequest.objects.filter(object=serialized_profile)
+    sent_requests = FriendRequest.objects.filter(actor=serialized_profile)
+
+
     return render(request, 'users/view_requests.html', {
-        'recieved_requests': recieved_requests,
-        'sent_requests': sent_requests
+        'recieved_requests': queryset_to_json(recieved_requests),
+        'sent_requests': queryset_to_json(sent_requests)
     })
 
+
+#THis function will take in a queryset and turn them into dicts
 
 def get_t15_authors(url):
 
@@ -557,20 +562,26 @@ def view_t3_posts(request):
 def view_followers(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
-    followers_list = UserFollows.objects.filter(object=user_profile)
-    follows_list = UserFollows.objects.filter(actor=user_profile)
+    followers_list = UserFollows.objects.filter(object=serialize_object(user_profile))
+    follows_list = UserFollows.objects.filter(actor=serialize_object(user_profile))
     is_user = (request.user.id == User_id)
     #friends_list = UserFollows.objects.filter(object_id=user_profile)
-    for x in followers_list:
-        print(x.actor.displayName)
+    test = followers_to_json(followers_list)
+    print(followers_to_json(followers_list), followers_to_json(follows_list))
+    print('\n')
+    #thing = (test[0]['actor'])
+    #print(thing)
+    #print(type(thing))
+    #print(test)
+    #for x in followers_list:
+        #print(x.actor)
     return render(
         request, 'users/view_followers.html', {
-            'followers_list': followers_list,
+            'followers_list': followers_to_json(followers_list),
             'user': user_profile,
             'request': request,
-            'follows_list': follows_list
+            'follows_list': followers_to_json(follows_list)
         })
-
 # This function will make it so that User_id user will stop following
 # foreign_id user
 def unfollower_user(request, User_id, foreign_id):
@@ -578,7 +589,7 @@ def unfollower_user(request, User_id, foreign_id):
         return HttpResponseForbidden("Action is not allowed.")
     user_profile = fetch_user_profiles(User_id)
     foreign_profile = fetch_user_profiles(foreign_id)
-    UserFollows.delete_user_follow(user_profile, foreign_profile)
+    UserFollows.delete_user_follow(serialize_object(user_profile), serialize_object(foreign_profile))
     return HttpResponseRedirect(reverse( 'users:view_followers',args=[User_id]))
 
 def fetch_user_profiles(user_id):
@@ -589,9 +600,16 @@ def fetch_user_profiles(user_id):
 def send_request_page(request):
     user_profile = get_object_or_404(User_Profile, user_id=request.user.id)
     users_list = User_Profile.objects.filter(~Q(user=request.user))
-    print(users_list)
+    #print(users_list)
+    #print(get_foreign_authors_list())
+    
+    #print(users_list)
+    #print(get_foreign_authors_list())
+    foreign_friends = get_foreign_authors_list()
+    ids = split_ids()
+    #print(ids)
     return render(request, 'users/send_requests.html',
-                  {'users_list': users_list})
+                  {'users_list': users_list, 'foreign_friends': foreign_friends, 'ids':ids})
 
 
 def get_user_page(request, User_id):

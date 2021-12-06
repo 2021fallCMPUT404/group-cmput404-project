@@ -151,7 +151,8 @@ class Share(models.Model):
         return 'Shared by {}'.format(self.author)
 
 class Node(models.Model):
-    url = models.URLField()
     team_id = models.IntegerField(null=True) #Added in case we need to do specific parsing for a team
+    users = models.URLField()
+    posts = models.URLField()
     username = models.TextField()
     password = models.TextField()

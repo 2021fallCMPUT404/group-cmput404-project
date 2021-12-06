@@ -79,7 +79,8 @@ class Inbox(models.Model):
 
 
 class UserFollows(models.Model):
-    #following
+    #followin
+    '''
     actor = models.ForeignKey(User_Profile,
                               related_name="following",
                               on_delete=models.CASCADE,
@@ -89,6 +90,10 @@ class UserFollows(models.Model):
                                related_name="followers",
                                on_delete=models.CASCADE,
                                default='')
+    '''
+
+    actor = models.JSONField(null=True, blank=True)
+    object = models.JSONField(null=True, blank=True)
 
     #Creates new instance of Userfollow with the actor following the object
     #Parameters are User_Profile objects

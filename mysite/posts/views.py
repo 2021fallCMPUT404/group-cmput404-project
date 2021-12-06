@@ -41,6 +41,7 @@ import base64
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from users.serializers import User_Profile, userPSerializer, UserSerializer
+from users.serialize_helper import serialize_object
 
 class ExemptGetPermission(permissions.BasePermission):        
 
@@ -194,7 +195,7 @@ def placeholder(request):
     template = loader.get_template('posts/placeholder.html')
     current_user = User.objects.get(id=request.user.id)
     user_profile = get_object_or_404(User_Profile, user=current_user)
-    followers = UserFollows.objects.filter(object=user_profile)
+    followers = UserFollows.objects.filter(object=serialize_object(user_profile))
     authorized_posts = []
     print(current_user)
     for p in latest_post_list:

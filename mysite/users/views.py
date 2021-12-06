@@ -16,7 +16,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer, friend_request_serializer
 from rest_framework import routers
-
+from users.serialize_helper import followers_to_json, serialize_object, queryset_to_json
 #rest framework imports
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -449,8 +449,8 @@ def accept_friend_request(request, User_id):
     #Error checking
     if request.user.is_anonymous:
         return HttpResponseForbidden("Please sign in")
-    actor_user_profile = get_object_or_404(User_Profile, user_id=User_id)
-    object_user_profile = get_object_or_404(User_Profile, user=request.user)
+    actor_user_profile = serialize_object(get_object_or_404(User_Profile, user_id=User_id))
+    object_user_profile = serialize_object(get_object_or_404(User_Profile, user=request.user))
     f_request = FriendRequest.objects.filter(actor=actor_user_profile,
                                              object=object_user_profile)
     if not f_request.exists():
@@ -503,15 +503,6 @@ def view_friend_requests(request, User_id):
 
 
 #THis function will take in a queryset and turn them into dicts
-def queryset_to_json(queryset):
-    query_list = []
-    for set in queryset:
-        serializer = friend_request_serializer(instance=set)
-        print("WHYYYYYYYYYYYYYYYYYYYYYYYYYYYY\n")
-        print(serializer.data)
-        query_list.append(serializer.data)
-    return query_list
-
 
 def get_t15_authors(url):
 
@@ -571,20 +562,24 @@ def view_t3_posts(request):
 def view_followers(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
-    followers_list = UserFollows.objects.filter(object=user_profile)
-    follows_list = UserFollows.objects.filter(actor=user_profile)
+    followers_list = UserFollows.objects.filter(object=serialize_object(user_profile))
+    follows_list = UserFollows.objects.filter(actor=serialize_object(user_profile))
     is_user = (request.user.id == User_id)
     #friends_list = UserFollows.objects.filter(object_id=user_profile)
-    for x in followers_list:
-        print(x.actor.displayName)
+    test = followers_to_json(followers_list)
+    print(followers_to_json(followers_list), followers_to_json(follows_list))
+    print('\n')
+    thing = (test[0]['actor'])
+    print(type(thing))
+    #for x in followers_list:
+        #print(x.actor)
     return render(
         request, 'users/view_followers.html', {
-            'followers_list': followers_list,
+            'followers_list': followers_to_json(followers_list),
             'user': user_profile,
             'request': request,
-            'follows_list': follows_list
+            'follows_list': followers_to_json(follows_list)
         })
-
 # This function will make it so that User_id user will stop following
 # foreign_id user
 def unfollower_user(request, User_id, foreign_id):

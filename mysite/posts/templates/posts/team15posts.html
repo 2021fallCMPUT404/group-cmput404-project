@@ -1,23 +1,32 @@
-{% extends 'users/base.html' %} 
+{% extends 'posts/base.html' %} 
 {% block content %}
 {% load static %}
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dancing Script">
+{% load markdown_ext %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <div class="container">
     
-    <h1 style="font-family: Dancing Script;"><a href=''>UNHINDLED APP</a></h1>
-    <a href = "{% url 'users:external_users'%}">List of users (Group 15)</a>
-    <h2 style="font-family: Dancing Script;  font-size: 5rem">List of Posts from Team 15</h2>
-    <br>
+    <h1 style="font-family: Dancing Script; font-size: 5rem">UNHINDLED APP</h1>
+    <h2 style="font-family: Dancing Script; ">List of Posts from Team 15</h2>
+    <a href = "{% url 'users:external_users'%}" class='btn btn-lg btn-primary btn-block'>List of users (Group 15)</a>
+    <br><br>
     {% if posts %}
         <div class="list-posts">
             {% for post in posts %}
             <div class="container border border-2 border-secondary " style="border-radius: 1rem; width: 60%;" >
                 <div class=container " style="border: 1cm ;">
                     <br>
-                    <p><img src="{{ post.author.profileImage }}" width="30px" height="30px" style="border: 0.3px solid;"> {{post.author.displayName}}</p>
+                    <h4 style="margin-right: 80%;" ><img src="{{ post.author.profileImage }}"  style="border: 0.3px cornsilk; width: 100px; height: 100px; object-fit: cover; border-radius: 50%;"> {{post.author.displayName}} </h4>
+                    <hr class="mt-2 mb-3" style="width: 30%;"/>
+                    <h2 style="overflow: hidden; text-overflow: ellipsis;">{{post.title}}</h2>
                     <p style="color: darkgrey;"> Published at: {{post.published}}</p>
-                <h2 class = 'post-title'>{{post.title}}</h2>
-                <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{post.content}}</p>
+                {% if post.contentType == 'text/plain' %}
+                    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{post.content}}</p>
+                {%elif post.contentType == 'image' %}
+                    <img src="{{ post.content }}" width="60%" style="border: 0.3px solid;">
+                {%elif post.contentType == 'text/markdown' %}
+                    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ post.content | markdown | safe }}</p>
+                {%endif%}
             </div>
             <br>
                 <div class="nav-scroller bg-body shadow-sm">
@@ -26,6 +35,14 @@
                     <a class="nav-link disabled " href="#">
                         <i class="fa fa-thumbs-up"></i> Likes
                         <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{post.likes|length}}</span>
+                    </a>
+                    <a class="nav-link disabled" href="#">
+                        <i class="fa fa-comment"></i> Comments
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{post.comments|length}}</span>
+                    </a>
+                    <a class="nav-link disabled" href="#">
+                        <i class="fa fa-share-square-o"></i> Shares
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{post.share|length}}</span>
                     </a>
 
                     </nav>

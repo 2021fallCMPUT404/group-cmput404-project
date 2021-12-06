@@ -26,8 +26,9 @@
                         
                         <div class="tr list-group-item list-group-item-action d-flex gap-3 py-3" style="background:  #fde4e9; height: 100px;" aria-current="true"  >
                             
-                                <img src="{{follower.actor.profileImage.url}}" alt="NO IMAGE" class="rounded-circle flex-shrink-0" width="70" style="object-fit: cover;">
-                                <h4>{{follower.actor.displayName}}</h4>
+                            <div style="font-size:150%;"><img src="{{follower.actor.profileImage.url}}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                                {{follower.actor.displayName}}
+                            </div>
                         </div>
                         {% endfor %}   
                 </div>
@@ -51,13 +52,11 @@
                 </div>
                 <div class="tbody">
                     {% for followed in follows_list %}
-                    <div class="tr list-group-item list-group-item-action d-flex gap-2 py-3" style="background:  #fde4e9; height: 100px;">
-    
-                            <img src="{{followed.object.profileImage.url}}" alt="NO IMAGE" class="rounded-circle flex-shrink-0" width="70" style="object-fit: cover;">
-                            <h4>{{followed.object.displayName}}</h4>
-              
-                            <a href="{% url 'users:unfollow' User_id=user.user.id foreign_id=followed.object.user.id %}" class="btn btn-primary" style="margin-left: 60%; background-color: darksalmon;"">Unfollow</a>
-                    </div>
+
+                    <li class="list-group-item list-group-item-action list-group-item-secondary list-group-item-action d-flex gap-3 py-3 justify-content-between" aria-current="true" style="background:  #fde4e9; height: 100px;">
+                        <div style="font-size:150%;"><img src="{{followed.object.profileImage.url}}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">  {{followed.object.displayName}}</div>
+                        <a href="{% url 'users:unfollow' User_id=user.user.id foreign_id=followed.object.user.id %}" class="btn btn-primary" style="margin-left: 50%; background-color: darksalmon;"">Unfollow</a>
+                    </li>
                     {% endfor %}   
                 </div>
             </div>

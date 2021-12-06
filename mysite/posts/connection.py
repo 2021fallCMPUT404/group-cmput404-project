@@ -115,3 +115,11 @@ def get_t15_posts(url):
     ext_request = ext_request.json()
     return ext_request
 
+
+def get_t23_posts(url):
+
+    ext_request = requests.get(url, auth=('Team5','Team5'), headers={'Referer': "http://127.0.0.1:8000/"})
+
+    ext_request = ext_request.json()
+    return ext_request
+

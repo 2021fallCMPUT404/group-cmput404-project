@@ -262,14 +262,15 @@ def placeholder(request):
 
     #output = '\n'.join([q.text for q in latest_post_list])
     #print(latest_post_list)
-    pos = get_t15_posts("https://unhindled.herokuapp.com/service/allposts/")
-
-
+    pos15 = get_t15_posts("https://unhindled.herokuapp.com/service/allposts/")
+    pos23 = get_t23_posts("https://project-api-404.herokuapp.com/api/author/20d63709-f5ce-43c7-87c1-c3c39ebd3910/posts/")
+   
     context = {
         'latest_post_list': authorized_posts,
         'current_user': current_user,
         'followers': followers,
-        'pos': pos,
+        'pos15': pos15,
+        'pos23': pos23,
     }
 
     return HttpResponse(template.render(context, request))

@@ -140,13 +140,44 @@
 <br>
 {% endfor %}
 
-{% if pos%}
-    <h1>Posts from outside of the circle!</h1>
-    {% for p in pos %}
-        <h2>{{p.author.displayName}}</h2>
+{% if pos15%}
+    <h1 style="font-family: Dancing Script; font-size: 5rem;">Posts from outside of the circle!</h1>
+    {% for p in pos15 %}
+        <h2>{{p.title}}</h2>
 
-    
+        <p>{{p.content}}</p>
+        
+        <h4>{{p.author.displayName}}</h4>
+        <p>{{p.published}}</p>
+        <br>
     {%endfor %}
+{% endif %}
+
+
+{% if pos23%}
+    {% for p in pos23 %}
+    <h2>{{p.title}}</h2>
+
+    <p>{{p.content}}</p>
+    
+    <h4>{{p.author.displayName}}</h4>
+    <p>{{p.published}}</p>
+    <br>
+    {%endfor %}
+
+{% endif %}
+
+{% if pos7%}
+    {% for p in pos7 %}
+    <h2>{{p.title}}</h2>
+
+    <p>{{p.content}}</p>
+    
+    <h4>{{p.author.displayName}}</h4>
+    <p>{{p.published}}</p>
+    <br>
+    {%endfor %}
+
 {% endif %}
 
 {% else %}

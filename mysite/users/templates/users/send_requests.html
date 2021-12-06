@@ -4,7 +4,7 @@
 
 
 {% block content %}
-    <div class="container align-middle">
+    <div class="container align-middle" style="border-radius: 1rem; width: 65%;">
     {% if users_list %}
         <h1 style="font-family: Dancing Script; font-size: 5rem;">Send a friend request</h1>
         <div class="container" >
@@ -12,7 +12,7 @@
 
 
             <li class="list-group-item list-group-item-action  list-group-item-dark d-flex gap-3 py-3  justify-content-between" aria-current="true">  
-                <div><a href="{% url 'users:user_get' User_id=User.user.id%}"><img src="{{ User.profileImage.url }}" width='30px' height="30"></a> {{User.displayName}}</div>
+                <div><a href="{% url 'users:user_get' User_id=User.user.id%}"><img src="{{ User.profileImage.url }}" width='35px' height="35"></a> {{User.displayName}}</div>
                 <div>
                     {% if User in followers_list%}
                         <a class='btn btn-secondary btn-sm'><i class="fa fa-users"></i> Friend</a>

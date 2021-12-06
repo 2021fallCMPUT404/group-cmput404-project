@@ -133,7 +133,7 @@ class FriendRequest(models.Model):
         print(actor, object)
         print(actor_json, object_json)
         print(type(actor_json))
-        if UserFollows.objects.filter(actor=object, object=actor).exists(
+        if UserFollows.objects.filter(actor=serialize_object(object), object=serialize_object(actor)).exists(
         ):  #Checks if the object is already following the actor
             # Returns so it doesn't create constant friend requests
             print("{} is already following {}".format(object.displayName,
@@ -152,3 +152,8 @@ class FriendRequest(models.Model):
         print("In summary: ", actor_json, object_json)
         return '{} wants to follow {}'.format(actor_json['displayName'],
                                               object_json['displayName'])
+
+
+def serialize_object(object):
+    serialized_object = serializers.serialize('json', [object]).replace("[","").replace("]","")
+    return serialized_object

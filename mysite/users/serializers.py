@@ -48,9 +48,21 @@ class userPSerializer(serializers.ModelSerializer):
         read_only_fields = ['type','user']
 
 class userFollowSerializer(serializers.ModelSerializer):
+
+    actor = SerializerMethodField('to_actor')
+    object = SerializerMethodField('to_object')
+
     class Meta:
         model = UserFollows
         fields = '__all__'
+
+    def to_actor(self, obj):
+        data = json.loads(obj.actor)['fields']
+        return get_object_or_404(User_Profile, pk=data['user'])
+
+    def to_object(self, obj):
+        data = json.loads(obj.object)['fields']
+        return get_object_or_404(User_Profile, pk=data['user'])
 
 
 class friend_request_serializer(serializers.ModelSerializer):

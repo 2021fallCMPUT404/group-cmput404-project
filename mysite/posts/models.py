@@ -41,7 +41,7 @@ class Post(models.Model):
     contentType = models.CharField(max_length=20, choices=CONTENT, default=CONTENT[1][0],null=False)
     originalPost = models.ForeignKey('Post', on_delete=models.CASCADE, null=True, blank=True, editable =False)
     like = models.ManyToManyField(User, related_name='posts_likes')
-
+    
     def get_absolute_url(self):
         return reverse('post_placeholder', args=[str(self.id)])
 

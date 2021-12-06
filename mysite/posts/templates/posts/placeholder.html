@@ -6,19 +6,7 @@
 {% block content %}
 {% load markdown_ext %}
 
-<!--
-<div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
-    <div class="nav-scroller bg-body shadow-sm " >
-        <nav class="nav nav-underline utt" aria-label="Secondary navigation">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a href="{% url 'users:t03_posts' %}">Group 3 Posts</a></li> 
-                <li class="nav-item"><a href = '{%  url "t15-posts" %}'>UNHINDLED (Group 15)</a></li>
-        
-            </ul>
-        </nav>
-    </div>
-</div>
--->
+
 
 
 
@@ -79,7 +67,7 @@
         <br>
     </div>
 
-    {%if posts.contentType == 1 %}
+    {%if posts.contentType == "text/plain" %}
     <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.content | markdown | safe }}
         {%else%}
     <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.content }}

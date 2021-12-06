@@ -7,7 +7,7 @@ import uuid
 from django import forms
 from django.forms.widgets import Textarea
 import datetime
-from posts.models import Post, Like, CommentLike#, InboxLike
+from posts.models import Post, Like
 from django.urls import reverse
 
 SITE_URL = "https://cmput404-socialdist-project.herokuapp.com"

@@ -12,6 +12,9 @@ class test_post(TestCase):
         User_Profile.objects.create(
             displayName='case_1',
             user=user1,
+            first_name='test',
+            last_name='case',
+            email='testcase@ualberta.ca',
             profileImage='test_image.jpg',
             github='https://github.com/orgs/2021fallCMPUT404/dashboard',
             bio='test_bio1')

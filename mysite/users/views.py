@@ -589,9 +589,20 @@ def fetch_user_profiles(user_id):
 def send_request_page(request):
     user_profile = get_object_or_404(User_Profile, user_id=request.user.id)
     users_list = User_Profile.objects.filter(~Q(user=request.user))
+    followers_list = UserFollows.objects.filter(object=user_profile)
+    sent_requests = FriendRequest.objects.filter(actor=user_profile)
     print(users_list)
+    followers_profile=[]
+    req_profile=[]
+    for r in sent_requests:
+        req_profile.append(r.object)
+    for f in followers_list:
+        followers_profile.append(f.actor)
+    print(req_profile)
     return render(request, 'users/send_requests.html',
-                  {'users_list': users_list})
+                  {'users_list': users_list,
+                  'followers_list': followers_profile,
+                  'request_list': req_profile})
 
 
 def get_user_page(request, User_id):

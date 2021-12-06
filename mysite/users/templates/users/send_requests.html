@@ -4,22 +4,35 @@
 
 
 {% block content %}
-    <div class="container align-middle">
+    <div class="container align-middle" style="border-radius: 1rem; width: 65%;">
     {% if users_list %}
-        <h1>Send a friend request</h1>
-        <div class="table table-striped table-bordered table-dark table-hover table-dark align-middle" >
+        <h1 style="font-family: Dancing Script; font-size: 5rem;">Send a friend request</h1>
+        <div class="container">
         {% for User in users_list%}
 
 
-            <a class="list-group-item list-group-item-action  list-group-item-dark d-flex gap-3 py-3" aria-current="true"  
-                href="{% url 'users:send_friend_request' User_id=User.user.id%}"> <img src="{{ User.profileImage.url }}" width='30px' height="30"> {{User.displayName}}</a>
+            <li class="list-group-item list-group-item-action  list-group-item-dark d-flex gap-3 py-3  justify-content-between" aria-current="true"  style="background-color: lightcyan;">  
+                <div><a href="{% url 'users:user_get' User_id=User.user.id%}"><img src="{{ User.profileImage.url }}" width='35px' height="35"></a> {{User.displayName}}</div>
+                <div>
+                    {% if User in followers_list%}
+                        <a class='btn btn-secondary btn-sm'><i class="fa fa-users"></i> Friend</a>
+                    {%elif User in request_list%}
+                        <a class='btn btn-secondary btn-sm'><i class="fa fa-circle-o-notch"></i> Requested</a>
+                    {%else%}
+                        <a href="{% url 'users:send_friend_request' User_id=User.user.id%}" class='btn btn-primary btn-sm'><i class="fa fa-plus"></i> Add Friend</a>
+                    {%endif%}        
+                </div>
+                
+            </li>
 
 
         {% endfor %}
         </div>
     {% else %}
+    <br>
         <h1 class="display-3"> No other users.</h1>
     {% endif %}
+    <br>
     <a class="btn btn-lg btn-primary btn-block" href="{% url 'users:user_home_page' %}"> Go Back</a>
         </div>
 {% endblock content %}

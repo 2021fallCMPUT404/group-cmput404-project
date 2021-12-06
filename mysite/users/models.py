@@ -133,3 +133,4 @@ class FriendRequest(models.Model):
     def summary(self):
         return '{} wants to follow {}'.format(self.actor.displayName,
                                               self.object.displayName)
+

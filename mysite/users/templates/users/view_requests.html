@@ -5,44 +5,45 @@
 {% block content %}
 
     <script src="{% static 'javascript/requests.js' %}" type="text/JavaScript"></script>
-    <div class="container">
+    <h1  style="font-family: Dancing Script; font-size: 5rem;">Friend Requests</h1>
+    <div class="container" id="left" style="float: left; width: 45%; overflow: hidden ; padding-left: 80px;  padding-top: 40px;" >
+        <h3 class="display-6"> Requests: {{recieved_requests.count}}</h3>
         {% if recieved_requests %}
-            <h6 class="display-6"> You have request(s) from others right now:</h6>
             <div class="list-group">
             {% for requests in recieved_requests %}
-                <li class="list-group-item list-group-item-action list-group-item-dark list-group-item-action d-flex gap-3 py-3 justify-content-between" aria-current="true"> 
-                    <div><img src="{{ requests.actor.profileImage.url }}" width='30px' height="30">  {{requests.actor.displayName}}</div>
+                <li class="list-group-item list-group-item-action list-group-item-dark list-group-item-action d-flex gap-3 py-3 justify-content-between" aria-current="true" style="background-color: blanchedalmond;"> 
+                    <div><img src="{{ requests.actor.profileImage.url }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">  {{requests.actor.displayName}}</div>
                  <!--<a href="">Accept</a>
                     <a href="">Reject</a>-->
 
                 <div>
                 <a href="{% url 'users:accept_request' User_id=requests.actor.user.id%}" class='btn btn-primary btn-sm'><i class="fa fa-check"></i> Accept</a>
                 <a href="{% url 'users:reject_request' User_id=requests.actor.user.id%}" class="btn btn-danger btn-sm"><i class="fa fa-times"></i> Reject</a>
-            </div>
+                </div>
             </li>
         {% endfor %}
         </div>
-    {% else %}
-        <h6 class="display-6">You have no requests from others right now.</h6>
-        <br>
     {% endif %}
-    <br><br>
+    </div>
+
+    <div class="container" id="right" style="float: right; width: 45%; overflow: hidden; padding-right: 80px;  padding-top: 40px">
+    <h3 class="display-6">Pending Requests:{{sent_requests.count}} </h3>
     {% if sent_requests %}
-        <h6 class="display-6">You have pending request(s) to others right now:</h6>
         <div class="list-group">
         {% for pending in sent_requests%}
 
-            <li class="list-group-item list-group-item-action list-group-item-secondary list-group-item-action d-flex gap-3 py-3 justify-content-between" aria-current="true">
-                <div><img src="{{ pending.object.profileImage.url }}" width='30px' height="30">  {{pending.object.displayName}}</div>
-            <a href="{% url 'users:user_get' User_id=pending.object.user.id%}" class='btn btn-secondary btn-sm'><i class="fa fa-circle-o-notch"></i> Requested</a>
+            <li class="list-group-item list-group-item-action list-group-item-secondary list-group-item-action d-flex gap-3 py-3 justify-content-between" aria-current="true" style="background-color: blanchedalmond;">
+                <div><img src="{{ pending.object.profileImage.url }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">  {{pending.object.displayName}}</div>
+            <a href="{% url 'users:user_get' User_id=pending.object.user.id%}" class='btn btn-secondary btn-sm' style="text-align: center;"><i class="fa fa-circle-o-notch"></i> Requested</a>
         </li>
 
         {% endfor %}
         </div>
-    {% else %}
-        <h6 class="display-6"> You have no pending friend requests to others right now.</h6>
     {% endif %}
-    <br><br>
+    </div>
+    <!--
+        <br>
+    <div style="float: bottom;">
     <p>Requests expected? Please go and check for <a href="{% url 'users:request_page'%}">more friends</a>.</p>
     <br>
     {% if not sent_requests and not recieved_requests %}
@@ -53,4 +54,4 @@
     <a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
     </div>
 {% endblock content %}
-
+-->

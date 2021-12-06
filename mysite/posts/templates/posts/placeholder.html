@@ -25,100 +25,108 @@
 <br><br><br>
 
 
-<h1 style="font-family: Dancing Script; font-size: 5rem;">Explore the post</h1>
+<h1  style="font-family: Dancing Script; font-size: 5rem; " >Explore the post</h1>
 {% if latest_post_list %}
 
 <br>
-<div class="container">
-    <a href="{% url 'addpost' %}" class=" btn btn-lg btn-primary btn-block"><i class="fa fa-plus"></i> Add Post</a>
-    <a href="{% url 'select_github_activity' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-github"></i>
-        Add Github Activity</a>
+<div class="container" >
+    <a href="{% url 'select_github_activity' %}" class="btn btn-lg btn-primary btn-block" style="width: 60%;"><i class="fa fa-github"></i> Add Github Activity</a>
+    <p style="margin:10px;"></p>
+
+    <a href="{% url 'addpost' %}"  class=" btn btn-lg btn-primary btn-block" style="width: 60%;"><i class="fa fa-plus-circle"></i> Add a Post</a>
 </div>
 
 
-<br>
-
-{% for posts in latest_post_list %}
-
-<div class="container border border-4 border-secondary " style="border-radius: 1rem; ;">
-    <div class=container " style=" border: 1cm ;">
+    <br>
+    
+    {% for posts in latest_post_list %}
+    
+    <div class="container border border-2 border-secondary " style="border-radius: 1rem; width: 60%;" >
+        <div class=container " style="border: 1cm ;">
 
         <br>
-        <h4 style="margin-right: 80%;"><img src="{{ posts.author.user_profile.profileImage.url }}" width="60px"
-                height="60px" style="border: 0.3px solid;"> {{posts.author}} </h4>
-        <hr class="mt-2 mb-3" style="width: 30%;" />
+        <h4 style="margin-right: 80%;" ><img src="{{ posts.author.user_profile.profileImage.url }}"  style="border: 0.3px cornsilk; width: 100px; height: 100px; object-fit: cover; border-radius: 50%;"> {{posts.author}} </h4>
+        <hr class="mt-2 mb-3" style="width: 30%;"/>
         {%if not posts.shared_user and current_user == posts.author %}
-        <a href="{% url 'editpost' posts.pk %}" class='btn btn-secondary '
-            style="margin-left:80%; border-radius: 1rem;"><i class="fa fa-pencil-square-o"></i> Edit</a>
-
+        <a href="{% url 'editpost' posts.pk %}" class='btn btn-secondary ' style="margin-left:80%; border-radius: 1rem;"><i class="fa fa-pencil-square-o"></i> Edit</a>
+    
         {% endif %}
         <br>
+        
+        
 
-
-
-    </div>
-
-    <div class="container-md">
+        </div>
+    
+        <div class="container-md">
         <a href="/post/{{ posts.id }}/" class="addpost-header">
             {%if not posts.shared_user%}
-            <h2 style="overflow: hidden; text-overflow: ellipsis;">{{ posts.title }}</h2>
+                <h2 style="overflow: hidden; text-overflow: ellipsis;">{{ posts.title }}</h2>
             {%else%}
-            <h2 style="overflow: hidden; text-overflow: ellipsis;">Repost: {{ posts.title }}</h2>
+                <h2  style="overflow: hidden; text-overflow: ellipsis;">Repost: {{ posts.title }}</h2>
             {% endif %}
 
-        </a>
-        <p style="color: darkgrey;"> Published at: {{posts.pub_date}}
-            {%if posts.privacy == 0%}
-            <i class="fa fa-globe"></i>
-            {%elif posts.privacy == 1%}
-            <i class="fa fa-lock"></i>
+            </a>
+            <p style="color: darkgrey;"> Published at:  {{posts.pub_date}} 
+                {%if posts.privacy == 0%}
+                    <i class="fa fa-globe"></i>
+                {%elif posts.privacy == 1%}
+                    <i class="fa fa-lock"></i>
+                {%else%}
+                    <i class="fa fa-users"></i>
+                {%endif%}
+            </p>
+        <br>
+        </div>
+
+        {%if posts.contentType == 1 %}
+            <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.text | markdown | safe }}
+        {%elif posts.contentType == 2 %}
+            {%if current_user == posts.author or posts.privacy == 0%}
+                <img src="{{ posts.text }}" width="60%" style="border: 0.3px solid;">
+            {%elif posts.privacy == 2%}
+                {%for f in followers%}
+                    {%if f.actor.displayName == posts.author.user_profile.displayName%}
+                        <img src="{{ posts.text }}" width="60%" style="border: 0.3px solid;">
+                    {%endif%}
+                {%endfor%}
             {%else%}
-            <i class="fa fa-users"></i>
+                <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">Sorry, this is currently not available</p>
             {%endif%}
+        {%else%}
+            <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.text }}
+        {% endif %}
+
         </p>
         <br>
-    </div>
-
-    {%if posts.contentType == 1 %}
-    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.text | markdown | safe }}
-        {%else%}
-    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.text }}
-        {% endif %}
-
-        {%if posts.image_link%}
-        <a href='{{posts.image_link}}'>preview</a>
-        {% endif %}
-    </p>
-    <br>
 
     {%if current_user == posts.author or posts.privacy == 0%}
-    {% if posts.image %}
+        {% if posts.image %}
 
-    <img src='{{posts.image.url}}' width=40% height="20%" style="max-height: 400px; max-width: 400px;">
+        <img src='{{posts.image.url}}'  style="height: auto; max-width: 80%;">
 
-    {% endif %}
+        {% endif %}
     {%elif posts.privacy == 2%}
-    {%for f in followers%}
-    {%if f.actor.displayName == posts.author.user_profile.displayName%}
-    {% if posts.image %}
-    <img src='{{posts.image.url}}' width="60%">
-    {% endif %}
+        {%for f in followers%}
+            {%if f.actor.displayName == posts.author.user_profile.displayName%}
+                {% if posts.image %}
+                    <img src='{{posts.image.url}}' width="60%">
+                {% endif %}
+            {%endif%}
+        {%endfor%}
     {%endif%}
-    {%endfor%}
-    {%endif%}
 
 
 
-    <br><br>
+        <br><br>
 
-    {%if posts.shared_user%}
-    <p style="font-style: italic; color: darkgrey;">Shared by {{ posts.shared_user }}</p>
-    {% endif %}
+            {%if posts.shared_user%}
+            <p style="font-style: italic; color: darkgrey;">Shared by {{ posts.shared_user }}</p>
+            {% endif %}
 
-    <br>
-    <div class="nav-scroller bg-body shadow-sm">
-        <nav class="nav nav-underline" aria-label="Secondary navigation">
-
+        <br>
+        <div class="nav-scroller bg-body shadow-sm">
+            <nav class="nav nav-underline" aria-label="Secondary navigation">
+            
             <a class="nav-link disabled " href="#">
                 <i class="fa fa-thumbs-up"></i> Likes
                 <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{posts.like.count}}</span>
@@ -132,62 +140,68 @@
                 <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{posts.share.count}}</span>
             </a>
 
-        </nav>
+            </nav>
+        </div>  
+        <br>
     </div>
+    
     <br>
-</div>
+    {% endfor %}
+    
+    
+    {% else %}
+    <br><br><br>
+    
+    <h1 style="font-family: Fredoka One;">Oops! No posts are available.</h1>
+    <br>
+    <div class="container" >
+        <a href="{% url 'select_github_activity' %}" class="btn btn-lg btn-primary btn-block" style="width: 60%;"><i class="fa fa-github"></i> Add Github Activity</a>
+        <p style="margin:10px;"></p>
+    
+        <a href="{% url 'addpost' %}"  class=" btn btn-lg btn-primary btn-block" style="width: 60%;"><i class="fa fa-plus-circle"></i> Add a Post</a>
+    </div>
+    
+    {% endif %}
 
-<br>
-{% endfor %}
+    
+<button
+    type="button"
+    class="btn btn-danger btn-floating btn-lg"
+    id="btn-back-to-top"
+    >
+<i class="fas fa-arrow-up"></i>
+</button>
 
 
-{% else %}
-<br><br><br>
+<!--   code from  https://mdbootstrap.com/snippets/standard/mdbootstrap/2964350 -->
+<script>
+//Get the button
+let mybutton = document.getElementById("btn-back-to-top");
 
-<h1 style="font-family: Fredoka One;">Oops! No posts are available.</h1>
-<br>
-<div class="container">
-    <a href="{% url 'addpost' %}" class=" btn btn-lg btn-primary btn-block"><i class="fa fa-plus"></i> Add Post</a>
-    <a href="{% url 'select_github_activity' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-github"></i>
-        Add Github Activity</a>
-</div>
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function () {
+  scrollFunction();
+};
 
-{% endif %}
+function scrollFunction() {
+  if (
+    document.body.scrollTop > 20 ||
+    document.documentElement.scrollTop > 20
+  ) {
+    mybutton.style.display = "block";
+  } else {
+    mybutton.style.display = "none";
+  }
+}
+// When the user clicks on the button, scroll to the top of the document
+mybutton.addEventListener("click", backToTop);
+
+function backToTop() {
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+}
+</script>
 
 
-<button type="button" class="btn btn-danger btn-floating btn-lg" id="btn-back-to-top">
-    <i class="fas fa-arrow-up"></i>>
 
-
-    <!--   code from  https://mdbootstrap.com/snippets/standard/mdbootstrap/2964350 -->
-    <script>
-        //Get the button
-        let mybutton = document.getElementById("btn-back-to-top");
-
-        // When the user scrolls down 20px from the top of the document, show the button
-        window.onscroll = function () {
-            scrollFunction();
-        };
-
-        function scrollFunction() {
-            if (
-                document.body.scrollTop > 20 ||
-                document.documentElement.scrollTop > 20
-            ) {
-                mybutton.style.display = "block";
-            } else {
-                mybutton.style.display = "none";
-            }
-        }
-        // When the user clicks on the button, scroll to the top of the document
-        mybutton.addEventListener("click", backToTop);
-
-        function backToTop() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        }
-    </script>
-
-    <a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
-
-    {% endblock content %}
+{% endblock content %}

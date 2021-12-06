@@ -63,6 +63,17 @@ def get_foreign_authors_list():
             print("Status code: {}".format(request.status_code))
     return request.json()['items']
 
+def get_foreign_posts():
+    nodes = get_nodes()
+    for node in nodes:
+        url = '{}allposts/?size=10000'.format(node['url'])
+        print(url)
+        request = make_external_request(url, (node['username'], node['password']))
+        if request.status_code != 200:
+            print("Status code: {}".format(request.status_code))
+    return request.json()
+
+
 def split_ids():
     cleaned = []
     authors = get_foreign_authors_list()
@@ -70,3 +81,4 @@ def split_ids():
         cleaned.append(user['id'].split('/')[-1])
     
     return cleaned
+

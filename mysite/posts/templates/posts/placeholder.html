@@ -37,7 +37,9 @@
 
 
 <br>
-
+{% if latest_post_list %}
+    <h1>Posts from your Neighbours!</h1> 
+{% endif %}
 {% for posts in latest_post_list %}
 
 <div class="container border border-4 border-secondary " style="border-radius: 1rem; ;">
@@ -189,5 +191,12 @@
     </script>
 
     <a class='return' href="{% url 'users:user_home_page' %}"><i class="fa fa-arrow-left"></i> Go Back</a>
+
+
+    {% if foriegn %}
+        <h1>Posts from Outside the Circle!</h1> 
+    {% endif %}
+
+    
 
     {% endblock content %}

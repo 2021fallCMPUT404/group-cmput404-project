@@ -198,6 +198,7 @@ def placeholder(request):
     followers = UserFollows.objects.filter(object=serialize_object(user_profile))
     authorized_posts = []
     print(current_user)
+    
     for p in latest_post_list:
         if p.unlisted:  #unlisted posts: always visible to creator
             if p.author == current_user:
@@ -266,7 +267,8 @@ def placeholder(request):
     context = {
         'latest_post_list': authorized_posts,
         'current_user': current_user,
-        'followers': followers
+        'followers': followers,
+        
     }
 
     return HttpResponse(template.render(context, request))

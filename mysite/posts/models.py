@@ -23,16 +23,17 @@ class Post(models.Model):
 
     PLAIN = 0
     MARKDOWN = 1
+    IMAGE = 2
     Content = (
         (PLAIN,"text/plain"),
-        (MARKDOWN,"text/markdown")
+        (MARKDOWN,"text/markdown"),
+        (IMAGE,"image")
     )
 
     type = 'post'
     title = models.TextField( max_length=100, blank=True )
     text = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='', blank=True, null=True)
-    image_link = models.TextField(blank=True, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     shared_user = models.ForeignKey(User,

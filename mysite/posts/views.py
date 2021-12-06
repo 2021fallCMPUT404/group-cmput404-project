@@ -893,7 +893,7 @@ class addComment(CreateView):
 class updatePost(UpdateView):
     model = Post
     template_name = 'posts/editPost.html'
-    fields = ['title', 'text', 'image', 'image_link', 'contentType']
+    fields = ['title', 'text', 'image', 'contentType']
     success_url = reverse_lazy('feed')
 
 

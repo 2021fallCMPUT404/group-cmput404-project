@@ -11,15 +11,24 @@
 
     </div>
         {%if post.contentType == 1 %}
-            <p style="overflow: hidden; text-overflow: ellipsis; font-size:200%;">{{ post.text | markdown | safe }}
+            <p style="overflow: hidden; text-overflow: ellipsis; font-size:200%;">{{ post.text | markdown | safe }}</p>
+        {%elif post.contentType == 2 %}
+            {%if user_name == post.author.username or post.privacy == 0%}
+                <img src="{{ post.text }}" width="60%" style="border: 0.3px solid;">
+            {%elif post.privacy == 2%}
+                {%for f in followers%}
+                    {%if f.actor.displayName == post.author.user_profile.displayName%}
+                        <img src="{{ post.text }}" width="60%" style="border: 0.3px solid;">
+                    {%endif%}
+                {%endfor%}
+            {%else%}
+                <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">Sorry, this is currently not available</p>
+            {%endif%}
         {%else%}
-            <p style="overflow: hidden; text-overflow: ellipsis; font-size:200%;">{{ post.text }}
+            <p style="overflow: hidden; text-overflow: ellipsis; font-size:200%;">{{ post.text }}</p>
         {% endif %}
 
-        {%if post.image_link%}
-            <a href='{{post.image_link}}'>preview</a>
-        {% endif %}
-    </p>
+    
 
     {%if user_name == post.author.username or post.privacy == 0%}
         {% if post.image %}

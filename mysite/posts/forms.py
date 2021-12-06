@@ -29,7 +29,6 @@ class addPostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['title'].required = True
-        self.fields['text'].required = True
 
     class Meta:
         model = Post

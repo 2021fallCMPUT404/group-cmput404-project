@@ -80,13 +80,22 @@
 
         {%if posts.contentType == 1 %}
             <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.text | markdown | safe }}
+        {%elif posts.contentType == 2 %}
+            {%if current_user == posts.author or posts.privacy == 0%}
+                <img src="{{ posts.text }}" width="60%" style="border: 0.3px solid;">
+            {%elif posts.privacy == 2%}
+                {%for f in followers%}
+                    {%if f.actor.displayName == posts.author.user_profile.displayName%}
+                        <img src="{{ posts.text }}" width="60%" style="border: 0.3px solid;">
+                    {%endif%}
+                {%endfor%}
+            {%else%}
+                <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">Sorry, this is currently not available</p>
+            {%endif%}
         {%else%}
             <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ posts.text }}
         {% endif %}
 
-        {%if posts.image_link%}
-             <a href='{{posts.image_link}}'>preview</a>
-        {% endif %}
         </p>
         <br>
 

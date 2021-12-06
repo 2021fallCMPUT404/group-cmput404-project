@@ -19,7 +19,7 @@
         {% endfor %}
         </div>
     {% else %}
-        <h1 class="display-3"> No Foreign Users :( </h1>
+        <h1 class="display-3"> No Friends to be made :( </h1>
     {% endif %}
 
     <div class="table table-striped table-bordered table-dark table-hover table-dark align-middle">
@@ -29,7 +29,7 @@
             {% for u in foreign_friends%}
     
                 <a class="list-group-item list-group-item-action  list-group-item-dark d-flex gap-3 py-3" aria-current="true"  
-                    href="{% url 'users:send_friend_request' User_id=User.user.id%}"> <img src="{{ u.profileImage }}" width='30px' height="30"> {{u.displayName}}</a>
+                    href=""> <img src="{{ u.profileImage }}" width='30px' height="30"> {{u.displayName}}</a>
 
             
             {% endfor %}

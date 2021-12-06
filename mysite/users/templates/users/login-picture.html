@@ -36,24 +36,31 @@
           <a class="navbar-brand" href="{% url 'users:user_home_page' %}" style="font-family: Dancing Script">Social Circle</a>
           <ul class="navbar-nav me-auto" id='nav'>
   
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'users:edit_user_profile' %}"><i class="fa fa-pencil-square-o"></i> Edit Profile</a>
-            </li>
+            <li class="nav-item subnavbtn">
+              <a class="nav-link active" aria-current="page"><i class="fa fa-child"></i> User Request <i class="fa fa-angle-down"></i></a>
+                <ul class="dropdown">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'users:view_requests' User_id=request.user.id %}"><i class="fa fa-search"></i> View Requests</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'users:request_page'%}"><i class="fa fa-paper-plane"></i> Send Request</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'users:view_followers' User_id=request.user.id %}"><i class="fa fa-users"></i> View Followers</a>
+                  </li>
+                </ul>
+              </li>
 
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'users:view_requests' User_id=request.user.id %}"><i class="fa fa-search"></i> View Requests</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'users:view_followers' User_id=request.user.id %}"><i class="fa fa-child"></i> View Followers</a>
-            </li>
-            
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'users:request_page'%}"> <i class="fa fa-paper-plane"></i> Send Request</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'users:user_home_page' %}"><i class="fa fa-user"></i> Profile</a>
+            <li class="nav-item subnavbtn">
+              <a class="nav-link active" aria-current="page"><i class="fa fa-user"></i> User Profile <i class="fa fa-angle-down"></i></a>
+                <ul class="dropdown">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'users:edit_user_profile' %}"><i class="fa fa-pencil-square-o"></i> Edit Profile</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'users:user_home_page' %}"><i class="fa fa-eye"></i> View Profile</a>
+                  </li>
+              </ul>
             </li>
 
             <li class="nav-item">

@@ -1,5 +1,6 @@
 from rest_framework import *
 from rest_framework import serializers
+from rest_framework.serializers import *
 
 from .models import FriendRequest, User, User_Profile, UserFollows, Inbox
 
@@ -35,7 +36,7 @@ class userPSerializer(serializers.ModelSerializer):
     #This puts in the type attribute since __all__ is not grabbing User_Profile.type attribute for some reason
     #Reference: https://stackoverflow.com/a/60891077
     
-
+    id = SerializerMethodField('set_id')
     class Meta:
         model = User_Profile
         fields = [
@@ -43,6 +44,9 @@ class userPSerializer(serializers.ModelSerializer):
             'profileImage', 'user'
         ]  #TODO: ADD URL AND HOST
         read_only_fields = ['type','user']
+
+    def set_id(self, obj):
+        return '{}author/{}'.format(obj.host, obj.id)
 
 class userFollowSerializer(serializers.ModelSerializer):
     class Meta:

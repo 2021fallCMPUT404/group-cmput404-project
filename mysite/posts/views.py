@@ -1,7 +1,4 @@
-
-from users.serializers import userPSerializer
-from django.http.response import HttpResponseBadRequest, HttpResponseRedirect, HttpResponseForbidden
-from posts.connection import *
+from django.http.response import HttpResponseRedirect, HttpResponseForbidden
 from django import template
 from posts.connection import *
 import traceback
@@ -14,6 +11,7 @@ from django.template import loader
 from django.utils import timezone
 from .models import Post, Comment, Like, Share, CommentLike, Node
 from .forms import ShareForm, CommentForm, addPostForm
+from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView, FormView, View, ListView
 from django.urls import reverse_lazy, reverse
 from django.core.exceptions import PermissionDenied
@@ -25,7 +23,7 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 import json
 import ast
-from .serializers import PostSerializer, CommentSerializer, LikeSerializer, LikeCommentSerializer, NodeSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer, LikeCommentSerializer
 from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
@@ -35,7 +33,6 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework import exceptions
-from rest_framework.views import APIView
 import requests
 import re
 import datetime
@@ -87,38 +84,6 @@ class CustomAuthentication(authentication.BaseAuthentication):
 
 
 # Create your views here.
-
-class post_comments_api(APIView):
-    #authentication_classes = [SessionAuthentication, BasicAuthentication]
-    #permission_classes = [IsAuthenticated]
-
-    def get(self, request, author_id, post_id, format=None):
-        try:
-            author = get_object_or_404(User, pk=author_id)
-            related_post = Post.objects.get(id=post_id)
-            comments = Comment.objects.filter(post=related_post)
-            comments_serializer = CommentSerializer(comments, many=True)
-            return Response(comments_serializer.data)
-        except Post.DoesNotExist:
-            return JsonResponse(
-                {'message': 'The requested post does not exist'},
-                status=status.HTTP_404_NOT_FOUND)
-
-
-    def post(self, request, author_id, post_id, format=None):
-        try:
-            test = json.loads(request.body)
-            post = get_object_or_404(Post, pk=post_id)
-            author = userPSerializer(data=test['author'])
-            print(author.is_valid())
-            if not author.is_valid():
-                return HttpResponseBadRequest("Author object cannot be serialized.")
-            new_comment = Comment(author=author.data, comment_body=test['comment'], post=post)
-            new_comment.save()
-            return HttpResponse(new_comment)
-        except Exception as e:
-            return JsonResponse({'message':'Error: {}'.format(e)})
-
 def handle_not_found(request, exception):
     return render(request, 'not_found.html')
 
@@ -135,7 +100,7 @@ def post(request, Post_id):
     user = request.user
     username = user.username
 
-    if post.visibility == "PUBLIC":
+    if post.privacy == 0:
         print("Public")
         return render(request, 'posts/post.html', {
             'post': post,
@@ -143,7 +108,7 @@ def post(request, Post_id):
             'followers': followers
         })
 
-    elif post.visibility == "PRIVATE":
+    elif post.privacy == 1:
         if post.author == current_user:
             print("private ")
             return render(request, 'posts/post.html', {
@@ -224,8 +189,8 @@ def handle_not_found(request, exception):
 
 
 def placeholder(request):
-    latest_post_list = Post.objects.order_by('-published')[:5]
-    backup_list = Post.objects.order_by('-published')[5:]
+    latest_post_list = Post.objects.order_by('-pub_date')
+    backup_list = Post.objects.order_by('-pub_date')[5:]
     template = loader.get_template('posts/placeholder.html')
     current_user = User.objects.get(id=request.user.id)
     user_profile = get_object_or_404(User_Profile, user=current_user)
@@ -237,10 +202,10 @@ def placeholder(request):
             if p.author == current_user:
                 authorized_posts.append(p)
         else:  #listed posts
-            if p.visibility == "PUBLIC":  #public: visible to all
+            if p.privacy == 0:  #public: visible to all
                 authorized_posts.append(p)
 
-            elif p.visibility == "PRIVATE":  #private: visible to creator
+            elif p.privacy == 1:  #private: visible to creator
                 if p.author == current_user:
                     authorized_posts.append(p)
 
@@ -266,10 +231,10 @@ def placeholder(request):
                     if p.author == current_user:
                         authorized_posts.append(p)
                 else:  #listed posts
-                    if p.visibility == "PUBLIC":  #public: visible to all
+                    if p.privacy == 0:  #public: visible to all
                         authorized_posts.append(p)
 
-                    elif p.visibility == "PRIVATE":  #private: visible to creator
+                    elif p.privacy == 1:  #private: visible to creator
                         if p.author == current_user:
                             authorized_posts.append(p)
 
@@ -1303,7 +1268,7 @@ class addPost(CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.published=datetime.datetime.now()
+        form.instance.pub_date = datetime.datetime.now()
         return super().form_valid(form)
 
 
@@ -1323,7 +1288,7 @@ class addComment(CreateView):
 class updatePost(UpdateView):
     model = Post
     template_name = 'posts/editPost.html'
-    fields = ['title', 'content', 'image',  'visibility', 'contentType']
+    fields = ['title', 'text', 'image', 'image_link']
     success_url = reverse_lazy('feed')
 
 
@@ -1344,9 +1309,10 @@ class SharedPostView(View):
 
         sharedPost = Post.objects.create(
             title=post_object.title,
-            content=post_object.content,
+            text=post_object.text,
             image=post_object.image,
-            published=post_object.published,
+            image_link=post_object.image_link,
+            pub_date=post_object.pub_date,
             author=post_object.author,
             shared_user=current_user,
             privacy=post_object.privacy,
@@ -1366,41 +1332,26 @@ def send_token(request, username, password):
     print(ast.literal_eval(response.text))
     return JsonResponse(dict_data, safe=False)
 
-def connect(request):
-    nodes = get_nodes()
-    posts = []
-    team_ids = []
-    for node in nodes:
-        print('NODES: ' + str(node['team_id']))
-        auth = (node['username'], node['password'])
-        req = make_external_request(node['posts'], auth)
-        req_json = req.json()
-        posts.append(req_json)
-        team_ids.append(node['team_id'])
-    print(posts)
-    return render(request, 'posts/teamposts.html', {'posts': posts, 'team_id': team_ids} )
-    
-    
-    
-    
-'''
-def t_15(request):
-    nodes = get_nodes()
-    for node in nodes:
-        if node['team_id'] == 15:
-            auth = (node['username'], node['password'])
-            req = make_external_request(node['url'], auth)
-            req_json = req.json()
-            
-    print(req_json)
-            
-    return render(request, 'posts/team15posts.html', {'posts': req_json} )
-''' 
+
+def get_t15_posts(url):
+
+    ext_request = requests.get(url,
+                               auth=('connectionsuperuser', '404connection'),
+                               headers={'Referer': "http://127.0.0.1:8000/"})
+
+    ext_request = ext_request.json()
+    return ext_request
 
 
+def view_t15_posts(request):
+    url = "https://unhindled.herokuapp.com/service/allposts/"
+    posts = get_t15_posts(url)
+    return render(request, 'posts/team15posts.html', {'posts': posts})
 
+def testing(request, user_id):
+    is_foreign_id(user_id)
+    return HttpResponse("test")
 
-'''
 def view_foriegn_posts(request):
     if node_working(request):
         node = get_nodes()
@@ -1415,12 +1366,10 @@ def view_foriegn_posts(request):
             return HttpResponse(node)
     else:
         return HttpResponse()
-'''
-def testing(request, user_id):
-    is_foreign_id(user_id)
-    return HttpResponse("test")
 
-
+def node_working(request):
+    url = request.build_absolute_uri()
+    host  = ['http://127.0.0.1:8000/', 'http://localhost:8000/', 'https://social-dis.herokuapp.com/',]
     
     for node in get_nodes():
         print('node ' + str(node['url']))

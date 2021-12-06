@@ -51,6 +51,3 @@ def is_foreign_id(user_id):
         except Exception as e:
             print("Error: {}".format(e))
     return (False, None)
-
-
-    return ()

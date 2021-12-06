@@ -120,14 +120,14 @@ def post(request, Post_id):
     user = request.user
     username = user.username
 
-    if post.privacy == 0:
+    if post.visibility == '0':
         print("Public")
         return render(request, 'posts/post.html', {
             'post': post,
             'user_name': username
         })
 
-    elif post.privacy == 1:
+    elif post.visibility == '1':
         if post.author == current_user:
             print("private ")
             return render(request, 'posts/post.html', {
@@ -142,8 +142,8 @@ def post(request, Post_id):
 
 
 def placeholder(request):
-    latest_post_list = Post.objects.order_by('-pub_date')[:5]
-    backup_list = Post.objects.order_by('-pub_date')[5:]
+    latest_post_list = Post.objects.order_by('-published')[:5]
+    backup_list = Post.objects.order_by('-published')[5:]
     template = loader.get_template('posts/placeholder.html')
     current_user = User.objects.get(id=request.user.id)
     authorized_posts = []
@@ -153,10 +153,10 @@ def placeholder(request):
             if p.author == current_user:
                 authorized_posts.append(p)
         else:  #listed posts
-            if p.privacy == 0:  #public: visible to all
+            if p.visibility == '0':  #public: visible to all
                 authorized_posts.append(p)
 
-            elif p.privacy == 1:  #private: visible to creator
+            elif p.visibility == '1':  #private: visible to creator
                 if p.author == current_user:
                     authorized_posts.append(p)
     
@@ -167,10 +167,10 @@ def placeholder(request):
                     if p.author == current_user:
                         authorized_posts.append(p)
                 else:  #listed posts
-                    if p.privacy == 0:  #public: visible to all
+                    if p.visibility == "0":  #public: visible to all
                         authorized_posts.append(p)
 
-                    elif p.privacy == 1:  #private: visible to creator
+                    elif p.visibility == "1":  #private: visible to creator
                         if p.author == current_user:
                             authorized_posts.append(p)
                 if len(authorized_posts)==5:
@@ -187,7 +187,6 @@ def placeholder(request):
     }
 
     return HttpResponse(template.render(context, request))
-
 
 def delete_post(request, Post_id):
     post = Post.objects.get(pk=Post_id)
@@ -635,7 +634,7 @@ class addPost(CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.pub_date=datetime.datetime.now()
+        form.instance.published=datetime.datetime.now()
         return super().form_valid(form)
 
 class addComment(CreateView):
@@ -649,6 +648,16 @@ class addComment(CreateView):
         form.instance.post_id = self.kwargs['pk']
         return super().form_valid(form)
 
+
+class addForeignComment(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'posts/addForeignComments.html'
+    success_url = reverse_lazy('foreign-posts')
+    #fields = '__all__'
+    def form_valid(self, form):
+        form.instance.post_id = self.kwargs['pk']
+        return super().form_valid(form)
 
 class updatePost(UpdateView):
     model = Post
@@ -675,9 +684,9 @@ class SharedPostView(View):
 
         sharedPost = Post.objects.create(
             title=post_object.title,
-            text=post_object.text,
+            text=post_object.conte,
             image=post_object.image,
-            pub_date=post_object.pub_date,
+            pub_date=post_object.published,
             author=post_object.author,
             shared_user=current_user,
             contentType=post_object.contentType).save()
@@ -716,7 +725,6 @@ def node_working(request):
 def connect(request):
     nodes = get_nodes()
     posts = []
-    found_post=''
     team_ids = []
     for node in nodes:
         print('NODES: ' + str(node['team_id']))
@@ -725,14 +733,20 @@ def connect(request):
         req_json = req.json()
         posts.append(req_json)
         team_ids.append(node['team_id'])
-    print(posts)
-    split = ''
-    for post in posts:
-            split = post
     
-    print(split)
-            
-    return render(request, 'posts/teamposts.html', {'posts': posts, 'team_id': team_ids} )
+    ids = []
+    for post in posts:
+        for p in post:
+            if p.get('id') != None:
+                ids.append(p.get('id'))
+
+    cleaned_ids = []
+    for id in ids:
+        cleaned_ids.append(id.split('/')[-1])
+    print(cleaned_ids)
+                
+    
+    return render(request, 'posts/teamposts.html', {'posts': posts, 'team_ids': team_ids , 'post_ids':cleaned_ids })
     
 
 def testing(request, user_id):

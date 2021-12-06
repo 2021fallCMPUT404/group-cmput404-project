@@ -48,5 +48,6 @@ urlpatterns = [
     path('request_like/<int:like_id>', views.request_like, name='request_like'),
     path('crud_like/<int:like_id>', views.crud_like, name='crud_like'),
     path('send_token/<str:username>/<str:password>', views.send_token, name='send_token'),
-    path('foreign-posts/', views.connect, name='foreign-posts')
+    path('foreign-posts/', views.connect, name='foreign-posts'),
+    path('foreign-comment/', views.addForeignComment, name='foreign-comment'),
 ]

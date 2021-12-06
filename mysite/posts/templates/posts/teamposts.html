@@ -16,13 +16,15 @@
                     <p>{{p.content}}</p>
                     <p>Created by {{p.author.displayName}}</p>
                     <p>{{p.created_on}}</p>
-                    <a href="{% url 'addcomment' p.id %}" class="btn btn-danger"><i class="fa fa-comment"></i> Comment</a>
-                    <a href="{% url 'sharepost' p.id %}" class="btn btn-danger"><i class="fa fa-share-square-o"></i> Share</a>
-                    <br>
-                    <form action = "{% url 'likepost' p.pk %}" method = "POST" class="likeButton">
-                        {% csrf_token %}
-                        <button type = 'submit', name = 'post_id', value = "{{ post.id }}"><i class="far fa-thumbs-up"></i></button>
-                    </form>
+                    {% for id in post_ids%}
+                        <a href="{% url 'foreign-comment' id %}" class="btn btn-danger"><i class="fa fa-comment"></i> Comment</a>
+                        <a href="{% url 'sharepost' id %}" class="btn btn-danger"><i class="fa fa-share-square-o"></i> Share</a>
+                        <br>
+                        <form action = "{% url 'likepost' id %}" method = "POST" class="likeButton">
+                            {% csrf_token %}
+                            <button type = 'submit', name = 'post_id', value = "{{ id }}"><i class="far fa-thumbs-up"></i></button>
+                        </form>
+                    {% endfor %}
                 {% endfor %}
             {% endfor %}
     {% endif %}

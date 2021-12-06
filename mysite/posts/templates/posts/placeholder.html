@@ -140,6 +140,14 @@
 <br>
 {% endfor %}
 
+{% if pos%}
+    <h1>Posts from outside of the circle!</h1>
+    {% for p in pos %}
+        <h2>{{p.author.displayName}}</h2>
+
+    
+    {%endfor %}
+{% endif %}
 
 {% else %}
 <br><br><br>

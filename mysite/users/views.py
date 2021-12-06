@@ -602,13 +602,12 @@ def send_request_page(request):
     users_list = User_Profile.objects.filter(~Q(user=request.user))
     #print(users_list)
     #print(get_foreign_authors_list())
-    print(make_external_friend_request(request.user.id, '6bccdad1-a8a0-4874-b74a-2c9b172d5ae5'))
-    print(users_list)
-    print(get_foreign_authors_list())
-    foreign_friends = get_foreign_authors_list()
     
+    #print(users_list)
+    #print(get_foreign_authors_list())
+    foreign_friends = get_foreign_authors_list()
     ids = split_ids()
-    print(ids)
+    #print(ids)
     return render(request, 'users/send_requests.html',
                   {'users_list': users_list, 'foreign_friends': foreign_friends, 'ids':ids})
 

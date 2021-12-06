@@ -197,7 +197,7 @@ def placeholder(request):
     user_profile = get_object_or_404(User_Profile, user=current_user)
     followers = UserFollows.objects.filter(object=serialize_object(user_profile))
     authorized_posts = []
-    print(current_user)
+    #print(current_user)
     for p in latest_post_list:
         if p.unlisted:  #unlisted posts: always visible to creator
             if p.author == current_user:
@@ -262,11 +262,14 @@ def placeholder(request):
 
     #output = '\n'.join([q.text for q in latest_post_list])
     #print(latest_post_list)
+    pos = get_t15_posts("https://unhindled.herokuapp.com/service/allposts/")
+
 
     context = {
         'latest_post_list': authorized_posts,
         'current_user': current_user,
-        'followers': followers
+        'followers': followers,
+        'pos': pos,
     }
 
     return HttpResponse(template.render(context, request))

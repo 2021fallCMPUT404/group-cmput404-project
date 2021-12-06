@@ -601,6 +601,7 @@ def send_request_page(request):
     user_profile = get_object_or_404(User_Profile, user_id=request.user.id)
     users_list = User_Profile.objects.filter(~Q(user=request.user))
     print(users_list)
+    print(get_foreign_authors_list())
     return render(request, 'users/send_requests.html',
                   {'users_list': users_list})
 

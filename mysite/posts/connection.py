@@ -53,4 +53,12 @@ def is_foreign_id(user_id):
     return (False, None)
 
 
-    return ()
+def get_foreign_authors_list():
+    nodes = get_nodes()
+    for node in nodes:
+        url = '{}authors/?size=10000'.format(node['url'])
+        print(url)
+        request = make_external_request(url, (node['username'], node['password']))
+        if request.status_code != 200:
+            print("Status code: {}".format(request.status_code))
+    return request.json()['items']

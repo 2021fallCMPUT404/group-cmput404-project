@@ -12,11 +12,11 @@
 <div class="container" style="width: 80% ; height: 100%; border: 0.5px solid ;  overflow: hidden;">
     {{ request.user.User_Profile.profileImage.url }}
     {% if user.is_authenticated %}
-    <div class="row">
+    <div style="margin-top: 3%;">
         
-        <img src="{{ user.user_profile.profileImage.url }}"  style="float: left; width: 120px; height: 120px; margin-left: 25%;" >
+        <img src="{{ user.user_profile.profileImage.url }}"  style=" float: left; width: 100px; height: 100px; object-fit: cover; margin-left: 30%; " >
         
-        <div  style="float: right; width: 40%; margin-top: 3%; "  >
+        <div  style="float: right; width: 40%; margin-top: 3%; margin-right: 20%; "  >
             <h2 class='Display_name' style="overflow: hidden;">{{ insert_display_name }}</h2>
             <h3 style= "font-family: Josefin Sans;;" >{{user.user_profile.bio}}</h3>
         </div>

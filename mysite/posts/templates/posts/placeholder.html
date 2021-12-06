@@ -74,7 +74,7 @@
                 </nav>
             </div>    
         <br>
-        <h4 style="margin-right: 80%;" ><img src="{{ posts.author.user_profile.profileImage.url }}" width="60px" height="60px" style="border: 0.3px solid;"> {{posts.author}} </h4>
+        <h4 style="margin-right: 80%;" ><img src="{{ posts.author.user_profile.profileImage.url }}"  style="border: 0.3px cornsilk; width: 100px; height: 100px; object-fit: cover;"> {{posts.author}} </h4>
         <hr class="mt-2 mb-3" style="width: 30%;"/>
         {%if not posts.shared_user and current_user == posts.author %}
         <a href="{% url 'editpost' posts.pk %}" class='btn btn-secondary ' style="margin-left:80%; border-radius: 1rem;"><i class="fa fa-pencil-square-o"></i> Edit</a>
@@ -113,7 +113,7 @@
     {%if current_user == posts.author or posts.privacy == 0%}
         {% if posts.image %}
 
-        <img src='{{posts.image.url}}' width=40% height="20%" style="max-height: 400px; max-width: 400px;">
+        <img src='{{posts.image.url}}'  style="height: auto; max-width: 80%;">
 
         {% endif %}
     {%elif posts.privacy == 2%}

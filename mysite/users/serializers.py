@@ -75,11 +75,11 @@ class friend_request_serializer(serializers.ModelSerializer):
 
     def to_actor(self, obj):
         data = json.loads(obj.actor)['fields']
-        return get_object_or_404(User_Profile, pk=data['id'])
+        return get_object_or_404(User_Profile, pk=data['user'])
 
     def to_object(self, obj):
         data = json.loads(obj.object)['fields']
-        return get_object_or_404(User_Profile, pk=data['id'])
+        return get_object_or_404(User_Profile, pk=data['user'])
 
 class InboxSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False, read_only=True)

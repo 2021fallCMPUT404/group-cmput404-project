@@ -494,15 +494,23 @@ def view_friend_requests(request, User_id):
     serialized_profile = serializers.serialize('json', [user_profile]).replace("[","").replace("]","")
     recieved_requests = FriendRequest.objects.filter(object=serialized_profile)
     sent_requests = FriendRequest.objects.filter(actor=serialized_profile)
-    serialized = friend_request_serializer(data=recieved_requests)
-    serialized2 = friend_request_serializer(data=recieved_requests)
-    if serialized.is_valid() and serialized2.is_valid():
-        print(serialized, serialized2)
-    print(recieved_requests, sent_requests)
+
+
     return render(request, 'users/view_requests.html', {
-        'recieved_requests': recieved_requests,
-        'sent_requests': sent_requests
+        'recieved_requests': queryset_to_json(recieved_requests),
+        'sent_requests': queryset_to_json(sent_requests)
     })
+
+
+#THis function will take in a queryset and turn them into dicts
+def queryset_to_json(queryset):
+    query_list = []
+    for set in queryset:
+        serializer = friend_request_serializer(instance=set)
+        print("WHYYYYYYYYYYYYYYYYYYYYYYYYYYYY\n")
+        print(serializer.data)
+        query_list.append(serializer.data)
+    return query_list
 
 
 def get_t15_authors(url):

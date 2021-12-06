@@ -2,13 +2,5 @@
 {% load static %}
 
 {% block content %}
-{% for message in inbox %}
-            <ul>
-                <li title="{{ message.sender.displayName }}">{{ message.sender.displayName }}: {{ message.msg_content }}
-                    <button onclick="myFunction()">Reply</button>
-                </li>
-                <small>-{{ message.timestamp }}</small>
-                <hr>
-            </ul>
-        {% endfor %}
+<h1>Currently No Notifications in Inbox</h1>
 {% endblock content %}

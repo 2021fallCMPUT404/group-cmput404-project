@@ -8,7 +8,7 @@
 <form method="POST">
     {% csrf_token %}
     <h2>Do you really want to do so?</h2>
-    <button type="submit" class = 'btn btn-primary'>Yes</button>
+    <button type="submit">Yes</button>
     <a class = 'btn btn-primary' href="{% url 'post_placeholder' post.pk %}">No</button>
 </form>
 

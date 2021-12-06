@@ -143,12 +143,53 @@
 {% if pos15%}
     <h1 style="font-family: Dancing Script; font-size: 5rem;">Posts from outside of the circle!</h1>
     {% for p in pos15 %}
-        <h2>{{p.title}}</h2>
-
-        <p>{{p.content}}</p>
+    <div class="container border border-4 border-secondary " style="border-radius: 1rem; ;">
+        <div class=container " style=" border: 1cm ;">
+            <br>
+            <h4 style="margin-right: 80%;" ><img src="{{ p.author.profileImage }}" alt="No image available" style="border: 0.3px cornsilk; width: 100px; height: 100px; object-fit: cover; border-radius: 50%;"> {{p.author.displayName}} </h4>
+            <hr class="mt-2 mb-3" style="width: 30%;" />
         
-        <h4>{{p.author.displayName}}</h4>
-        <p>{{p.published}}</p>
+        <h2 style="overflow: hidden; text-overflow: ellipsis;">{{p.title}}</h2>
+                    <p style="color: darkgrey;"> Published at: {{p.published}}
+                        {%if p.visibility == 'PUBLIC'%}
+                            <i class="fa fa-globe"></i>
+                        {%elif p.visibility == 'PRIVATE'%}
+                            <i class="fa fa-lock"></i>
+                        {%elif p.visibility == 'FRIENDS'%}
+                            <i class="fa fa-users"></i>
+                        {%endif%}
+                    </p>
+                {% if p.contentType == 'text/plain' %}
+                    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{p.content}}</p>
+                {%elif p.contentType == 'image/png' %}
+                    <img src="{{ p.content }}" width="60%" style="border: 0.3px solid;">
+                {%elif p.contentType == 'text/markdown' %}
+                    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ p.content | markdown | safe }}</p>
+                {%endif%}
+        </div>
+                <br>
+                <div class="nav-scroller bg-body shadow-sm">
+                    <nav class="nav nav-underline" aria-label="Secondary navigation">
+                    
+                    <a class="nav-link disabled " href="#">
+                        <i class="fa fa-thumbs-up"></i> Likes
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{p.likes|length}}</span>
+                    </a>
+                    <a class="nav-link disabled" href="#">
+                        <i class="fa fa-comment"></i> Comments
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">0</span>
+                    </a>
+                    <a class="nav-link disabled" href="#">
+                        <i class="fa fa-share-square-o"></i> Shares
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{p.share|length}}</span>
+                    </a>
+
+                    </nav>
+                </div>  
+                <br>
+             
+
+    </div>
         <br>
     {%endfor %}
 {% endif %}
@@ -156,29 +197,59 @@
 
 {% if pos23%}
     {% for p in pos23 %}
-    <h2>{{p.title}}</h2>
+    <div class="container border border-4 border-secondary " style="border-radius: 1rem; ;">
+        <div class=container " style=" border: 1cm ;">
+            <br>
+            <h4 style="margin-right: 80%;" ><img src="{{ p.author.profileImage }}" alt="No image available" style="border: 0.3px cornsilk; width: 100px; height: 100px; object-fit: cover; border-radius: 50%;"> {{p.author.displayName}} </h4>
+            <hr class="mt-2 mb-3" style="width: 30%;" />
+        
+        <h2 style="overflow: hidden; text-overflow: ellipsis;">{{p.title}}</h2>
+                    <p style="color: darkgrey;"> Published at: {{p.published}}
+                        {%if p.visibility == 'PUBLIC'%}
+                            <i class="fa fa-globe"></i>
+                        {%elif p.visibility == 'PRIVATE'%}
+                            <i class="fa fa-lock"></i>
+                        {%elif p.visibility == 'FRIENDS'%}
+                            <i class="fa fa-users"></i>
+                        {%endif%}
+                    </p>
+                {% if p.contentType == 'text/plain' %}
+                    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{p.content}}</p>
+                {%elif p.contentType == 'image/png' %}
+                    <img src="{{ p.content }}" width="60%" style="border: 0.3px solid;">
+                {%elif p.contentType == 'text/markdown' %}
+                    <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ p.content | markdown | safe }}</p>
+                {%endif%}
+        </div>
+                <br>
+                <div class="nav-scroller bg-body shadow-sm">
+                    <nav class="nav nav-underline" aria-label="Secondary navigation">
+                    
+                    <a class="nav-link disabled " href="#">
+                        <i class="fa fa-thumbs-up"></i> Likes
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{p.likes|length}}</span>
+                    </a>
+                    <a class="nav-link disabled" href="#">
+                        <i class="fa fa-comment"></i> Comments
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{p.count}}</span>
+                    </a>
+                    <a class="nav-link disabled" href="#">
+                        <i class="fa fa-share-square-o"></i> Shares
+                        <span class="badge bg-light text-dark rounded-pill align-text-bottom">{{p.share|length}}</span>
+                    </a>
 
-    <p>{{p.content}}</p>
-    
-    <h4>{{p.author.displayName}}</h4>
-    <p>{{p.published}}</p>
-    <br>
+                    </nav>
+                </div>  
+                <br>
+             
+
+    </div>
+        <br>
     {%endfor %}
 
 {% endif %}
 
-{% if pos7%}
-    {% for p in pos7 %}
-    <h2>{{p.title}}</h2>
 
-    <p>{{p.content}}</p>
-    
-    <h4>{{p.author.displayName}}</h4>
-    <p>{{p.published}}</p>
-    <br>
-    {%endfor %}
-
-{% endif %}
 
 {% else %}
 <br><br><br>

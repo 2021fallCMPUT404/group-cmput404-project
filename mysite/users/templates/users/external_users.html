@@ -5,18 +5,18 @@
 <div class="container">
     
     <h1><a href='' id ='unhindled'>UNHINDLED APP</a></h1>
-    <h2>List of Foriegn users</h2>
+    <h2>List of Foreign users</h2>
     <br>
     {% if users %}
     <div class="list-users">
         {% for user in users %}
-            {% for item in user %}
+            {% for i in user %}
                 <ul class ='t15Users'>
-                    {% if item.displayName%}
-                        <li><h2> {{item.displayName}}</h2></li>
+                    {% if i.items.displayName%}
+                        <li><h2> {{i.items.displayName}}</h2></li>
                     {% endif %}
-                    {% if item.profileImage %}
-                        <img src='{{item.profileImage}}' style="width:100px;"> 
+                    {% if user.profileImage %}
+                        <img src='{{user.profileImage}}' style="width:100px;"> 
                     {% endif %}
                     <br>
                 </ul>

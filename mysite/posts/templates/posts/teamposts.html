@@ -1,4 +1,4 @@
-{% extends 'users/base.html' %}
+{% extends 'posts/base.html' %}
 {% block content %}
 {% load static %}
 
@@ -11,14 +11,15 @@
     {% if posts %}
     <div class="list-posts">
         {% for post in posts %}
-        {% for p in post%}
-        <h2 class='post-title'>{{p.title}}</h2>
-        <p>{{p.content}}</p>
-        <p>Created by {{p.author.displayName}}</p>
-        <p>{{p.published}}</p>
+            {% for p in post%}
+                <h2 class='post-title'>{{p.title}}</h2>
+                <p>{{p.content}}</p>
+                <p>Created by {{p.author.displayName}}</p>
+                <p>{{p.published}}</p>
+                <p>Comments {{p.comments}}</p>
+            {% endfor %}
 
         {% endfor %}
-        {% endfor %}
-        {% endif %}
+    {% endif %}
     </div>
     {% endblock content %}

@@ -498,60 +498,24 @@ def view_friend_requests(request, User_id):
         'sent_requests': sent_requests
     })
 
-
-def get_t15_authors(url):
-
-    ext_request = requests.get(
-        url,
-        auth=('connectionsuperuser', '404connection'),
-        headers={
-            'Referer': "https://cmput404-socialdist-project.herokuapp.com/"
-        })
-
-    ext_request = ext_request.json()
-    return ext_request
-
-
-def view_t15_users(request):
-    url = "https://unhindled.herokuapp.com/service/authors"
-    authors = get_t15_authors(url)
-    list_of_authors = []
-    for i in authors['items']:
-        list_of_authors.append(i)
-    return render(request, 'users/team15users.html',
-                  {'authors': list_of_authors})
+def connect(request):
+    nodes = get_nodes()
+    users = []
+    team_ids = []
+    for node in nodes:
+        print('NODES: ' + str(node['team_id']))
+        auth = (node['username'], node['password'])
+        req = make_external_request(node['users'], auth)
+        req_json = req.json()
+        users.append(req_json)
+    
+    for u in users:
+        print(u.get('items')['displayName']))    
+    
+    
+    return render(request, 'users/external_users.html', {'users': users, 'team_id': team_ids} )
 
 
-def make_external_request(url, auth):
-    ext_request = requests.get(
-        url,
-        auth=auth,
-        headers={
-            'Referer': "https://cmput404-socialdist-project.herokuapp.com/"
-        })
-
-    ext_request = ext_request.json()
-    return ext_request
-
-
-def view_t3_users(request):
-    url = "https://social-dis.herokuapp.com/authors/"
-    auth = ('socialdistribution_t03', 'c404t03')
-    ext_json = make_external_request(url, auth)
-
-    print(ext_json['items'])
-    return render(request, 'users/t03_users.html',
-                  {'authors': ext_json['items']})
-
-
-def view_t3_posts(request):
-    url = "https://social-dis.herokuapp.com/posts/"
-    auth = ('socialdistribution_t03', 'c404t03')
-    ext_json = make_external_request(url, auth)
-
-    #print(ext_json['items'])
-    return render(request, 'users/t03_posts.html',
-                  {'post_list': ext_json['items']})
 
 
 def view_followers(request, User_id):

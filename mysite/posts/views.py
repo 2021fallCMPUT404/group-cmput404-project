@@ -1356,52 +1356,13 @@ def connect(request):
     
     
     
-'''
-def t_15(request):
-    nodes = get_nodes()
-    for node in nodes:
-        if node['team_id'] == 15:
-            auth = (node['username'], node['password'])
-            req = make_external_request(node['url'], auth)
-            req_json = req.json()
-            
-    print(req_json)
-            
-    return render(request, 'posts/team15posts.html', {'posts': req_json} )
-''' 
 
-
-
-
-'''
-def view_foriegn_posts(request):
-    if node_working(request):
-        node = get_nodes()
-        url = request.get_full_path()
-        if url in node:
-            n = list(filter(lambda node: node['url'] == url, node))
-            print('list :'+ str(n))
-            ext_request = requests.get(url, auth=(n.username,n.password), headers={'Referer': "http://localhost:8000/"})
-            ext_request = ext_request.json()
-            return render(request, 'posts/team15posts.html', {'posts': ext_request})
-        else:
-            return HttpResponse(node)
-    else:
-        return HttpResponse()
-'''
 def testing(request, user_id):
     is_foreign_id(user_id)
     return HttpResponse("test")
 
 
     
-    for node in get_nodes():
-        print('node ' + str(node['url']))
-        print('url ' + url)
-        if url in node['url']:
-            return True
-        else:
-            return False
 
 def get_nodes():
     nodes = Node.objects.all()

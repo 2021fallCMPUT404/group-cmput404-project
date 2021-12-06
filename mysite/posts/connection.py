@@ -1,8 +1,11 @@
 from django.shortcuts import get_object_or_404
 from posts.models import Node
-from users.models import User
+from users.models import User, UserFollows, FriendRequest, User_Profile
 import requests
 from posts.serializers import NodeSerializer
+from users.serialize_helper import serialize_object
+from django.forms.models import model_to_dict
+import json
 
 #This function will check if the id is a local user
 def is_local_id(user_id):
@@ -74,6 +77,9 @@ def get_foreign_authors_list():
             print("Status code: {}".format(request.status_code))
     return request.json()['items']
 
+
+#Function makes an external friend request to another server
+# Currently functions but not connected to the UI
 def make_external_friend_request(internal_id, foreign_id):
     foreign_host = is_foreign_id(foreign_id)[1]['host'] + 'service/'
     print('Printing foreign host: {}'.format(foreign_host)) 
@@ -83,6 +89,7 @@ def make_external_friend_request(internal_id, foreign_id):
     request = make_external_request(url, (node.username, node.password), method='PUT')
     print(request)
     return request.status_code
+
 def split_ids():
     cleaned = []
     authors = get_foreign_authors_list()
@@ -90,3 +97,23 @@ def split_ids():
         cleaned.append(user['id'].split('/')[-1])
     
     return cleaned
+
+
+#Example: http://127.0.0.1:8000/service/author/2/followers/<UUID>
+# Function is supposed to be called in REST API when a foreign follower is put
+# Does work but it is not called anywhere
+def get_external_friend_request(internal_id, foreign_id):
+    foreign_profile = is_foreign_id(foreign_id)
+    internal_profile = get_object_or_404(User_Profile, user=internal_id)
+    if foreign_profile[0] == False:
+        return Exception
+    #profile = foreign_profile[1]
+    #temporary_profie = User_Profile.objects.create(id=profile['id'], displayName=['displayName'])
+
+    UserFollows.create_user_follow(json.dumps({'fields':foreign_profile[1]}), serialize_object(internal_profile))
+    FriendRequest.foreign_friend_request(json.dumps({'fields':foreign_profile[1]}), serialize_object(internal_profile))
+    return
+
+    
+
+

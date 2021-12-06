@@ -16,7 +16,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from .serializers import UserSerializer, userFollowSerializer, userPSerializer, friend_request_serializer
 from rest_framework import routers
-from users.serialize_helper import followers_to_json, serialize_object, queryset_to_json
+from users.serialize_helper import followers_to_json, json_to_dict, serialize_object, queryset_to_json
 #rest framework imports
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -495,10 +495,9 @@ def view_friend_requests(request, User_id):
     recieved_requests = FriendRequest.objects.filter(object=serialized_profile)
     sent_requests = FriendRequest.objects.filter(actor=serialized_profile)
 
-
     return render(request, 'users/view_requests.html', {
-        'recieved_requests': queryset_to_json(recieved_requests),
-        'sent_requests': queryset_to_json(sent_requests)
+        'recieved_requests': json_to_dict(recieved_requests),
+        'sent_requests': json_to_dict(sent_requests)
     })
 
 
@@ -566,9 +565,9 @@ def view_followers(request, User_id):
     follows_list = UserFollows.objects.filter(actor=serialize_object(user_profile))
     is_user = (request.user.id == User_id)
     #friends_list = UserFollows.objects.filter(object_id=user_profile)
-    test = followers_to_json(followers_list)
-    print(followers_to_json(followers_list), followers_to_json(follows_list))
-    print('\n')
+    #test = followers_to_json(followers_list)
+    #print(followers_to_json(followers_list), followers_to_json(follows_list))
+    #print('\n')
     #thing = (test[0]['actor'])
     #print(thing)
     #print(type(thing))
@@ -577,10 +576,10 @@ def view_followers(request, User_id):
         #print(x.actor)
     return render(
         request, 'users/view_followers.html', {
-            'followers_list': followers_to_json(followers_list),
+            'followers_list': json_to_dict(followers_list),
             'user': user_profile,
             'request': request,
-            'follows_list': followers_to_json(follows_list)
+            'follows_list': json_to_dict(follows_list)
         })
 # This function will make it so that User_id user will stop following
 # foreign_id user
@@ -603,6 +602,7 @@ def send_request_page(request):
     #print(users_list)
     #print(get_foreign_authors_list())
     print(make_external_friend_request(request.user.id, '6bccdad1-a8a0-4874-b74a-2c9b172d5ae5'))
+    get_external_friend_request(request.user.id, '6bccdad1-a8a0-4874-b74a-2c9b172d5ae5')
     print(users_list)
     print(get_foreign_authors_list())
     foreign_friends = get_foreign_authors_list()

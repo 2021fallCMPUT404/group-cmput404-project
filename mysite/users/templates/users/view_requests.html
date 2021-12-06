@@ -11,13 +11,11 @@
             <div class="list-group">
             {% for requests in recieved_requests %}
                 <li class="list-group-item list-group-item-action list-group-item-dark list-group-item-action d-flex gap-3 py-3 justify-content-between" aria-current="true"> 
-                    <div><img src="{{ requests.actor.profileImage.url }}" width='30px' height="30">  {{requests.actor.displayName}}</div>
+                    <div><img src="{{ requests.actor.fields.profileImage }}" alt='No image available'width='30px' height="30">  {{requests.actor.fields.displayName}}</div>
                  <!--<a href="">Accept</a>
                     <a href="">Reject</a>-->
 
                 <div>
-                <a href="{% url 'users:accept_request' User_id=requests.actor.user.id%}" class='btn btn-primary btn-sm'><i class="fa fa-check"></i> Accept</a>
-                <a href="{% url 'users:reject_request' User_id=requests.actor.user.id%}" class="btn btn-danger btn-sm"><i class="fa fa-times"></i> Reject</a>
             </div>
             </li>
         {% endfor %}
@@ -33,8 +31,7 @@
         {% for pending in sent_requests%}
 
             <li class="list-group-item list-group-item-action list-group-item-secondary list-group-item-action d-flex gap-3 py-3 justify-content-between" aria-current="true">
-                <div><img src="{{ pending.object.profileImage.url }}" width='30px' height="30">  {{pending.object.displayName}}</div>
-            <a href="{% url 'users:user_get' User_id=pending.object.user.id%}" class='btn btn-secondary btn-sm'><i class="fa fa-circle-o-notch"></i> Requested</a>
+                <div><img src="{{ pending.object.fields.profileImage.url }}" width='30px' height="30">  {{pending.object.fields.displayName}}</div>
         </li>
 
         {% endfor %}

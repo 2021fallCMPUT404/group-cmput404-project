@@ -146,6 +146,15 @@ class FriendRequest(models.Model):
 
         return f_request
 
+    #Same as create_friend_request, but the actor and object parameters should be serialized already
+    # when passed into the function
+    def foreign_friend_request(actor, object):
+        if UserFollows.objects.filter(actor=object, object=actor).exists():
+            return
+        f_request, created = FriendRequest.objects.get_or_create(actor=actor, object=object)
+        
+        return f_request
+        
     def summary(self):
         actor_json = json.loads(self.actor)['fields']
         object_json = json.loads(self.object)['fields']

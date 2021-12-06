@@ -12,7 +12,7 @@ from django.urls.base import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseBadRequest
 from django.template import loader
 from django.utils import timezone
-from .models import Post, Comment, Like, Share, Node
+from .models import Post, Comment, Like, Share, CommentLike, Node
 from .forms import ShareForm, CommentForm, addPostForm
 from django.views.generic import CreateView, UpdateView, DeleteView, FormView, View, ListView
 from django.urls import reverse_lazy, reverse
@@ -25,7 +25,7 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 import json
 import ast
-from .serializers import PostSerializer, CommentSerializer, LikeSerializer, NodeSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer, LikeCommentSerializer, NodeSerializer
 from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
@@ -398,7 +398,7 @@ class HandleAuthorPost(APIView):
 
     def post(self, request, AUTHOR_ID, POST_ID, format=None):
         try:
-            
+            #This part of code will check if the token from request matches the token of author.
             user = User.objects.get(id=AUTHOR_ID)
             request_user = request.user
             print(request_user.id)
@@ -866,35 +866,12 @@ class HandleInboxPost(APIView):
 def request_post_list(request):
     posts = Post.objects.all()
     posts_serializer = PostSerializer(posts, many=True)
-    for post_serializer_data in posts_serializer.data:
-        user = User.objects.get(id=post_serializer_data['author'])
-        user_profile = User_Profile.objects.get(user=user)
-        user_profile = userPSerializer(user_profile)
-        post_serializer_data['author'] = user_profile.data
     return Response(posts_serializer.data)
-'''
-user = User.objects.get(id=AUTHOR_ID)
-            posts = Post.objects.filter(author=user)
-            user_profile = User_Profile.objects.get(user=user)
-            post_serializer = PostSerializer(posts, many=True)
-            for post_serializer_data in post_serializer.data:
-                comments = Comment.objects.filter(post = post_serializer_data['id'])
-                count = len(comments)
-                post_serializer_data['origin'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
-                post_serializer_data['source'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
-                post_serializer_data['description'] = "This post discusses stuff -- brief"
-                post_serializer_data['categories'] = []
-                post_serializer_data['count'] = count
-                post_serializer_data['comments'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
-                if post_serializer_data['contentType'] == 1:
-                    post_serializer_data['contentType'] = "text/markdown"
-                else:
-                    post_serializer_data['contentType'] = "text/plain"
-            return JsonResponse(post_serializer.data, safe=False)
-'''
+
+
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([ExemptGetPermission])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def create_new_post(request):
     if request.method == 'POST':
         try:
@@ -913,8 +890,8 @@ def create_new_post(request):
 
 
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
 def get_posts_from_user(request, username):
     if request.method == 'GET':
         try:
@@ -929,14 +906,22 @@ def get_posts_from_user(request, username):
 
 
 @api_view(['POST', 'DELETE'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([ExemptGetPermission])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def manage_user_post(request, username):
     if request.method == 'POST':
         try:
             related_user = User.objects.get(username=username)
 
-            
+            #This part of code will check if the token from request matches the token of author.
+            user_token = Token.objects.get(user=related_user)
+            entered_token = re.findall('(?:Token\s)(\w*)',
+                                       request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse(
+                    {'message': 'The token user does not match the post user'},
+                    status=status.HTTP_403_FORBIDDEN)
+            #End of this part of code.
 
             data = JSONParser().parse(request)
             post_serializer = PostSerializer(data=data)
@@ -956,7 +941,15 @@ def manage_user_post(request, username):
         try:
             related_user = User.objects.get(username=username)
 
-            
+            #This part of code will check if the token from request matches the token of author.
+            user_token = Token.objects.get(user=related_user)
+            entered_token = re.findall('(?:Token\s)(\w*)',
+                                       request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse(
+                    {'message': 'The token user does not match the post user'},
+                    status=status.HTTP_403_FORBIDDEN)
+            #End of this part of code.
 
             posts = Post.objects.filter(author=related_user)
             for post in posts:
@@ -970,8 +963,8 @@ def manage_user_post(request, username):
 
 
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
 def request_post(request, id):
     if request.method == 'GET':
         try:
@@ -985,8 +978,8 @@ def request_post(request, id):
 
 
 @api_view(['PUT', 'DELETE'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([ExemptGetPermission])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def crud_post(request, id):
 
     #post_serializer = PostSerializer(data = request.data)
@@ -1004,7 +997,15 @@ def crud_post(request, id):
         try:
             related_post = Post.objects.get(id=id)
 
-            
+            #This part of code will check if the token from request matches the token of author.
+            user_token = Token.objects.get(user=related_post.author)
+            entered_token = re.findall('(?:Token\s)(\w*)',
+                                       request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse(
+                    {'message': 'The token user does not match the post user'},
+                    status=status.HTTP_403_FORBIDDEN)
+            #End of this part of code.
 
             data = JSONParser().parse(request)
             post_serializer = PostSerializer(related_post, data=data)
@@ -1022,7 +1023,15 @@ def crud_post(request, id):
         try:
             related_post = Post.objects.get(id=id)
 
-            
+            #This part of code will check if the token from request matches the token of author.
+            user_token = Token.objects.get(user=related_post.author)
+            entered_token = re.findall('(?:Token\s)(\w*)',
+                                       request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse(
+                    {'message': 'The token user does not match the post user'},
+                    status=status.HTTP_403_FORBIDDEN)
+            #End of this part of code
 
             related_post.delete()
             return JsonResponse({'message': 'Post was deleted'},
@@ -1034,8 +1043,8 @@ def crud_post(request, id):
 
 
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
 def get_comments_from_post(request, post_id):
     if request.method == 'GET':
         try:
@@ -1050,14 +1059,24 @@ def get_comments_from_post(request, post_id):
 
 
 @api_view(['POST', 'DELETE'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([ExemptGetPermission])
+#@authentication_classes([TokenAuthentication])
+#@permission_classes([IsAuthenticated])
 def manage_post_comment(request, post_id):
 
     if request.method == 'POST':
         try:
             related_post = Post.objects.get(id=post_id)
-            
+            '''
+            #This part of code will check if the token from request matches the token of author.
+            user_token = Token.objects.get(user=related_post.author)
+            entered_token = re.findall('(?:Token\s)(\w*)',
+                                       request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse(
+                    {'message': 'The token user does not match the post user'},
+                    status=status.HTTP_403_FORBIDDEN)
+            #End of this part of code.
+            '''
             data = JSONParser().parse(request)
             comment_serializer = CommentSerializer(data=data)
             if comment_serializer.is_valid():
@@ -1075,7 +1094,15 @@ def manage_post_comment(request, post_id):
         try:
             related_post = Post.objects.get(id=post_id)
 
-            
+            #This part of code will check if the token from request matches the token of author.
+            user_token = Token.objects.get(user=related_post.author)
+            entered_token = re.findall('(?:Token\s)(\w*)',
+                                       request.META['HTTP_AUTHORIZATION'])[0]
+            if str(user_token) != entered_token:
+                return JsonResponse(
+                    {'message': 'The token user does not match the post user'},
+                    status=status.HTTP_403_FORBIDDEN)
+            #End of this part of code.
 
             comments = Comment.objects.filter(post=related_post)
             for comment in comments:
@@ -1090,8 +1117,8 @@ def manage_post_comment(request, post_id):
 
 
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
 def request_comment(request, comment_id):
     if request.method == 'GET':
         try:
@@ -1105,8 +1132,8 @@ def request_comment(request, comment_id):
 
 
 @api_view(['PUT', 'DELETE'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([ExemptGetPermission])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def crud_comment(request, comment_id):
     if request.method == 'PUT':
         try:
@@ -1134,8 +1161,8 @@ def crud_comment(request, comment_id):
 
 
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
 def get_likes_from_post(request, post_id):
     if request.method == 'GET':
         try:
@@ -1151,8 +1178,8 @@ def get_likes_from_post(request, post_id):
 
 
 @api_view(['POST', 'DELETE'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([ExemptGetPermission])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def manage_post_like(request, post_id):
 
     if request.method == 'POST':
@@ -1187,8 +1214,8 @@ def manage_post_like(request, post_id):
 
 
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([CustomAuthentication])
+@permission_classes([AccessPermission])
 def request_like(request, like_id):
     if request.method == 'GET':
         try:
@@ -1202,8 +1229,8 @@ def request_like(request, like_id):
 
 
 @api_view(['PUT', 'DELETE'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([ExemptGetPermission])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def crud_like(request, like_id):
 
     if request.method == 'PUT':

@@ -1,4 +1,4 @@
-Not commplete we ran into last minute bugs and our code cannot be deployed.
+Not complete we ran into last minute bugs and our code cannot be deployed.
 
 Project: social Circle (social network app)
 

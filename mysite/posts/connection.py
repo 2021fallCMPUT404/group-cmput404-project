@@ -83,3 +83,10 @@ def make_external_friend_request(internal_id, foreign_id):
     request = make_external_request(url, (node.username, node.password), method='PUT')
     print(request)
     return request.status_code
+def split_ids():
+    cleaned = []
+    authors = get_foreign_authors_list()
+    for user in authors:
+        cleaned.append(user['id'].split('/')[-1])
+    
+    return cleaned

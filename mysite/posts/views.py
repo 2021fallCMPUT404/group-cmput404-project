@@ -23,7 +23,7 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 import json
 import ast
-from .serializers import PostSerializer, CommentSerializer, LikeSerializer, LikeCommentSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes

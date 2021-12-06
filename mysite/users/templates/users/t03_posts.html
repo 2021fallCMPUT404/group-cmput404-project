@@ -14,7 +14,8 @@
                 <div class=container " style="border: 1cm ;">
                     <br>
 
-                    <h4 style="margin-right: 80%;" ><img src="{{ post.author.profileImage }}"  style="border: 0.3px cornsilk; width: 100px; height: 100px; object-fit: cover; border-radius: 50%;"> {{post.author.displayName}} </h4>
+                    <h4 style="margin-right: 80%;" ><img src="{{ post.author.profileImage }}"  alt="No image available" style="border: 0.3px cornsilk; width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                        <p> {{post.author.displayName}} </p></h4>
                     <hr class="mt-2 mb-3" style="width: 30%;"/>
                     <h2 style="overflow: hidden; text-overflow: ellipsis;">{{post.title}}</h2>
                     <p style="color: darkgrey;"> Published at: {{post.published}}</p>

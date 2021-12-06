@@ -22,7 +22,7 @@
                     <p style="color: darkgrey;"> Published at: {{post.published}}</p>
                 {% if post.contentType == 'text/plain' %}
                     <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{post.content}}</p>
-                {%elif post.contentType == 'image' %}
+                {%elif post.contentType == 'image/png' %}
                     <img src="{{ post.content }}" width="60%" style="border: 0.3px solid;">
                 {%elif post.contentType == 'text/markdown' %}
                     <p style="overflow: hidden; text-overflow: ellipsis; font-size:125%;">{{ post.content | markdown | safe }}</p>

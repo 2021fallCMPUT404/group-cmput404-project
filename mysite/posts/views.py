@@ -944,8 +944,8 @@ def get_t15_posts(url):
                                auth=('connectionsuperuser', '404connection'),
                                headers={'Referer': "http://127.0.0.1:8000/"})
 
-    ext_request = ext_request.json()
-    return ext_request
+    req = ext_request.json()
+    return req
 
 
 def view_t15_posts(request):

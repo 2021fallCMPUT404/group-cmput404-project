@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% csrf_token %}
 {% block content %}
-<h1>{{ insert_github_username }}</h1>
+<h1 style="font-family: Dancing Script; ">{{ insert_github_username }}</h1>
 <div class="all_activities">
     <div class="activity_list">
         <form id='event_form' method='post'>
@@ -10,11 +10,18 @@
             <div id='form_div' style='display: flex;
             justify-content: center;'>
                 <div id='event_div' style='align-items: initial; display: flex; flex-direction: column; border-radius: 25px;padding: 20px; border: 15px outset black; width: 1200px; 
-                position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: auto; margin-top: 10px;
+                position: absolute; top: 90%; left: 50%; transform: translate(-50%, -50%); margin: auto; margin-top: 10px;
                 '>
+                <br>
+                <div>
+                    <div id='input_div'><input type="submit" class="btn btn-lg btn-primary btn-block" value='Add' style='position: absolute;
+                        bottom: -8%;'></div>
+                    </div>
+                    <div><a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block"
+                        style='position:absolute; left:10%; bottom: -8%;'><i class="fa fa-arrow-left"></i> Go back</a>
+                    </div>
                 </div>
-                <div id='input_div'><input type="submit" class="btn btn-lg btn-primary btn-block" value='Add' style='position: absolute;
-                        bottom: 10%;'></div>
+                
 
                 <br>
 
@@ -168,9 +175,7 @@
                 </script>
 
         </form>
-        <div><a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block"
-                style='position:absolute; left:10%; top: 90%'><i class="fa fa-arrow-left"></i> Go back</a>
-        </div>
+        <br><br>
     </div>
 
     {% endblock content %}

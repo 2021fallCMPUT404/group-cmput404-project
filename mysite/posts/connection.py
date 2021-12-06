@@ -62,3 +62,11 @@ def get_foreign_authors_list():
         if request.status_code != 200:
             print("Status code: {}".format(request.status_code))
     return request.json()['items']
+
+def split_ids():
+    cleaned = []
+    authors = get_foreign_authors_list()
+    for user in authors:
+        cleaned.append(user['id'].split('/')[-1])
+    
+    return cleaned

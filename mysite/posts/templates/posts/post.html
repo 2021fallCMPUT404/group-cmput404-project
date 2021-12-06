@@ -96,7 +96,7 @@
     {% endif %}
     <h2>Shares</h2>
     <p>Total Shares: {{post.share.count}}</p>
-    {%if not post.share %}
+    {%if not post.share or post.share.count == 0%}
         Not shared yet 
     {%else%}
         Shared by 

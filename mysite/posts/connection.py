@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from posts.models import Node
 from users.models import User
 import requests
@@ -15,8 +16,18 @@ def is_local_id(user_id):
 # It will return a tuple, with the first value being a bool, the 2nd a url string
 # Returns true with the url if it is a valid foreign id, else, returns False with None
 
-def make_external_request(url, auth):
-    ext_request = requests.get(url, auth=auth, headers={'Referer': "http://127.0.0.1:8000/"})
+def make_external_request(url, auth, method='GET'):
+    headers = {'Referer': "http://127.0.0.1:8000/"}
+    if method == "GET":
+        ext_request = requests.get(url, auth=auth, headers=headers)
+    elif method == "POST":
+        ext_request = requests.post(url, auth=auth, headers=headers)
+    elif method == "PUT":
+        ext_request = requests.put(url, auth=auth, headers=headers)
+    elif method == "DELETE":
+        ext_request = requests.delete(url, auth=auth, headers=headers)
+    else:
+        return Exception
 
     #ext_request = ext_request.json()
     return ext_request
@@ -62,3 +73,13 @@ def get_foreign_authors_list():
         if request.status_code != 200:
             print("Status code: {}".format(request.status_code))
     return request.json()['items']
+
+def make_external_friend_request(internal_id, foreign_id):
+    foreign_host = is_foreign_id(foreign_id)[1]['host'] + 'service/'
+    print('Printing foreign host: {}'.format(foreign_host)) 
+    node = get_object_or_404(Node, url=foreign_host)
+    url = '{}author/{}/followers/{}'.format(foreign_host, foreign_id, internal_id)
+    print("THE URL", url)
+    request = make_external_request(url, (node.username, node.password), method='PUT')
+    print(request)
+    return request.status_code

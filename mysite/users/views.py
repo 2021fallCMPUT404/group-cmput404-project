@@ -600,8 +600,9 @@ def fetch_user_profiles(user_id):
 def send_request_page(request):
     user_profile = get_object_or_404(User_Profile, user_id=request.user.id)
     users_list = User_Profile.objects.filter(~Q(user=request.user))
-    print(users_list)
-    print(get_foreign_authors_list())
+    #print(users_list)
+    #print(get_foreign_authors_list())
+    print(make_external_friend_request(request.user.id, '6bccdad1-a8a0-4874-b74a-2c9b172d5ae5'))
     return render(request, 'users/send_requests.html',
                   {'users_list': users_list})
 

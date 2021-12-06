@@ -17,8 +17,11 @@ class UsersTestCase(TestCase):
         user_profile1 = User_Profile.objects.create(
             displayName='case_1',
             user=user1,
+            first_name='test1',
+            last_name='case1',
+            email='testcase1@ualberta.ca',
             profileImage='test_image.jpg',
-            github='https://github.com/orgs/2021fallCMPUT404/dashboard',
+            github='JohnChen97',
             bio='test_bio1')
 
         user2 = User.objects.create(username='testcase2',
@@ -29,8 +32,11 @@ class UsersTestCase(TestCase):
         user_profile2 = User_Profile.objects.create(
             displayName='case_2',
             user=user2,
+            first_name='test2',
+            last_name='case2',
+            email='testcase2@ualberta.ca',
             profileImage='test_image.jpg',
-            github='https://github.com/JohnChen97/CMPUT404_lab1',
+            github='JohnChen97',
             bio='test_bio2')
 
     def test_user_profile_model(self):
@@ -41,6 +47,15 @@ class UsersTestCase(TestCase):
         test_profile_2 = User_Profile.objects.get(user=test_user_2)
         self.assertEqual(test_profile_1.displayName, 'case_1')
         self.assertEqual(test_profile_2.displayName, 'case_2')
+
+        self.assertEqual(test_profile_1.first_name, 'test1')
+        self.assertEqual(test_profile_2.first_name, 'test2')
+
+        self.assertEqual(test_profile_1.last_name, 'case1')
+        self.assertEqual(test_profile_2.last_name, 'case2')
+
+        self.assertEqual(test_profile_1.email, 'testcase1@ualberta.ca')
+        self.assertEqual(test_profile_2.email, 'testcase2@ualberta.ca')
 
         self.assertEqual(test_profile_1.bio, 'test_bio1')
         self.assertEqual(test_profile_2.bio, 'test_bio2')
@@ -83,6 +98,9 @@ class UsersTestCase(TestCase):
         user_profile3 = User_Profile.objects.create(
             displayName='case_3',
             user=user3,
+            first_name='test3',
+            last_name='case3',
+            email='testcase3@ualberta.ca',
             profileImage='test_image.jpg',
             github='https://github.com/orgs/2021fallCMPUT404/dashboard',
             bio='test_bio3')
@@ -96,6 +114,9 @@ class UsersTestCase(TestCase):
         }
         user_profile_data3 = {
             'displayName': user_profile3.displayName,
+            'first_name': user_profile3.first_name,
+            'last_name': user_profile3.last_name,
+            'email': user_profile3.email,
             'profileImage': user_profile3.profileImage,
             'github': user_profile3.github,
             'bio': user_profile3.bio,
@@ -115,6 +136,9 @@ class UsersTestCase(TestCase):
         user_profile4 = User_Profile.objects.create(
             displayName='case_4',
             user=user4,
+            first_name='test4',
+            last_name='case4',
+            email='testcase4@ualberta.ca',
             profileImage='test_image.jpg',
             github='https://github.com/orgs/2021fallCMPUT404/dashboard',
             bio='test_bio3')
@@ -128,6 +152,9 @@ class UsersTestCase(TestCase):
         }
         user_profile_data4 = {
             'displayName': 'false',
+            'first_name': 'lol',
+            'last_name': 'lol',
+            'email': 'lol',
             'profileImage': 'falseImage.png',
             'github': 123,
             'bio': 'fasle_bio',

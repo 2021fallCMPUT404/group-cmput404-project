@@ -1,22 +1,20 @@
-{% extends 'users/home_page.html' %} 
+{% extends 'users/base.html' %} 
 {% block content %}
 {% load static %}
 
 <div class="container">
     
-    <h1 style="font-family: Dancing Script; font-size: 5rem;">UNHINDLED APP</h1>
-    <h2 style="font-family: Dancing Script;">List of Users from Team 15</h2>
+    <h1><a href=''>UNHINDLED APP</a></h1>
+    <h2>List of Users from Team 15</h2>
     <br>
     {% if authors %}
-    <div class="container align-middle" style="border-radius: 1rem; width: 65%;">
+    <div class="list-users">
         {% for user in authors %}
-        <li class="list-group-item list-group-item-action list-group-item-dark list-group-item-action d-flex gap-3 py-3" aria-current="true" style="background-color: blanchedalmond;"> 
-        <h2><img src='{{user.profileImage}}' style="width:100px;"> {{user.displayName}}</h2>
+        <h2> {{user.displayName}}</h2>
         <p>{{user.email}}</p>
-        </li>
+        <img src='{{user.profileImage}}' style="width:100px;"> 
         <br>
         {% endfor %}
-    </div>
     {% endif %}
     </div>
     {% endblock content %}

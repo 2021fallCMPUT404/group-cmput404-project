@@ -1,85 +1,25 @@
 {% extends "users/home_page.html" %}
-{% load static %}
-
 
 {% load crispy_forms_tags %}
+<h1>Welcome to Social Circle!</h1>
 {% block content %}
-
 <br>
-
-<h1  style="font-family: Dancing Script; font-size: 5rem;" >Profile</h1>
 <br>
-<div class="container" style="width: 80% ; height: 100%; border: 0.5px solid ;  overflow: hidden;">
+<br>
+<h2>{{user.username}}'s Home Page</h2>
+<br>
+<div>
     {{ request.user.User_Profile.profileImage.url }}
     {% if user.is_authenticated %}
-    <div style="margin-top: 3%;">
-        
-        <img src="{{ user.user_profile.profileImage.url }}"  style=" float: left; width: 100px; height: 100px; object-fit: cover; margin-left: 30%; border-radius: 50%;" >
-        
-        <div  style="float: right; width: 40%; margin-top: 3%; margin-right: 20%; "  >
-            <h2 class='Display_name' style="overflow: hidden;">{{ insert_display_name }}</h2>
-            <h3 style= "font-family: Josefin Sans;;" >{{user.user_profile.bio}}</h3>
-        </div>
-        <a href="{% url 'users:edit_user_profile' %}"><i class="btn  fa fa-gear fa-spin" style="font-size:24px;margin-left: 75%;" data-toggle="tooltip" data-placement="bottom" title="Edit Profile"></i></a>
-        
-
-        
-
-        
-    </div>
+    <img src="{{ user.user_profile.profileImage.url }}" width='300px' height="300"><br>
+    <br>
     {% endif %}
-    <hr style="width: 80%; border: 0.5px solid; margin: auto;">
+    <h2 class='Display_name'>{{ insert_display_name }}</h2>
+    <p>{{user.user_profile.bio}}</p>
     <br>
-
-    <div class="input-group input-group-lg" style="margin-left: 20%; overflow: hidden; ">
-        <div class="input-group-prepend">
-          <span class="input-group-text "id="userprofile_hd" style="width: 100px; height: 48px; background-color: #f9f5fa;">Username</span>
-        </div>
-        <span class="input-group-text " id="userprofile_hd" style="width: 800px; height: 48px;background-color: #f9f5fa; overflow: auto;" >{{ insert_display_name }}</span>
-    </div>
-    <br>
-    <div class="input-group input-group-lg" style="margin-left: 20%; overflow: hidden; background-color: #f9f5fa;">
-        <div class="input-group-prepend">
-          <span class="input-group-text " id="userprofile_hd" style="width: 100px; height: 48px;background-color: #f9f5fa;">Firstname</span>
-        </div>
-        <span class="input-group-text " id="userprofile_hd" style="width: 800px; height: 48px;background-color: #f9f5fa; overflow: auto;" >{{user.first_name}}</span>
-    </div>
-    <br>
-    <div class="input-group input-group-lg" style="margin-left: 20%; overflow: hidden; background-color: #f9f5fa;" >
-        <div class="input-group-prepend">
-          <span class="input-group-text " id="userprofile_hd" style="width: 100px; height: 48px;background-color: #f9f5fa;">Lastname</span>
-        </div>
-        <span class="input-group-text " id="userprofile_hd" style="width: 800px; height: 48px;background-color: #f9f5fa; overflow: auto;" >{{user.last_name}}</span>
-    </div>
-
-    <br>
-    <div class="input-group input-group-lg" style="margin-left: 20%; overflow: hidden; background-color: #f9f5fa;" >
-        <div class="input-group-prepend">
-          <span class="input-group-text " id="userprofile_hd" style="width: 100px; height: 48px;background-color: #f9f5fa;">Email</span>
-        </div>
-        <span class="input-group-text " id="userprofile_hd" style="width: 800px; height: 48px;background-color: #f9f5fa; overflow: auto;" >{{user.email}}</span>
-    </div>
-
-    <br>
-    <div class="input-group input-group-lg" style="margin-left: 20%; overflow: hidden; background-color: #f9f5fa;" >
-        <div class="input-group-prepend">
-          <span class="input-group-text " id="userprofile_hd" style="width: 100px; height: 48px;background-color: #f9f5fa;">Github</span>
-        </div>
-        <span class="input-group-text " id="userprofile_hd" style="width: 800px; height: 48px;background-color: #f9f5fa; overflow: auto;" >{{user.user_profile.github}}</span>
-    </div>
-    
-
-    <br>
-    <div class="input-group input-group-lg" style="margin-left: 20%; overflow: hidden; background-color: #f9f5fa;" >
-        <div class="input-group-prepend">
-          <span class="input-group-text " id="userprofile_hd" style="width: 100px; height: 48px;background-color: #f9f5fa;">Bio</span>
-        </div>
-        <span class="input-group-text " id="userprofile_hd" style="width: 800px; height: 48px;background-color: #f9f5fa; overflow: auto;" >{{user.user_profile.bio}}</span>
-    </div>
-    
-<br><br><br>
-
+    <a href="{% url 'addpost' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-plus"></i> Add a
+        Post</a>
+    <a href="{% url 'select_github_activity' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-github"></i> Add a Github Activity</a>
+    <a href="{% url 'feed' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-globe"></i> Explore Feed</a>
+    {% endblock content %}
 </div>
-
-
-{% endblock content %}

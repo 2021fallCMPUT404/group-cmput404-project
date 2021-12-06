@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -10,62 +9,15 @@ from django.apps import apps
 from django.db.models.fields.json import JSONField
 
 
-class Post(models.Model):
+#from users.models import User_Profile
+#Inbox = apps.get_model('users', 'Inbox')
+#import django
+#django.setup()
 
-    PUBLIC = 0
-    PRIVATE = 1
-    FREINDS=2    #Need friend system?
-
-    Privacy = (
-        (PUBLIC, "PUBLIC"),
-        (PRIVATE, "PRIVATE"),  #only shows to me
-        (FREINDS,"FRIENDS"),
-        
-    )
-    
-
-    PLAIN = 0
-    MARKDOWN = 1
-    IMAGE = 2
-    Content = (
-        (PLAIN,"text/plain"),
-        (MARKDOWN,"text/markdown"),
-        (IMAGE,"image")
-    )
-
-    type = 'post'
-    title = models.TextField( max_length=100, blank=True )
-    text = models.TextField(blank=True, null=True)
-    image = models.ImageField(upload_to='', blank=True, null=True)
-    pub_date = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    shared_user = models.ForeignKey(User,
-                                    on_delete=models.CASCADE,
-                                    null=True,
-                                    blank=True,
-                                    related_name='+')
-
-    shared_on = models.DateTimeField(blank=True, null=True)
-    unlisted = models.BooleanField(default=False)
-    privacy=models.IntegerField(choices=Privacy,default=PUBLIC)
-    visible=None
-
-    contentType = models.IntegerField(choices=Content,default=PLAIN)
-    
-    like = models.ManyToManyField(User, related_name='posts_likes')
-    share = models.ManyToManyField(User, related_name='posts_shares')
-
-    def get_absolute_url(self):
-        return reverse('post_placeholder', args=[str(self.id)])
-
-    def __str__(self):
-        return self.title
-    def is_shared_post(self):
-        return self.shared_user != None
-
-    
-
-
+from django.apps import apps
+import uuid
+from django.urls import reverse
+#Inbox = apps.get_model('users', 'Inbox')
 
 class Like(models.Model):
     type = 'like'
@@ -83,6 +35,62 @@ class Like(models.Model):
     #comment = models.ForeignKey(Comment, related_name='comment_like', blank=True, null=True, on_delete=models.CASCADE)
     #inbox = models.ManyToManyField("users.Inbox", related_name='inbox', blank=True, null=True)
 
+class Post(models.Model):
+
+    PUBLIC = 0
+    PRIVATE = 1
+    FREINDS = 2  #Need friend system?
+
+    Privacy = (
+        (PUBLIC, "PUBLIC"),
+        (PRIVATE, "PRIVATE"),  #only shows to me
+        (FREINDS, "FRIENDS"),
+    )
+
+    PLAIN = 0
+    MARKDOWN = 1
+    Content = ((PLAIN, "text/plain"), (MARKDOWN, "text/markdown"))
+
+    type = 'post'
+    title = models.TextField(max_length=100, blank=True)
+    text = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='', blank=True, null=True)
+    image_link = models.TextField(blank=True, null=True)
+    pub_date = models.DateTimeField(auto_now_add=True, null=True)
+    author = models.ForeignKey(User,
+                               on_delete=models.CASCADE,
+                               blank=True,
+                               null=True)
+
+    #author = JSONField()
+    shared_user = models.ForeignKey(User,
+                                    on_delete=models.CASCADE,
+                                    null=True,
+                                    blank=True,
+                                    related_name='+')
+
+    shared_on = models.DateTimeField(blank=True, null=True)
+    unlisted = models.BooleanField(default=False)
+    privacy = models.IntegerField(choices=Privacy, default=PUBLIC)
+    visible = None
+
+    contentType = models.IntegerField(choices=Content,default=PLAIN)
+    
+    share = models.ManyToManyField(User, related_name='posts_shares')
+
+    like = models.ManyToManyField(Like, related_name='posts_likes', blank=True, null=True)
+
+    #inbox = models.ManyToManyField("users.Inbox", null=True, blank=True, related_name='PostAndInbox')
+
+
+    def get_absolute_url(self):
+        return reverse('post_placeholder', args=[str(self.id)])
+
+    def __str__(self):
+        return self.title
+
+    def is_shared_post(self):
+        return self.shared_user != None
 
 
 class Comment(models.Model):
@@ -147,4 +155,3 @@ class Node(models.Model):
     team_id = models.IntegerField(null=True) #Added in case we need to do specific parsing for a team
     username = models.TextField()
     password = models.TextField()
-

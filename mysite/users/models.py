@@ -7,7 +7,7 @@ import uuid
 from django import forms
 from django.forms.widgets import Textarea
 import datetime
-from posts.models import Post
+from posts.models import Post, Like, CommentLike#, InboxLike
 from django.urls import reverse
 
 SITE_URL = "https://cmput404-socialdist-project.herokuapp.com"
@@ -45,8 +45,8 @@ class User_Profile(models.Model):
     url = SITE_URL
     displayName = models.CharField(max_length=60, blank=True)
     email = models.CharField(max_length=60, blank=True)
-    first_name = models.CharField(max_length=60, blank=True)
-    last_name = models.CharField(max_length=60, blank=True)
+    first_name = models.CharField(max_length=69, blank=True)
+    last_name = models.CharField(max_length=69, blank=True)
     profileImage = models.ImageField(
         upload_to='profile_picture',
         blank=True,
@@ -69,12 +69,20 @@ class Inbox(models.Model):
     type = 'inbox'
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    post = models.ManyToManyField(Post, null=True, blank=True)
+    follow = models.ManyToManyField("users.FriendRequest", null=True, blank=True)
+    like = models.ManyToManyField(Like, null=True, blank=True)
+    #comment_like = models.ManyToManyField(CommentLike, null=True, blank=True, on_delete=models.CASCADE)
+    #inbox_like = models.ManyToManyField(InboxLike, null=True, blank=True, on_delete=models.CASCADE)
+
 
 class UserFollows(models.Model):
+    #following
     actor = models.ForeignKey(User_Profile,
                               related_name="following",
                               on_delete=models.CASCADE,
                               default='')
+    #Got followed
     object = models.ForeignKey(User_Profile,
                                related_name="followers",
                                on_delete=models.CASCADE,
@@ -126,15 +134,3 @@ class FriendRequest(models.Model):
         return '{} wants to follow {}'.format(self.actor.displayName,
                                               self.object.displayName)
 
-class Messages(models.Model):
-    type='messages'
-    sender = models.ForeignKey(User_Profile,
-                              on_delete=models.CASCADE,
-                              related_name="sender",
-                              default='')
-    receiver = models.ForeignKey(User_Profile,
-                               on_delete=models.CASCADE,
-                               related_name="receiver",
-                               default='')
-
-        

@@ -2,146 +2,181 @@
 {% load crispy_forms_tags %}
 {% csrf_token %}
 {% block content %}
-<h1>{{ insert_github_username }}</h1>
+<h1 style="font-family: Dancing Script; ">{{ insert_github_username }}</h1>
 <div class="all_activities">
     <div class="activity_list">
         <form id='event_form' method='post'>
             {% csrf_token %}
-            <br>
-            <input type="submit" class="btn btn-lg btn-primary btn-block" value='Add selected Activity'>
-            <br>
-        </form>
-        <br>
-        <script type="text/javascript" style="display: block; border: 00.5px solid;">
 
-            function check_key(json_data, key) {
-                if (json_data.hasOwnProperty(key)) {
-                    return json_data[key]
-                } else {
+            <div id='form_div' style='display: flex;
+            justify-content: center;'>
+                <div id='event_div' style='align-items: initial; display: flex; flex-direction: column; border-radius: 25px;padding: 20px; border: 15px outset black; width: 1200px; 
+                position: absolute; top: 90%; left: 50%; transform: translate(-50%, -50%); margin: auto; margin-top: 10px;
+                '>
+                <br>
+                <div>
+                    <div id='input_div'><input type="submit" class="btn btn-lg btn-primary btn-block" value='Add' style='position: absolute;
+                        bottom: -8%;'></div>
+                    </div>
+                    <div><a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block"
+                        style='position:absolute; left:10%; bottom: -8%;'><i class="fa fa-arrow-left"></i> Go back</a>
+                    </div>
+                </div>
+                
 
-                }
-            }
-
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    world = this.responseText;
-                    var parsed_data = JSON.parse(this.responseText);
-
-                    var event_form = document.getElementById('event_form')
-
-                    for (let i = 0; i < parsed_data.length; i++) {
-                        //console.log(parsed_data[i]);
-                        (async () => {
-                            let event_type = parsed_data[i]['type'];
-                            let event_date = parsed_data[i]['created_at'];
-                            let event_org;
-                            let event_repo;
-                            let inner_text = event_type + ' on';
-                            let event_json = {};
-
-                            event_json.date = event_date;
-                            event_json.type = event_type;
-
-                            function update_json(json_object, key, value) {
-                                json_object[key] = value;
-                                return json_object;
-
-                            }
-
-                            let promise_org = new Promise(function (solve, reject) {
-                                if (parsed_data[i].hasOwnProperty('org')) {
-                                    solve(parsed_data[i]['org']['login']);
-                                } else {
-                                    //reject('no org');
-
-                                }
-                            })
-                            promise_org.then(
-                                function (value) {
-                                    //console.log(value)
-                                    event_json = update_json(event_json, 'org', value);
-
-                                },
-                                function (error) {
-                                    //console.log(error)
-                                    //console.log('this is empty:' + event_org)
-
-                                }
-                            )
+                <br>
 
 
+                <script type="text/javascript">
 
-                            let promise_repo = new Promise(function (solve, reject) {
-                                if (parsed_data[i].hasOwnProperty('repo')) {
-                                    solve(parsed_data[i]['repo']['name']);
-                                } else {
-                                    //reject('no repo');
-                                }
-                            });
-                            promise_repo.then(
-                                function (value) {
-                                    event_json = update_json(event_json, 'repo', value);
-                                    //console.log(event_json)
-                                },
-                                function (error) {
-                                    //console.log(error)
+                    function check_key(json_data, key) {
+                        if (json_data.hasOwnProperty(key)) {
+                            return json_data[key]
+                        } else {
 
-                                }
-
-                            )
-                            await promise_org
-                            await promise_repo
-
-                            //var dt = document.createElement('dt');
-                            //dt.innerText = event_json['date'];
-                            //event_list.appendChild(dt);
-                            //var dd = document.createElement('dd');
-
-                            for (let key in event_json) {
-                                if (key != 'type' && key != 'created_at') {
-                                    inner_text += ' ' + event_json[key];
-                                }
-
-                            }
-
-                            //dd.innerText = inner_text;
-                            //event_list.appendChild(dd);
-
-                            var button_label = document.createElement('label');
-                            button_label.innerText = event_date + ', ' + inner_text;
-                            const select_button = document.createElement('input');
-                            select_button.type = 'radio';
-                            select_button.name = 'select_event';
-                            select_button.id = i
-                            let event_json_string = JSON.stringify(event_json)
-                            let test_string = 'check this out'
-                            console.log(event_json)
-                            select_button.value = event_json_string;
-                            button_label.appendChild(select_button)
-                            event_form.appendChild(button_label)
-
-
-
-
-                        })()
+                        }
                     }
 
+                    var xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            world = this.responseText;
+                            var parsed_data = JSON.parse(this.responseText);
+
+                            var event_form = document.getElementById('event_form')
+                            var event_div = document.getElementById('event_div')
+                            var input_div = document.getElementById('input_div')
+
+                            for (let i = 0; i < parsed_data.length; i++) {
+                                //console.log(parsed_data[i]);
+                                (async () => {
+                                    let event_type = parsed_data[i]['type'];
+                                    let event_date = parsed_data[i]['created_at'];
+                                    let event_org;
+                                    let event_repo;
+                                    let inner_text = event_type + ' on';
+                                    let event_json = {};
+
+                                    event_json.date = event_date;
+                                    event_json.type = event_type;
+
+                                    function update_json(json_object, key, value) {
+                                        json_object[key] = value;
+                                        return json_object;
+
+                                    }
+
+                                    let promise_org = new Promise(function (solve, reject) {
+                                        if (parsed_data[i].hasOwnProperty('org')) {
+                                            solve(parsed_data[i]['org']['login']);
+                                        } else {
+                                            //reject('no org');
+
+                                        }
+                                    })
+                                    promise_org.then(
+                                        function (value) {
+                                            //console.log(value)
+                                            event_json = update_json(event_json, 'org', value);
+
+                                        },
+                                        function (error) {
+                                            //console.log(error)
+                                            //console.log('this is empty:' + event_org)
+
+                                        }
+                                    )
 
 
 
-                }
-            };
+                                    let promise_repo = new Promise(function (solve, reject) {
+                                        if (parsed_data[i].hasOwnProperty('repo')) {
+                                            solve(parsed_data[i]['repo']['name']);
+                                        } else {
+                                            //reject('no repo');
+                                        }
+                                    });
+                                    promise_repo.then(
+                                        function (value) {
+                                            event_json = update_json(event_json, 'repo', value);
+                                            //console.log(event_json)
+                                        },
+                                        function (error) {
+                                            //console.log(error)
 
-            xhr.open('GET', 'https://api.github.com/users/{{ insert_github_username }}/events/public', true);
-            xhr.setRequestHeader('Accept', "application/json");
-            xhr.send();
+                                        }
+
+                                    )
+                                    await promise_org
+                                    await promise_repo
+
+                                    //var dt = document.createElement('dt');
+                                    //dt.innerText = event_json['date'];
+                                    //event_list.appendChild(dt);
+                                    //var dd = document.createElement('dd');
+
+                                    for (let key in event_json) {
+                                        if (key != 'type' && key != 'created_at') {
+                                            inner_text += ' ' + event_json[key];
+                                        }
+
+                                    }
+
+                                    //dd.innerText = inner_text;
+                                    //event_list.appendChild(dd);
+                                    var individual_div = document.createElement('div');
+                                    individual_div.style.display = 'inline';
+                                    individual_div.style.color = 'black';
+                                    individual_div.style.textAlign = 'left';
+                                    individual_div.style.textustify = 'auto';
+                                    individual_div.style.fontStyle = 'italic';
+                                    //individual_div.style.borderStyle = 'solid';
+                                    individual_div.style.borderLeft = '5px solid blue';
+                                    individual_div.style.paddingBottom = '10px'
+
+                                    var button_label = document.createElement('label');
+                                    button_label.innerText = event_date + ', ' + inner_text;
+                                    const select_button = document.createElement('input');
+                                    select_button.type = 'radio';
+                                    select_button.name = 'select_event';
+                                    select_button.id = i
+                                    let event_json_string = JSON.stringify(event_json)
+                                    let test_string = 'check this out'
+
+                                    select_button.value = event_json_string;
+                                    button_label.appendChild(select_button)
+                                    //event_form.appendChild(button_label)
+                                    button_label.position = 'realtive'
+                                    individual_div.appendChild(button_label)
+                                    event_div.appendChild(individual_div)
 
 
-        </script>
 
-    <a href="{% url 'users:user_home_page' %}" class="btn btn-lg btn-primary btn-block"><i class="fa fa-arrow-left"></i> Go back</a> 
+                                })()
+                            }
+                            console.log(event_div)
+                            var divs = document.getElementById("event_div").childNodes;
+                            for (let theDiv of divs) {
+                                //radio_button.style.position = 'static';
+                                console.log(theDiv)
+                                //theDiv.style.textAlign = 'center';
+                                //theDiv.style.color = 'blue';
+                            }
+
+
+
+                        }
+                    };
+
+                    xhr.open('GET', 'https://api.github.com/users/{{ insert_github_username }}/events/public', true);
+                    xhr.setRequestHeader('Accept', "application/json");
+                    xhr.send();
+
+
+                </script>
+
+        </form>
+        <br><br>
     </div>
-</div>
 
-{% endblock content %}
+    {% endblock content %}

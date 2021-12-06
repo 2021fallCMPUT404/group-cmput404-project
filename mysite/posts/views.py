@@ -1,14 +1,15 @@
 from django.http.response import HttpResponseRedirect, HttpResponseForbidden
 from django import template
+from posts.connection import *
 import traceback
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User, AnonymousUser
 from . import views
 from django.urls.base import reverse
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseBadRequest
 from django.template import loader
 from django.utils import timezone
-from .models import Post, Comment, Like, Share
+from .models import Post, Comment, Like, Share, CommentLike, Node
 from .forms import ShareForm, CommentForm, addPostForm
 from .models import Post
 from django.views.generic import CreateView, UpdateView, DeleteView, FormView, View, ListView
@@ -16,20 +17,20 @@ from django.urls import reverse_lazy, reverse
 from django.core.exceptions import PermissionDenied
 from .forms import addPostForm
 from django.shortcuts import render
-from users.models import User_Profile, UserFollows
+from users.models import User_Profile, UserFollows, Inbox
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 import json
 import ast
-from .serializers import PostSerializer, CommentSerializer, LikeSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer, LikeCommentSerializer
 from .authentication import UsernamePasswordAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import TokenAuthentication, BaseAuthentication, SessionAuthentication, BasicAuthentication
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework import exceptions
 import requests
@@ -38,6 +39,19 @@ import datetime
 from rest_framework import authentication, permissions
 import base64
 from rest_framework.views import APIView
+from rest_framework.decorators import action
+from users.serializers import User_Profile, userPSerializer, UserSerializer
+
+class ExemptGetPermission(permissions.BasePermission):        
+
+    def has_permission(self, request, view):
+        # allow all POST requests
+        if request.method == 'GET':
+            return True
+
+        # Otherwise, only allow authenticated requests
+        # Post Django 1.10, 'is_authenticated' is a read-only attribute
+        return request.user and request.user.is_authenticated
 
 
 class AccessPermission(permissions.BasePermission):
@@ -123,7 +137,8 @@ def post(request, Post_id):
                 else:
                     if post.shared_user != None:
                         friend = User.objects.get(id=post.shared_user.id)
-                        friends_profile = get_object_or_404(User_Profile, user=friend)
+                        friends_profile = get_object_or_404(User_Profile,
+                                                            user=friend)
                         if f.actor.displayName == friends_profile.displayName:
                             print("friend share")
                             return render(request, 'posts/post.html', {
@@ -132,11 +147,45 @@ def post(request, Post_id):
                                 'followers': followers
                             })
 
-
     return render(request, 'not_found.html')
 
     #output = "Post text is: {}, Post date is: {}, Post id is: {}, Post author is: {}".format(post.text, post.pub_date,post.id, post.author)
     #return HttpResponse(output)
+
+
+class post_comments_api(APIView):
+    #authentication_classes = [SessionAuthentication, BasicAuthentication]
+    #permission_classes = [IsAuthenticated]
+
+    def get(self, request, author_id, post_id, format=None):
+        try:
+            author = get_object_or_404(User, pk=author_id)
+            related_post = Post.objects.get(id=post_id)
+            comments = Comment.objects.filter(post=related_post)
+            comments_serializer = CommentSerializer(comments, many=True)
+            return Response(comments_serializer.data)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+
+    def post(self, request, author_id, post_id, format=None):
+        try:
+            test = json.loads(request.body)
+            post = get_object_or_404(Post, pk=post_id)
+            author = userPSerializer(data=test['author'])
+            print(author.is_valid())
+            if not author.is_valid():
+                return HttpResponseBadRequest("Author object cannot be serialized.")
+            new_comment = Comment(author=author.data, comment_body=test['comment'], post=post)
+            new_comment.save()
+            return HttpResponse(new_comment)
+        except Exception as e:
+            return JsonResponse({'message':'Error: {}'.format(e)})
+
+def handle_not_found(request, exception):
+    return render(request, 'not_found.html')
 
 
 def placeholder(request):
@@ -160,7 +209,7 @@ def placeholder(request):
                 if p.author == current_user:
                     authorized_posts.append(p)
 
-            elif p.privacy == 2: #friend: visible to creator and friends only
+            elif p.privacy == 2:  #friend: visible to creator and friends only
                 if p.author == current_user:
                     authorized_posts.append(p)
                 else:
@@ -170,7 +219,8 @@ def placeholder(request):
                         else:
                             if p.shared_user != None:
                                 friend = User.objects.get(id=p.shared_user.id)
-                                friends_profile = get_object_or_404(User_Profile, user=friend)
+                                friends_profile = get_object_or_404(
+                                    User_Profile, user=friend)
                                 if f.actor.displayName == friends_profile.displayName:
                                     authorized_posts.append(p)
 
@@ -188,7 +238,7 @@ def placeholder(request):
                         if p.author == current_user:
                             authorized_posts.append(p)
 
-                    elif p.privacy == 2: #friend: visible to creator and friends only
+                    elif p.privacy == 2:  #friend: visible to creator and friends only
                         if p.author == current_user:
                             authorized_posts.append(p)
                         else:
@@ -197,8 +247,10 @@ def placeholder(request):
                                     authorized_posts.append(p)
                                 else:
                                     if p.shared_user != None:
-                                        friend = User.objects.get(id=p.shared_user.id)
-                                        friends_profile = get_object_or_404(User_Profile, user=friend)
+                                        friend = User.objects.get(
+                                            id=p.shared_user.id)
+                                        friends_profile = get_object_or_404(
+                                            User_Profile, user=friend)
                                         if f.actor.displayName == friends_profile.displayName:
                                             authorized_posts.append(p)
 
@@ -229,18 +281,26 @@ def delete_post(request, Post_id):
 
 def likePost(request, pk):
     post = get_object_or_404(Post, id=request.POST.get('post_id'))
-    post.like.add(request.user)
+    like = Like(user=request.user, object='https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}'.format(post.author.id, post.id))
+    
+    like.save()
+    post.like.add(like)
+    
     return HttpResponseRedirect(reverse('post_placeholder', args=[str(pk)]))
 
 
 class HandleAuthorPost(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [ExemptGetPermission]
+    
     def get(self, request, AUTHOR_ID, POST_ID, format=None):
         try:
+            print(request.user)
             user = User.objects.get(id=AUTHOR_ID)
             post = Post.objects.get(id=POST_ID)
+            user_profile = User_Profile.objects.get(user=user)
+            comments = Comment.objects.filter(post = post)
+            count = len(comments)
             if post.author.username != user.username:
                 return JsonResponse(
                     {
@@ -251,8 +311,19 @@ class HandleAuthorPost(APIView):
             if post.privacy != 0:
                 return JsonResponse({'message': 'This is not a public post.'},
                                     status=status.HTTP_403_FORBIDDEN)
-            post_serializer = PostSerializer(post)
-            return Response(post_serializer.data)
+            post_serializer = PostSerializer(post, many=False)
+            post_serializer_data = post_serializer.data
+            post_serializer_data['origin'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post.id))
+            post_serializer_data['source'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post.id))
+            post_serializer_data['description'] = "This post discusses stuff -- brief"
+            post_serializer_data['categories'] = []
+            post_serializer_data['count'] = count
+            post_serializer_data['comments'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post.id))
+            if post_serializer_data['contentType'] == 1:
+                post_serializer_data['contentType'] = "text/markdown"
+            else:
+                post_serializer_data['contentType'] = "text/plain"
+            return Response(post_serializer_data)
         except Post.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested post does not exist'},
@@ -261,52 +332,30 @@ class HandleAuthorPost(APIView):
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
-
+    
     def put(self, request, AUTHOR_ID, POST_ID, format=None):
         try:
-            #related_post = Post.objects.get(id=id)
-
-            #This part of code will check if the token from request matches the token of author.
-            user = User.objects.get(id=AUTHOR_ID)
-            '''
-            user_token = Token.objects.get(user=user)
-            entered_token = re.findall('(?:Token\s)(\w*)',
-                                       request.META['HTTP_AUTHORIZATION'])[0]
-            if str(user_token) != entered_token:
+            if Post.objects.filter(id = POST_ID).exists():
                 return JsonResponse(
-                    {'message': 'The token user does not match the post user'},
-                    status=status.HTTP_403_FORBIDDEN)
-            '''
-            #End of this part of code.
-
+                {'message': 'The requested post has already existed'},
+                status=status.HTTP_403_FORBIDDEN)
+            user = User.objects.get(id=AUTHOR_ID)
+            request_user = request.user
             data = JSONParser().parse(request)
-            data['author'] = AUTHOR_ID
-            data['id'] = POST_ID
-            '''
-            if Post.objects.filter(id=POST_ID).exists():
-                post_serializer = PostSerializer(post, data=data)
+            
+            if data['contentType'] == "text/markdown":
+                data['contentType'] = 1
             else:
-                post_serializer = PostSerializer(data=data)
-            '''
-            try:
-                post = Post.objects.get(id=POST_ID)
+                data['contentType'] = 0
 
-                #post = Post.objects.get(id=POST_ID)
-                post_serializer = PostSerializer(post, data=data)
-                if post_serializer.is_valid():
-
-                    post_serializer.save()
-                    print(post_serializer.data)
-                    return JsonResponse(post_serializer.data)
-            except Post.DoesNotExist:
-                post_serializer = PostSerializer(data=data)
-                if post_serializer.is_valid():
-
-                    post_serializer.save()
-                    print(post_serializer.data)
-                    return JsonResponse(post_serializer.data)
-            return JsonResponse(post_serializer.errors,
-                                status=status.HTTP_400_BAD_REQUEST)
+            created_post = Post( id = POST_ID, title=data['title'], text=data['text'], image=data['image'], author=user,
+                    shared_user = data['shared_user'],shared_on = data['shared_on'],
+                    privacy=data['privacy'], contentType=data['contentType'],)
+            
+            created_post.save()
+            post_serializer = PostSerializer(created_post)
+            
+            return JsonResponse(post_serializer.data)
         except User.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
@@ -316,26 +365,30 @@ class HandleAuthorPost(APIView):
         try:
             #This part of code will check if the token from request matches the token of author.
             user = User.objects.get(id=AUTHOR_ID)
-            '''
-            user_token = Token.objects.get(user=user)
-            entered_token = re.findall('(?:Token\s)(\w*)',
-                                       request.META['HTTP_AUTHORIZATION'])[0]
-            if str(user_token) != entered_token:
+            request_user = request.user
+            print(request_user.id)
+            
+            if request_user.id != AUTHOR_ID:
                 return JsonResponse(
-                    {'message': 'The token user does not match the post user'},
+                    {
+                        'message':
+                        'The authorized user id does not match the provided user id in url.'
+                    },
                     status=status.HTTP_403_FORBIDDEN)
-            '''
-            #End of this part of code.
-
+            
             post = Post.objects.get(id=POST_ID)
             if post.author.id != user.id:
                 return JsonResponse(
                     {
                         'message':
-                        'The post author id does not match the provided user id'
+                        'The provided author id does not match the provided user id in url.'
                     },
                     status=status.HTTP_403_FORBIDDEN)
             data = JSONParser().parse(request)
+            if data['contentType'] == "text/markdown":
+                data['contentType'] = 1
+            else:
+                data['contentType'] = 0
             post_serializer = PostSerializer(post, data=data)
             if post_serializer.is_valid():
                 post_serializer.save()
@@ -350,21 +403,12 @@ class HandleAuthorPost(APIView):
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
-
+    
     def delete(self, request, AUTHOR_ID, POST_ID, format=None):
         try:
 
             #This part of code will check if the token from request matches the token of author.
             user = User.objects.get(id=AUTHOR_ID)
-            '''
-            user_token = Token.objects.get(user=related_post.author)
-            entered_token = re.findall('(?:Token\s)(\w*)',
-                                       request.META['HTTP_AUTHORIZATION'])[0]
-            if str(user_token) != entered_token:
-                return JsonResponse(
-                    {'message': 'The token user does not match the post user'},
-                    status=status.HTTP_403_FORBIDDEN)
-            '''
             #End of this part of code
 
             post = Post.objects.get(id=POST_ID)
@@ -388,55 +432,402 @@ class HandleAuthorPost(APIView):
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
-
 class MangePostUnderUser(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [ExemptGetPermission]
     def get(self, request, AUTHOR_ID, format=None):
         try:
             user = User.objects.get(id=AUTHOR_ID)
             posts = Post.objects.filter(author=user)
-            posts_serializer = PostSerializer(posts, many=True)
-            return JsonResponse(posts_serializer.data, safe=False)
+            user_profile = User_Profile.objects.get(user=user)
+            post_serializer = PostSerializer(posts, many=True)
+            for post_serializer_data in post_serializer.data:
+                comments = Comment.objects.filter(post = post_serializer_data['id'])
+                count = len(comments)
+                post_serializer_data['origin'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                post_serializer_data['source'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                post_serializer_data['description'] = "This post discusses stuff -- brief"
+                post_serializer_data['categories'] = []
+                post_serializer_data['count'] = count
+                post_serializer_data['comments'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                if post_serializer_data['contentType'] == 1:
+                    post_serializer_data['contentType'] = "text/markdown"
+                else:
+                    post_serializer_data['contentType'] = "text/plain"
+            return JsonResponse(post_serializer.data, safe=False)
         except User.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, AUTHOR_ID, format=None):
+
         try:
             user = User.objects.get(id=AUTHOR_ID)
-
-            #This part of code will check if the token from request matches the token of author.
-            '''
-            user_token = Token.objects.get(user=user)
-            entered_token = re.findall('(?:Token\s)(\w*)',
-                                       request.META['HTTP_AUTHORIZATION'])[0]
-            if str(user_token) != entered_token:
-                return JsonResponse(
-                    {'message': 'The token user does not match the post user'},
-                    status=status.HTTP_403_FORBIDDEN)
-            '''
-            #End of this part of code.
-
+            request_user = request.user
             data = JSONParser().parse(request)
-            post_serializer = PostSerializer(data=data)
-            if post_serializer.is_valid():
-                post_serializer.save()
-                return JsonResponse(post_serializer.data,
-                                    status=status.HTTP_201_CREATED)
-            return JsonResponse(post_serializer.errors,
-                                status=status.HTTP_400_BAD_REQUEST)
+            if data['contentType'] == "text/markdown":
+                data['contentType'] = 1
+            else:
+                data['contentType'] = 0
+            created_post = Post(title=data['title'], text=data['text'], image=data['image'], author=user,
+                    shared_user = data['shared_user'],shared_on = data['shared_on'],
+                    privacy=data['privacy'], contentType=data['contentType'],)
+            
+            created_post.save()
+            post_serializer = PostSerializer(created_post)
+            
+            return JsonResponse(post_serializer.data)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+class HandleAuthorPostComment(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
+
+    def get(self, request, AUTHOR_ID, POST_ID, format=None):
+        
+        try:
+            post = Post.objects.get(id=POST_ID)
+            if AUTHOR_ID != post.author.id:
+                return JsonResponse({
+                    'message':
+                    'The provided author in url does have the request post'
+                })
+            comments = Comment.objects.filter(post=post)
+            
+            comments_serializer = CommentSerializer(comments, many=True)
+            return JsonResponse(comments_serializer.data, safe=False)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, AUTHOR_ID, POST_ID, format=None):
+        print("Is this running/")
+        try:
+            data = JSONParser().parse(request)
+            user = User.objects.get(id=data['author']['id'])
+            post = Post.objects.get(id=POST_ID)
+
+            created_comment = Comment(post = post, author=user,
+                    comment_body = data['comment_body'], comment_created = data['comment_created'])
+            
+            created_comment.save()
+
+            
+
+            comment_serializer = CommentSerializer(created_comment)
+
+            
+            return JsonResponse(comment_serializer.data,
+                                status=status.HTTP_201_CREATED)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+class HandleInboxLike(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
+
+    def post(self, request, AUTHOR_ID, format=None):
+        try:
+            inbox = Inbox.objects.get(author=AUTHOR_ID)
+            data = JSONParser().parse(request)
+            try:
+                user = User.objects.get(id=data['user']['id'])
+            except:
+                user = User.objects.get(id=AUTHOR_ID)
+            
+            created_like = Like(user=user, object = data['object'])
+            like_serializer = LikeSerializer(created_like)
+            inbox.like.add(created_like.id)
+            return JsonResponse(like_serializer.data,
+                                status=status.HTTP_201_CREATED)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+        except Inbox.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested inbox does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+
+class HandlePostLikeList(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
+    def get(self, request, AUTHOR_ID, POST_ID, format=None):
+
+        try:
+            related_post = Post.objects.get(id=POST_ID)
+            likes = Like.objects.filter(user=related_post.author)
+            likes_serializer = LikeSerializer(likes, many=True)
+            
+            for like_data in likes_serializer.data:
+                like_data['object'] = "https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}".format(str(AUTHOR_ID), str(POST_ID))
+                like_data['@context'] = 'https://cmput404-socialdist-project.herokuapp.com/post/feed'
+                user_profile = User_Profile.objects.get(user=like_data['user']['id'])
+                like_data['summary'] = "{} Likes your post".format(user_profile.displayName)
+            return JsonResponse(likes_serializer.data, safe=False)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+
+class HandleCommentLike(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
+    def get(self, request, AUTHOR_ID, POST_ID, COMMENT_ID, format=None):
+        try:
+            user_comment = Comment.objects.get(author = AUTHOR_ID)
+            print(user_comment.id)
+            comment = Comment.objects.get(id=COMMENT_ID)
+            post = Post.objects.get(id=POST_ID)
+
+            if comment.post.id != post.id:
+                return JsonResponse(
+                    {
+                        'message':
+                        'The requested post does not have the requested comment'
+                    },
+                    status=status.HTTP_404_NOT_FOUND)
+            if post.author != AUTHOR_ID:
+                return JsonResponse(
+                    {
+                        'message':
+                        'The requested author does not have the requested post'
+                    },
+                    status=status.HTTP_404_NOT_FOUND)
+            commentlikes = CommentLike.objects.filter(comment=comment)
+            like_serializer = LikeCommentSerializer(likes, many=True)
+            for like_data in like_serializer.data:
+                like_data['object'] = "https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}".format(str(AUTHOR_ID), str(POST_ID))
+                like_data['@context'] = 'https://cmput404-socialdist-project.herokuapp.com/post/feed'
+                user_profile = User_Profile.objects.get(user=like_data['user']['id'])
+                like_data['summary'] = "{} Likes your post".format(user_profile.displayName)
+            return JsonResponse(like_serializer.data, safe=False)
+        except Comment.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested comment does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+        except Post.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested post does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
         except User.DoesNotExist:
             return JsonResponse(
                 {'message': 'The requested user does not exist'},
                 status=status.HTTP_404_NOT_FOUND)
 
 
+class HandleAuthorLike(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
+    def get(self, request, AUTHOR_ID, format=None):
+        try:
+            author = User.objects.get(id=AUTHOR_ID)
+            likes = Like.objects.filter(user=author)
+            comment_likes = CommentLike.objects.filter(user = author)
+            likes_serializer = LikeSerializer(likes, many=True)
+            comment_likes_serializer = LikeCommentSerializer(comment_likes, many = True)
+            for like_data in likes_serializer.data:
+                like_data['object'] = "https://cmput404-socialdist-project.herokuapp.com/author/{}".format(str(AUTHOR_ID))
+                like_data['@context'] = 'https://cmput404-socialdist-project.herokuapp.com/post/feed'
+                user_profile = User_Profile.objects.get(user=like_data['user']['id'])
+                like_data['summary'] = "{} Likes your post".format(user_profile.displayName)
+            for like_data in comment_likes_serializer.data:
+                like_data['object'] = "https://cmput404-socialdist-project.herokuapp.com/author/{}".format(str(AUTHOR_ID))
+                like_data['@context'] = 'https://cmput404-socialdist-project.herokuapp.com/post/feed'
+                user_profile = User_Profile.objects.get(user=like_data['user']['id'])
+                like_data['summary'] = "{} Likes your post".format(user_profile.displayName)
+            
+            return JsonResponse(likes_serializer.data + comment_likes_serializer.data, safe=False)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+
+class HandleInboxPost(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [ExemptGetPermission]
+    def get(self, request, AUTHOR_ID, format=None):
+        try:
+            author = User.objects.get(id=AUTHOR_ID)
+            user_profile = User_Profile.objects.get(user = author)
+            user_follows = UserFollows.objects.filter(actor= user_profile)
+
+            new_data = [] 
+            for user_follow in user_follows:
+                posts = Post.objects.filter(author=user_follow.object.user)
+                post_serializer = PostSerializer(posts, many=True)
+                for post_serializer_data in post_serializer.data:
+                    comments = Comment.objects.filter(post = post_serializer_data['id'])
+                    count = len(comments)
+                    post_serializer_data['origin'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                    post_serializer_data['source'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                    post_serializer_data['description'] = "This post discusses stuff -- brief"
+                    post_serializer_data['categories'] = []
+                    post_serializer_data['count'] = count
+                    post_serializer_data['comments'] = "https://cmput404-socialdist-project.herokuapp.com/posts/{}".format(str(post_serializer_data['id']))
+                    if post_serializer_data['contentType'] == 1:
+                        post_serializer_data['contentType'] = "text/markdown"
+                    else:
+                        post_serializer_data['contentType'] = "text/plain"
+                print(type(post_serializer.data))
+                new_data.extend(post_serializer.data)
+            
+            return JsonResponse(new_data, safe=False)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
+    def post(self, request, AUTHOR_ID, format=None):
+        try:
+            author = User.objects.get(id=AUTHOR_ID)
+            user_profile = User_Profile.objects.get(user = author)
+            user_follows = UserFollows.objects.filter(actor= user_profile)
+            data = JSONParser().parse(request)
+            print('check1')
+            if data['type'] == 'post':
+                try:
+                    try: 
+                        
+                        user = User.objects.get(id=data['user'])
+                    
+                    except KeyError:
+                        
+                        user = User.objects.get(id=data['author']['id'])
+
+                    except TypeError:
+                        
+                        user = User.objects.get(id=data['user']['id'])
+                                 
+                    except:
+                        
+                        user = User.objects.get(id=data['author'])
+                        
+                    
+                    
+                    
+                    if data['contentType'] == "text/markdown":
+                        data['contentType'] = 1
+                    else:
+                        data['contentType'] = 0
+                    created_post = Post(title=data['title'], text=data['text'], image=data['image'], author=user,
+                            shared_user = data['shared_user'],shared_on = data['shared_on'],
+                            privacy=data['privacy'], contentType=data['contentType'],)
+                    
+                    created_post.save()
+                    post_serializer = PostSerializer(created_post)
+                    inbox = Inbox.objects.get(author=AUTHOR_ID)
+                    inbox.post.add(created_post.id)
+                    
+                    return JsonResponse(post_serializer.data)
+                except User.DoesNotExist:
+                    return JsonResponse(
+                        {'message': 'The requested user does not exist'},
+                        status=status.HTTP_404_NOT_FOUND)
+            print('check2')
+            if data['type'] == 'follow':
+                try:
+                    try: 
+                        
+                        user = User.objects.get(id=data['user'])
+                    
+                    except KeyError:
+                        
+                        user = User.objects.get(id=data['author']['id'])
+
+                    except TypeError:
+                        
+                        user = User.objects.get(id=data['user']['id'])
+                                 
+                    except:
+                        
+                        user = User.objects.get(id=data['author'])
+                    
+                    request_user = User.objects.get(id=AUTHOR_ID)
+                    
+                    actor = data['actor']
+                    actor_user = User.objects.get(actor['id'])
+                    actor_profile = User_Profile.objects.get(user=actor_user)
+                    friend_request = FriendRequest.create_friend_request(foreign_user_profile, user_profile)
+                    friend_request.save()
+                    inbox = Inbox.objects.get(author=AUTHOR_ID)
+                    inbox.follow.add(friend_request.id)
+                    
+                except User.DoesNotExist:
+                    return JsonResponse(
+                        {'message': 'The requested user does not exist'},
+                        status=status.HTTP_404_NOT_FOUND)
+            print('check3')
+            if data['type'] == 'like':
+                try:
+                    inbox = Inbox.objects.get(author=AUTHOR_ID)
+                    
+                    
+                    try: 
+                        
+                        user = User.objects.get(id=data['user'])
+                    
+                    except KeyError:
+                        
+                        user = User.objects.get(id=data['author']['id'])
+
+                    except TypeError:
+                        
+                        user = User.objects.get(id=data['user']['id'])
+                                 
+                    except:
+                        
+                        user = User.objects.get(id=data['author'])
+                    
+                    created_like = Like(user=user, object = data['object'])
+                    created_like.save()
+                    like_serializer = LikeSerializer(created_like)
+                    inbox.like.add(created_like.id)
+
+                    search_comment = re.findall("(?:(comments\/))(.+)", data['object'])
+                    if search_comment:
+                        if len(search_comment) != 0:
+                            comment_id = search_comment[0]
+                            comment = Comment.objects.get(id = comment_id[1])
+                            comment.like.add(created_like)
+                    else:
+                        search_post = re.findall("(?:(post\/))(.+)", data['object'])
+                        if len(search_post) != 0:
+                            post_id = search_post[0]
+                            print(post_id)
+                            post = Post.objects.get(id = int(post_id[1]))
+                            post.like.add(created_like)
+
+
+                    return JsonResponse(like_serializer.data,
+                                        status=status.HTTP_201_CREATED)
+                except User.DoesNotExist:
+                    return JsonResponse(
+                        {'message': 'The requested user does not exist'},
+                        status=status.HTTP_404_NOT_FOUND)
+                except Inbox.DoesNotExist:
+                    return JsonResponse(
+                        {'message': 'The requested inbox does not exist'},
+                        status=status.HTTP_404_NOT_FOUND)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {'message': 'The requested user does not exist'},
+                status=status.HTTP_404_NOT_FOUND)
 @api_view(['GET'])
-@authentication_classes([CustomAuthentication])
-@permission_classes([AccessPermission])
+@authentication_classes([])
+@permission_classes([])
 def request_post_list(request):
     posts = Post.objects.all()
     posts_serializer = PostSerializer(posts, many=True)
@@ -633,14 +1024,14 @@ def get_comments_from_post(request, post_id):
 
 
 @api_view(['POST', 'DELETE'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
+#@authentication_classes([TokenAuthentication])
+#@permission_classes([IsAuthenticated])
 def manage_post_comment(request, post_id):
 
     if request.method == 'POST':
         try:
             related_post = Post.objects.get(id=post_id)
-
+            '''
             #This part of code will check if the token from request matches the token of author.
             user_token = Token.objects.get(user=related_post.author)
             entered_token = re.findall('(?:Token\s)(\w*)',
@@ -650,7 +1041,7 @@ def manage_post_comment(request, post_id):
                     {'message': 'The token user does not match the post user'},
                     status=status.HTTP_403_FORBIDDEN)
             #End of this part of code.
-
+            '''
             data = JSONParser().parse(request)
             comment_serializer = CommentSerializer(data=data)
             if comment_serializer.is_valid():
@@ -862,7 +1253,10 @@ def select_github_activity(request):
 
 def likeComment(request, pk):
     comment = get_object_or_404(Comment, id=request.POST.get('comment_id'))
-    comment.like.add(request.user)
+    like = Like(user=request.user, object = 'https://cmput404-socialdist-project.herokuapp.com/author/{}/post/{}/comments/{}'.format(comment.post.author.id, comment.post.id, comment.id))
+    like.save()
+    comment.like.add(like)
+    
     return HttpResponseRedirect(reverse('post_placeholder', args=[str(pk)]))
 
 
@@ -883,10 +1277,10 @@ class addComment(CreateView):
     form_class = CommentForm
     template_name = 'posts/addComment.html'
     success_url = reverse_lazy('feed')
-
     #fields = '__all__'
     def form_valid(self, form):
         form.instance.post_id = self.kwargs['pk']
+        form.instance.author = self.request.user
         return super().form_valid(form)
 
 
@@ -952,6 +1346,45 @@ def view_t15_posts(request):
     url = "https://unhindled.herokuapp.com/service/allposts/"
     posts = get_t15_posts(url)
     return render(request, 'posts/team15posts.html', {'posts': posts})
+
+def testing(request, user_id):
+    is_foreign_id(user_id)
+    return HttpResponse("test")
+
+def view_foriegn_posts(request):
+    if node_working(request):
+        node = get_nodes()
+        url = request.get_full_path()
+        if url in node:
+            n = list(filter(lambda node: node['url'] == url, node))
+            print('list :'+ str(n))
+            ext_request = requests.get(url, auth=(n.username,n.password), headers={'Referer': "http://localhost:8000/"})
+            ext_request = ext_request.json()
+            return render(request, 'posts/team15posts.html', {'posts': ext_request})
+        else:
+            return HttpResponse(node)
+    else:
+        return HttpResponse()
+
+def node_working(request):
+    url = request.build_absolute_uri()
+    host  = ['http://127.0.0.1:8000/', 'http://localhost:8000/', 'https://social-dis.herokuapp.com/',]
+    
+    for node in get_nodes():
+        print('node ' + str(node['url']))
+        print('url ' + url)
+        if url in node['url']:
+            return True
+        else:
+            return False
+
+def get_nodes():
+    nodes = Node.objects.all()
+    serializer = NodeSerializer(nodes, many=True)
+    connected = []
+    for node in serializer.data:
+        connected.append(node)
+    return connected     
 
 
 #curl -X POST -d "username=1&password=12345" http://127.0.0.1:8000/api-token-auth/

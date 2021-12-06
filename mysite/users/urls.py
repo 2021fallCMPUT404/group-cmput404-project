@@ -1,3 +1,4 @@
+
 from django.urls import path
 from . import views
 from posts import views as post_views
@@ -9,7 +10,6 @@ from rest_framework.authtoken import views as token_views
 app_name = 'users'
 
 urlpatterns = [
-    path('', views.UserList, name='homepage'),
      path('<int:author_id>/', views.ManageUserView.as_view(), name='user_crud'),
     path('userGet/<int:User_id>/', views.userGet, name='user_get'),
     path('userPost/<int:User_id>/', views.userPost, name='user_post'),
@@ -17,10 +17,9 @@ urlpatterns = [
     path('create_user/', views.create_user_view, name='create_user'),
     path('<int:User_id>/posts/', views.user_post_view, name='view_user_posts'),
     path('<int:User_id>/page/', views.get_user_page, name='get_user_page'),
-    path('<int:User_id>/posts/<int:post_id>/comments',
-         views.get_post_comments,
-         name='get_post_comments'),
-     path('<int:User_id>/inbox/', views.user_inbox_view, name='get_inbox'),
+    #path('<int:User_id>/posts/<int:post_id>/comments',
+         #views.get_post_comments,
+        # name='get_post_comments'),
     path('user_login/', views.login_view, name='user_login'),
     path('register/', views.register, name='register'),
     path('login', views.login_view, name='login'),
@@ -36,11 +35,11 @@ urlpatterns = [
     path('<int:User_id>/view-followers/',
          views.view_followers,
          name='view_followers'),
-    path('<int:User_id>/get-followers/<int:Foreign_id>/',
-         views.get_follow,
-         name='get_followers'),
+    #path('<int:User_id>/get-followers/<int:Foreign_id>/',
+         #views.get_follow,
+         #name='get_followers'),
     path('<int:User_id>/followers/<int:Foreign_id>/',
-         views.follow_crud,
+         views.get_follow,
          name='crud_followers'),
     path('requests/send-request/<int:User_id>/',
          views.send_friend_request,
@@ -72,5 +71,24 @@ urlpatterns = [
          name='HandleAuthorPost'),
     path('<int:AUTHOR_ID>',
          post_views.MangePostUnderUser.as_view(),
-         name='MangePostUnderUser')
+         name='MangePostUnderUser'),
+    path('<int:AUTHOR_ID>/posts/<int:POST_ID>/comments',
+         post_views.HandleAuthorPostComment.as_view(),
+         name='HandleAuthorPostComment'),
+     #path('<int:AUTHOR_ID>/posts/<int:POST_ID>/comments',
+         #post_views.HandleAuthorPostComment,
+         #name='HandleAuthorPostComment'),
+    path('<int:AUTHOR_ID>/inbox/',
+         post_views.HandleInboxLike.as_view(),
+         name='HandleInboxLike'),
+    path('<int:AUTHOR_ID>/post/<int:POST_ID>/likes',
+         post_views.HandlePostLikeList.as_view(),
+         name='HandlePostLikeList'),
+    path('<int:AUTHOR_ID>/post/<int:POST_ID>/comments/<int:COMMENT_ID>/likes',
+         post_views.HandleCommentLike.as_view(),
+         name='HandleCommentLike'),
+    path('<int:AUTHOR_ID>/liked',
+         post_views.HandleAuthorLike.as_view(),
+         name='HandleAuthorLike'),
+     path('<int:AUTHOR_ID>/inbox', post_views.HandleInboxPost.as_view(), name='HandleInboxPost')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

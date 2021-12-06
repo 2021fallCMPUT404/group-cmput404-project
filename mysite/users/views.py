@@ -4,7 +4,7 @@ from . import views
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from .models import User, Create_user, User_Profile, FriendRequest, UserFollows, Messages
+from .models import User, Create_user, User_Profile, FriendRequest, UserFollows, Inbox
 from posts.views import *  #Will change this later on
 from posts.serializers import *  #Also will change this too
 from django.apps import apps
@@ -139,8 +139,8 @@ def userPost(request, User_id):
 
 
 @api_view(['GET'])
-@authentication_classes([CustomAuthentication])
-@permission_classes([AccessPermission])
+@authentication_classes([])
+@permission_classes([])
 def follow_list(request, User_id):
     user = get_object_or_404(User, pk=User_id)
     user_profile = get_object_or_404(User_Profile, user=user)
@@ -166,20 +166,29 @@ def following_list(request, User_id):
     return Response({'type': 'following', 'items': serializer.data})
 
 
-@api_view(['GET'])
-@authentication_classes([CustomAuthentication])
-@permission_classes([AccessPermission])
+@api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([])
+@permission_classes([])
 def get_follow(request, User_id, Foreign_id):
-    user = get_object_or_404(User, pk=User_id)
-    foreign_user = get_object_or_404(User, pk=Foreign_id)
-    user_profile = get_object_or_404(User_Profile, user=user)
-    foreign_user_profile = get_object_or_404(User_Profile, user=foreign_user)
+
     if request.method == 'GET':
-        thing = UserFollows.objects.filter(actor=foreign_user_profile,
-                                           object=user_profile).first()
-        serializer = userFollowSerializer(thing, many=False)
-        print('PRINTING DATA:', serializer)
-        return Response(serializer.data)
+        user = get_object_or_404(User, pk=User_id)
+        foreign_user = get_object_or_404(User, pk=Foreign_id)
+        user_profile = get_object_or_404(User_Profile, user=user)
+        foreign_user_profile = get_object_or_404(User_Profile, user=foreign_user)
+        if request.method == 'GET':
+            thing = UserFollows.objects.filter(actor=foreign_user_profile,
+                                            object=user_profile).first()
+            if thing != None:
+                return HttpResponse('True\n')
+            else:
+                return HttpResponse('False\n')
+            #serializer = userFollowSerializer(thing, many=False)
+            #print('PRINTING DATA:', serializer)
+            #return Response(serializer.data)
+    else:
+        print(request._request)
+        return follow_crud(request._request, User_id, Foreign_id)
 
 
 @api_view(['PUT', 'DELETE'])
@@ -251,18 +260,6 @@ def user_post_view(request, User_id):
     return render(request, 'posts/placeholder.html',
                   {'latest_post_list': latest_post_list})
 
-def user_inbox_view(request, User_id):
-    user = get_object_or_404(User, pk=User_id)
-    user_profile = get_object_or_404(User_Profile, user=user)
-    if request.method == "POST":
-        sender = request.user
-        receiver_name = request.POST.get('msg_receiver')
-        receiver = User.objects.get(username=receiver_name)
-        msg_content = request.POST.get('msg_content')
-        Messages.objects.create(sender=sender, receiver=receiver, msg_content=msg_content)
-    inbox = Messages.objects.filter(receiver=user_profile)
-    outbox = Messages.objects.filter(sender=user_profile)
-    return render(request, 'users/view_inbox.html', {'user':user, 'inbox': inbox, 'outbox': outbox})
 
 def index(request):
     #my_dict = {'insert_me': "This line is from users/index.html"}
@@ -307,6 +304,8 @@ def register(request):
             profile = user_profile_form.save(commit=False)
             profile.user = user
 
+            inbox = Inbox(author=user)
+            inbox.save()
             if 'profileImage' in request.FILES:
                 profile.profileImage = request.FILES['profileImage']
 
@@ -420,7 +419,6 @@ def edit_user_profile_view(request):
 
     return render(request, 'users/edit_user_profile.html',
                   {'profile_form': user_profile_form})
-
 
 
 def advance_home_page_view(request):

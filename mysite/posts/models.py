@@ -1,10 +1,13 @@
+
 from django.db import models
 from django.conf import settings
-#from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 from django.db.models.fields.related import ForeignKey
-from users.models import User
-import uuid
-from django.urls import reverse
+from users.models import *
+from django.db.models.fields import related
+from django.contrib.auth.models import User
+from django.apps import apps
+from django.db.models.fields.json import JSONField
 
 
 class Post(models.Model):
@@ -63,6 +66,25 @@ class Post(models.Model):
     
 
 
+
+class Like(models.Model):
+    type = 'like'
+    user = models.ForeignKey(User,
+                             related_name='likes',
+                             on_delete=models.CASCADE)
+    
+    object = models.CharField(max_length=100)
+    
+    #post = models.ForeignKey(Post,
+                             #related_name='post_like',
+                             #blank=True,
+                             #null=True,
+                             #on_delete=models.CASCADE)
+    #comment = models.ForeignKey(Comment, related_name='comment_like', blank=True, null=True, on_delete=models.CASCADE)
+    #inbox = models.ManyToManyField("users.Inbox", related_name='inbox', blank=True, null=True)
+
+
+
 class Comment(models.Model):
     #name of the user (primary key problem)
     type = 'comment'
@@ -72,13 +94,15 @@ class Comment(models.Model):
                              blank=True,
                              null=True,
                              related_name="comments")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL,
-                               on_delete=models.CASCADE,
-                               blank=True,
-                               null=True)
+    #author = models.ForeignKey(User,
+                               #on_delete=models.CASCADE,
+                               #blank=True,
+                               #null=True)
+    author = JSONField(null=True, blank=True)
     comment_body = models.TextField()
     comment_created = models.DateTimeField(auto_now_add=True)
-    like = models.ManyToManyField(User, related_name='comments_likes')
+    like = models.ManyToManyField(Like, related_name='comments_likes', blank=True, null=True)
+
     class Meta:
         ordering = ['comment_created']
 
@@ -86,20 +110,30 @@ class Comment(models.Model):
         return 'Comment {} by {}'.format(self.comment_body, self.author)
 
 
-class Like(models.Model):
 
+'''
+class InboxLike(models.Model):
+    type = 'like'
+    inbox = models.ForeignKey("users.Inbox", related_name='inbox', blank=True, null=True, on_delete=models.CASCADE)
+'''
+    
+class CommentLike(models.Model):
+    type = 'comment_like'
     user = models.ForeignKey(User,
-                             related_name='likes',
+                             related_name='CommentLikeUser',
                              on_delete=models.CASCADE)
-    post = models.ForeignKey(Post,
-                             related_name='likes',
-                             on_delete=models.CASCADE)
-
-
+    comment = models.ForeignKey(Comment, related_name='comment', blank=True, null=True, on_delete=models.CASCADE)
 class Share(models.Model):
-    id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, blank=True, null=True,related_name="shares")
-    shared_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    post = models.ForeignKey(Post,
+                             on_delete=models.CASCADE,
+                             blank=True,
+                             null=True,
+                             related_name="shares")
+    shared_user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                    on_delete=models.CASCADE,
+                                    blank=True,
+                                    null=True)
     shared_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -107,4 +141,10 @@ class Share(models.Model):
 
     def __str__(self):
         return 'Shared by {}'.format(self.author)
+
+class Node(models.Model):
+    url = models.URLField()
+    team_id = models.IntegerField(null=True) #Added in case we need to do specific parsing for a team
+    username = models.TextField()
+    password = models.TextField()
 

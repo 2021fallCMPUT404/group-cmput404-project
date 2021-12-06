@@ -24,7 +24,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('post/', include('posts.urls')),
-    path('authors/', include('users.urls')),
+    path('author/', include('users.urls')),
     path('admin/', admin.site.urls),
     path('users', include('users.urls')),
     url(r'^users_test$', views.index, name='index'),
@@ -35,4 +35,6 @@ urlpatterns = [
     path('', views.login_view, name='login'),
     path('logout', views.logout_view, name='logout'),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('service/author/<int:author_id>/posts/<int:post_id>/comments/', views.post_comments_api.as_view(), name='comment_api'),
+    path('authors/', views.UserList, name='homepage'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

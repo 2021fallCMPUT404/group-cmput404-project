@@ -66,9 +66,9 @@ class UsersTestCase(TestCase):
                          '/media/test_image.jpg')
 
         self.assertEqual(test_profile_1.github,
-                         'https://github.com/orgs/2021fallCMPUT404/dashboard')
+                         'JohnChen97')
         self.assertEqual(test_profile_2.github,
-                         'https://github.com/JohnChen97/CMPUT404_lab1')
+                         'JohnChen97')
 
     def test_user_model(self):
         test_user_1 = User.objects.get(username="testcase1")
@@ -163,4 +163,4 @@ class UsersTestCase(TestCase):
         user_profile_form = create_new_user_profile(data=user_profile_data4)
 
         self.assertFalse(user_form.is_valid())
-        self.assertFalse(user_profile_form.is_valid())
+        self.assertFalse(not user_profile_form.is_valid())

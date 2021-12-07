@@ -41,6 +41,13 @@ import base64
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from users.serializers import User_Profile, userPSerializer, UserSerializer
+from django.core import serializers as cereal
+
+
+def serialize_object(object):
+    serialized_object = cereal.serialize('json', [object]).replace("[","").replace("]","")
+    return serialized_object
+
 
 class ExemptGetPermission(permissions.BasePermission):        
 
@@ -1281,7 +1288,7 @@ class addComment(CreateView):
     #fields = '__all__'
     def form_valid(self, form):
         form.instance.post_id = self.kwargs['pk']
-        form.instance.author = self.request.user
+        form.instance.author = serialize_object(self.request.user)
         return super().form_valid(form)
 
 
